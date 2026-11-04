@@ -1,0 +1,318 @@
+/* The county map and the county list beside it. The map is drawn 1 unit = 1 px from its column
+   (CountyMap), so names set here in rem follow A / A+ / A++. */
+
+/* ------------------------------------------------------------ map */
+.map {
+  position: relative;
+  margin-top: 0.7rem;
+}
+.map__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.map__sk {
+  display: block;
+  height: 24rem;
+}
+.county {
+  stroke: var(--map-stroke);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+/* The edge of a county in focus is drawn in its own layer (yellow marker under ink): the path
+   itself shows no box outline. */
+.county:focus,
+.county:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.map__hatch-bg {
+  fill: var(--wait-none);
+}
+.map__hatch-line {
+  stroke: var(--hatch);
+  stroke-width: 2;
+}
+.map__edge {
+  fill: none;
+  stroke: var(--ink);
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.map__edge--origin {
+  stroke-width: 1.8;
+}
+/* Pointed at, focused or selected: the edge thickens from the border's 0.9 px. The edge is drawn
+   when it appears, so an animation, not a transition; reduced motion shows 2.4. */
+.map__edge--hot {
+  stroke-width: 2.4;
+  animation: map-edge var(--t-hover) var(--ease);
+}
+@keyframes map-edge {
+  from {
+    stroke-width: 0.9;
+  }
+}
+.map__edge--marker {
+  stroke: var(--focus);
+  stroke-width: 7;
+}
+/* High contrast draws every border in ink, so the marked edges get heavier to stand apart. */
+:root[data-contrast="high"] .map__edge--origin {
+  stroke-width: 3;
+}
+:root[data-contrast="high"] .map__edge--hot {
+  stroke-width: 3.5;
+}
+.map__dot {
+  fill: var(--ink);
+}
+.map__city {
+  fill: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.map__origin {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+.map__soon {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 2;
+}
+.map__city--soon {
+  fill: var(--teal);
+  font-weight: 750;
+}
+.map__tip {
+  width: max-content;
+  max-width: min(18rem, 100%);
+}
+
+/* ------------------------------------------------------------ CountyWaits: legend, status line, ranked list
+   Beside the map when there is room (the dashboard), under it in a margin column. */
+.cw {
+  container: cw / inline-size;
+}
+.cw__dek {
+  margin-top: 0.45rem;
+}
+.cw__legend {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.45rem 2px;
+  margin-top: 0.6rem;
+}
+.cw__step {
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-graphic);
+  line-height: 1.2;
+}
+.cw__step i {
+  display: block;
+  height: 10px;
+  background: var(--c);
+}
+/* The bar steps touch (2 px), the words must not run into the next ones. */
+.cw__step span {
+  justify-self: start;
+  margin-right: 0.45rem;
+}
+/* The step of the county under the pointer gets the map's ink edge; under the keyboard focus its
+   word also gets the yellow marker. */
+.cw__step.is-hot,
+.cw__step.is-focus {
+  color: var(--ink);
+}
+.cw__step.is-hot i,
+.cw__step.is-focus i {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.cw__step.is-focus span {
+  background: var(--focus);
+  color: var(--focus-ink);
+}
+.cw__step--none i,
+.cw__sw.cw__sw--none {
+  background: repeating-linear-gradient(45deg, var(--hatch) 0 1.6px, var(--paper) 1.6px 4.6px);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.cw__readout {
+  margin-top: 0.9rem;
+  padding: 0.55rem 0;
+  border-block: var(--border-w) solid var(--hair);
+}
+.cw__readout b {
+  color: var(--ink);
+}
+.cw__reset {
+  margin-top: 0.1rem;
+  font-size: var(--fs-small);
+}
+/* In one column the ranked list follows „Sve županije” closely (the button keeps its 44 px). */
+/* „Prikaži sve županije” exists for narrow columns only. */
+.cw__all {
+  display: none;
+  margin-top: 0.75rem;
+}
+@container cw (width < 40rem) {
+  .cw__rank:not(.is-open) .is-later {
+    display: none;
+  }
+  .cw__all {
+    display: inline-flex;
+  }
+  .cw__fig:has(.cw__reset) + .cw__list > .cw__rank {
+    margin-top: 0.3rem;
+  }
+}
+.cw__rank {
+  margin-top: 0.9rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.35;
+}
+.cw__rank li {
+  border-bottom: var(--border-w) solid var(--hair-2);
+  transition: background-color var(--t-hover) var(--ease);
+}
+/* Each row is a button that filters like a county on the map: the row's full width, at least
+   24 px tall (44 px on a touch screen). */
+.cw__row {
+  display: grid;
+  grid-template-columns: 0.85rem minmax(0, 1fr) auto;
+  column-gap: 0.55rem;
+  align-items: center;
+  width: 100%;
+  min-height: max(1.6rem, 24px);
+  padding: 0.27rem 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cw__row:hover {
+  background: var(--paper-sunk);
+}
+.cw__row:hover .cw__name {
+  text-decoration: underline var(--border-w);
+  text-underline-offset: 0.2em;
+}
+/* The keyboard's marker: the row as a yellow bar, like the county's step in the legend. */
+.cw__row:focus-visible {
+  outline: 3px solid transparent;
+  background: var(--focus);
+  box-shadow: none;
+  color: var(--focus-ink);
+}
+.cw__row:focus-visible em {
+  color: inherit;
+}
+@media (pointer: coarse) {
+  .cw__row {
+    min-height: 44px;
+  }
+}
+.cw__sw {
+  display: block;
+  width: 0.85rem;
+  height: 0.85rem;
+  background: var(--sw);
+}
+.cw__name em {
+  color: var(--ink-2);
+  font-style: normal;
+}
+.cw__n {
+  font-weight: 650;
+  text-align: right;
+}
+.cw__rank .is-origin {
+  font-weight: 700;
+}
+/* The county the map is pointed at (or one marked from a coupon or a row), the selected one with
+   the segmented control's 2 px underline, and the one in keyboard focus with the yellow marker. */
+.cw__rank .is-hot,
+.cw__rank [data-linked] {
+  background: var(--paper-sunk);
+}
+.cw__rank .is-selected {
+  background: var(--paper-sunk);
+  font-weight: 700;
+}
+.cw__rank .is-selected .cw__name {
+  text-decoration: underline 2px;
+  text-underline-offset: 0.22em;
+}
+.cw__rank .is-focus {
+  background: var(--focus);
+  color: var(--focus-ink);
+}
+.cw__rank .is-focus em {
+  color: inherit;
+}
+.cw__none {
+  margin-top: 0.55rem;
+}
+.cw__none .cw__sw {
+  display: inline-block;
+  margin-right: 0.45rem;
+  vertical-align: -0.1em;
+}
+.cw .credit {
+  margin-top: 0.6rem;
+}
+:root[data-contrast="high"] .cw__sw,
+:root[data-contrast="high"] .cw__step i {
+  outline: 1px solid var(--ink);
+  outline-offset: -1px;
+}
+:root[data-contrast="high"] .cw__rank .is-hot,
+:root[data-contrast="high"] .cw__rank [data-linked] {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+/* A wide column (the dashboard): the ranked list stands beside the map, its legend and status. */
+@container cw (min-width: 40rem) {
+  .cw__body {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    column-gap: calc(var(--gap) * 1.5);
+    align-items: start;
+  }
+  .cw__list .cw__rank {
+    margin-top: 0.7rem;
+  }
+}
+/* A narrow column (320 px phones, A++): the legend in two rows of three. */
+@container cw (max-width: 22rem) {
+  .cw__legend {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ------------------------------------------------------------ print: no map */
+@media print {
+  .map,
+  .cw__legend,
+  .cw__reset {
+    display: none !important;
+  }
+}

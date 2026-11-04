@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Uputko: agent tool contract",
+  "version": "0.4.3",
+  "description": "Source of truth for the tools both profiles call: the ElevenLabs agent (premium, webhooks) and the Pipecat bot (open, HTTP). Backend endpoints, tests, the ElevenLabs agent configuration and the open bot's function schemas must match this file. Health only since 0.3.0 (weather and crisis tools removed).",
+  "transport": {
+    "method": "POST",
+    "base_url_env": "PUBLIC_BASE_URL (premium) / TOOLS_BASE_URL (open)",
+    "path_prefix": "/tools",
+    "content_type": "application/json",
+    "auth_header": "X-Tool-Secret",
+    "auth_secret_env": "TOOL_SECRET",
+    "profile_header": {
+      "name": "X-Profile",
+      "enum": [
+        "premium",
+        "open"
+      ],
+      "description": "Which voice profile made the call. Used only for statistics (tool_calls.profile), never for authorization."
+    }
+  },
+  "common_response": {
+    "type": "object",
+    "required": [
+      "status",
+      "summary_hr",
+      "source"
+    ],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "ambiguous",
+          "not_found",
+          "no_data",
+          "error"
+        ]
+      },
+      "location": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "municipality": {
+            "type": "string"
+          },
+          "county": {
+            "type": "string"
+          }
+        }
+      },
+      "candidates": {
+        "type": "array",
+        "maxItems": 3,
+        "description": "Options when status is ambiguous: places (with county), procedures or drugs.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "county": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "municipality": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "A place's city or municipality ('Grad Vrbovec'): one name can repeat inside a county."
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "place",
+                "procedure",
+                "drug"
+              ]
+            }
+          }
+        }
+      },
+      "summary_hr": {
+        "type": "string",
+        "description": "Short Croatian summary ready to be spoken, at most 3 sentences. Generated from templates, never by an LLM. Identical for both profiles."
+      },
+      "data": {
+        "type": "object"
+      },
+      "source": {
+        "type": "string",
+        "examples": [
+          "HZZO",
+          "HZZO, liste čekanja (CEZIH)",
+          "HALMED"
+        ]
+      },
+      "updated_at": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "date-time"
+      },
+      "card_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "find_waiting_times",
+      "path": "/tools/find_waiting_times",
+      "description": "First free appointments for a medical exam or procedure covered by HZZO (Croatian health insurance), from the public waiting lists on CEZIH (liste.cezih.hr): the nearest institution with a free slot, a sooner option nearby or in Croatia, and HZZO-contracted providers of the same service that publish no list. Use for 'Gdje mogu napraviti MR koljena?', 'Koliko se čeka na kardiologa u Osijeku?', 'Ima li slobodnih termina za kolonoskopiju?'. A referral (uputnica) is needed; the tool does not book.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "procedure"
+        ],
+        "properties": {
+          "procedure": {
+            "type": "string",
+            "description": "The exam or procedure in Croatian as the user said it, without the place: 'MR koljena', 'UZV abdomena', 'pregled kod kardiologa', 'kolonoskopija', 'mamografija'. After an ambiguous answer send the exact candidate name the user chose."
+          },
+          "location": {
+            "type": "string",
+            "description": "Place name in nominative, e.g. 'Vinkovci'. Leave it out when the user has not named a place or does not mind where: the soonest appointments in Croatia are returned at once, and the answer asks for the place to find the nearest. After an ambiguous place send the option the user chose as the answer named it, e.g. 'Novigrad u Istarskoj županiji'."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3,
+            "description": "How many institutions to return (1-5). Use 3 unless the user asks for more."
+          },
+          "conversation_id": {
+            "type": "string",
+            "description": "Premium: bind to system__conversation_id. Open: Pipecat session ID set by the bot. Never chosen by the LLM."
+          }
+        }
+      }
+    },
+    {
+      "name": "find_health_facilities",
+      "path": "/tools/find_health_facilities",
+      "description": "Nearest health facilities to a place (primary care practices, hospitals and other institutions) with address and distance, from HZZO open data. Does not give medical advice.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "location"
+        ],
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "Place name in nominative case, e.g. 'Vinkovci'. After an ambiguous place send the option the user chose as the answer named it, e.g. 'Luka u gradu Vrbovec'."
+          },
+          "facility_type": {
+            "type": "string",
+            "enum": [
+              "family_medicine",
+              "pediatrics",
+              "gynecology",
+              "dentistry",
+              "hospital",
+              "any"
+            ],
+            "default": "any",
+            "description": "Maps to HZZO categories: family_medicine = opća/obiteljska medicina, pediatrics = pedijatrija, gynecology = ginekologija, dentistry = dentalna zdravstvena zaštita, hospital = opće i kliničke bolnice; any = all of these. Locations are known to settlement level only."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3,
+            "description": "How many facilities to return (1-5). Use 3 unless the user asks for more."
+          },
+          "conversation_id": {
+            "type": "string",
+            "description": "Premium: bind to system__conversation_id. Open: Pipecat session ID set by the bot. Never chosen by the LLM."
+          }
+        }
+      }
+    },
+    {
+      "name": "get_drug_info",
+      "path": "/tools/get_drug_info",
+      "description": "Facts about a medicine authorised in Croatia from the HALMED database and HZZO's lists of medicines: active substance, whether it needs a prescription, whether it is on HZZO's basic list (no co-payment on prescription) or supplementary list (with the co-payment in euros), market and shortage status, and a link to the patient leaflet. Use for 'Je li Andol na listi HZZO-a?', 'Koja je djelatna tvar u Lekadolu?', 'Treba li za Voltaren recept?'. Never gives dosage or treatment advice.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Protected name of the medicine as on the box (e.g. 'Andol', 'Voltaren', 'Lekadol Forte') or an active substance (e.g. 'paracetamol'). After an ambiguous answer send the exact name the user chose."
+          },
+          "conversation_id": {
+            "type": "string",
+            "description": "Premium: bind to system__conversation_id. Open: Pipecat session ID set by the bot. Never chosen by the LLM."
+          }
+        }
+      }
+    }
+  ]
+}

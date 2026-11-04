@@ -1,0 +1,94 @@
+[project]
+name = "uputko-open"
+version = "0.2.0"
+description = "Uputko: open profil (Pipecat bot, sinteza govora na CPU-u)"
+license = "EUPL-1.2"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "pipecat-ai[groq,runner,silero,webrtc]>=1.14",
+]
+
+[dependency-groups]
+dev = ["mypy>=2.4", "pytest>=8.3", "ruff>=0.8"]
+# Sinteza govora: bot je treba da govori (Docker i lokalni način je instaliraju); `uv sync --group tts`
+tts = [
+    "coqui-tts[cpu]>=0.27",
+    "piper-tts>=1.3",
+    "soundfile>=0.12",
+    # direct so that [tool.uv.sources] can point Linux builds at the CPU-only index
+    "torch>=2.2,<2.9",  # from 2.9 coqui-tts needs torchcodec + FFmpeg for audio IO
+    "torchaudio>=2.2,<2.9",
+]
+# Local mode (OPEN_MODE=local, `uv sync --group tts --group local`): Whisper on this machine
+# (faster-whisper). The NVIDIA libraries let it run on a CUDA GPU (CTranslate2 needs cuBLAS 12
+# and cuDNN 9); without a GPU it runs on the CPU. The language model is served by Ollama.
+local = [
+    "pipecat-ai[whisper]>=1.14",
+    "nvidia-cublas-cu12>=12.4; sys_platform == 'win32' or sys_platform == 'linux'",
+    "nvidia-cudnn-cu12>=9,<10; sys_platform == 'win32' or sys_platform == 'linux'",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "UP", "B", "SIM", "RUF",
+    "A",     # shadowed builtins
+    "ANN",   # type hints everywhere
+    "ARG",   # unused arguments
+    "ASYNC", "C4", "DTZ", "FLY", "FURB", "G", "ISC", "LOG", "N", "PERF", "PGH", "PIE",
+    "BLE",   # a blind except only where one failure must not end the session, marked
+    "FBT",   # boolean flags are keyword-only
+    "PLE", "PLW", "PT", "PTH", "RET", "RSE", "SLF", "T10", "T20", "TID", "TRY", "YTT",
+    "S",     # bandit
+]
+ignore = [
+    "RUF001", "RUF002", "RUF003",  # Croatian text: „quotes”, en dashes
+    "S101",    # assert states an internal invariant (type narrowing), never a check
+    "TRY003",  # the message is written where the error is raised
+]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["bot"]
+strict = true
+warn_unreachable = true
+# Some Pipecat methods (connection.disconnect) carry no type information.
+untyped_calls_exclude = ["pipecat"]
+
+[[tool.mypy.overrides]]
+# Optional engines (groups tts and local) and libraries without type information.
+module = ["TTS.*", "piper.*", "faster_whisper.*", "soundfile", "nvidia.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["bot.pipeline"]
+disallow_untyped_decorators = false  # @transport.event_handler(...)
+
+[[tool.mypy.overrides]]
+module = ["bot.local_stt"]
+warn_unreachable = false  # the Windows-only DLL setup is unreachable when checked on Linux
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -p no:warnings"
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*" = ["E501", "T201"]  # test sentences are data; command-line output
+"tests/*" = ["ANN", "S105", "SLF001"]
+
+# Speech synthesis runs on CPU: take torch from the CPU-only index (no CUDA wheels).
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+torchaudio = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

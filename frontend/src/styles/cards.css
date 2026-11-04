@@ -1,0 +1,705 @@
+/* Answers and tickets: an answer in the conversation is one clean white
+   card (18 px corners, a hairline, a light shadow) with a short title, the key number big, rows
+   with hairlines and its source and date in small grey at the bottom. A first free appointment
+   is a ticket: the days big on the left, where and when on the right, the phone as a pill.
+   Layout switches are container queries in rem, so they follow the column and the text size. */
+
+/* ------------------------------------------------------------ arrival */
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+/* ------------------------------------------------------------ the ticket (a first free appointment)
+   <ul class="coupons"><li><article class="coupon" data-inst aria-label>
+     <p class="coupon__days coupon__days--short"><span class="coupon__num">69</span><span class="coupon__unit">dana</span></p>
+     <div class="coupon__body">.coupon__role .coupon__name .coupon__where .coupon__when .coupon__acts .coupon__receipt</div>
+   </article></li></ul> */
+.coupons {
+  container: coupons / inline-size;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  --print-at: 0ms;
+}
+.coupons > li {
+  display: flex;
+  min-width: 0;
+}
+.coupon {
+  flex: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 1.1rem;
+  min-width: 0;
+  padding: 1.05rem 1.15rem 1rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--t-hover) var(--ease);
+  animation: card-rise var(--t-print) var(--ease) var(--print-at) backwards;
+}
+.coupons > li:nth-child(2) {
+  --print-at: 90ms;
+}
+.coupons > li:nth-child(3) {
+  --print-at: 180ms;
+}
+/* The same institution lit up in the ticket, the table row, the dot and the county: the page
+   sets data-linked on every element with the ticket's data-inst while one of them is hovered. */
+.coupon[data-linked] {
+  border-color: var(--ink);
+}
+/* The sooner appointment: a teal edge and what it saves against the nearest one. */
+.coupon--sooner {
+  border-color: var(--teal);
+  box-shadow: inset 0 0 0 1px var(--teal), var(--shadow-card);
+}
+.coupon__saving {
+  width: fit-content;
+  margin: 0.15rem 0 0.25rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: var(--radius-control);
+  background: var(--teal-tint);
+  color: var(--teal);
+  font-size: var(--fs-small);
+  font-weight: 750;
+}
+:root[data-contrast="high"] .coupon__saving {
+  border: 2px solid var(--teal);
+}
+
+/* The wait: a big bold number, teal when shorter than the Croatian median, red when longer. */
+.coupon__days {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 3.4rem;
+  color: var(--num-mid);
+  line-height: 1;
+}
+.coupon__days--short {
+  color: var(--num-short);
+}
+.coupon__days--long {
+  color: var(--num-long);
+}
+.coupon__num {
+  font-size: 2.9rem;
+  font-variant-numeric: lining-nums;
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+.coupon__days--l3 .coupon__num {
+  font-size: 2.45rem;
+}
+.coupon__days--l4 .coupon__num {
+  font-size: 1.95rem;
+}
+/* „danas”, „sutra”: a word, smaller than a numeral. */
+.coupon__days--word .coupon__num {
+  padding-top: 0.15rem;
+  font-size: 1.45rem;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.coupon__unit {
+  margin-top: 0.3rem;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.coupon__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.coupon__role {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 650;
+  line-height: 1.3;
+}
+.coupon__name {
+  margin-top: 0.05rem;
+  font-size: 1.12rem;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.coupon__where,
+.coupon__when {
+  font-size: var(--fs-meta);
+  line-height: 1.4;
+}
+.coupon__where {
+  color: var(--ink-2);
+}
+.coupon__when {
+  font-weight: 650;
+}
+.coupon__acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.1rem;
+  margin-top: 0.55rem;
+}
+.coupon__mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+.coupon__mail .lucide {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.coupon__web {
+  padding-block: 0.65rem;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+/* The address is read out with „E-pošta” and printed instead of it. */
+.coupon__addr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.coupon__receipt {
+  margin-top: 0.35rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+}
+
+/* A narrow ticket (a phone at A++, a half column): the days go on top, „69 dana” in one line. */
+@container coupons (max-width: 21rem) {
+  .coupon {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 1rem;
+  }
+  .coupon__days {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin-bottom: 0.45rem;
+  }
+  .coupon__unit {
+    margin-top: 0;
+  }
+  .coupon__days--word .coupon__num {
+    padding-top: 0;
+  }
+  /* The phone pill keeps its number on one line in a 250 px column at A++. */
+  .coupon a.tel.coupon__tel {
+    gap: 0.35rem;
+    padding-inline: 0.65rem 0.8rem;
+    font-size: var(--fs-meta);
+  }
+}
+
+/* ------------------------------------------------------------ pills: the phone as a button
+   <a class="tel apill"><svg/>031 123 456</a>; the ticket's phone is the same pill. */
+a.tel:is(.coupon__tel, .apill),
+.tel:is(.coupon__tel, .apill) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 1.05rem 0.35rem 0.85rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-size: var(--fs-ui);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: border-color var(--t-hover) var(--ease);
+}
+a.tel:is(.coupon__tel, .apill):hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+a.tel:is(.coupon__tel, .apill):focus-visible {
+  border-color: var(--focus-ink);
+  box-shadow: 0 4px 0 var(--focus-ink);
+}
+.tel:is(.coupon__tel, .apill) .lucide {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+/* A number the format does not recognise is plain text in the same place, not a button. */
+span.tel:is(.coupon__tel, .apill) {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  font-weight: 650;
+}
+:root[data-contrast="high"] a.tel:is(.coupon__tel, .apill) {
+  border-width: 2px;
+  border-color: var(--ink);
+}
+
+/* ------------------------------------------------------------ an answer in the conversation
+   <figure class="ans" id="odgovor-1">
+     <div class="ans__head"><div class="ans__titles"><h2 class="ans__title">…</h2><p class="ans__sub">…</p></div>
+       <p class="ans__fig"><span class="ans__n">57</span> <span class="ans__unit">ordinacija u mjestu</span></p></div>
+     <ul class="coupons">…</ul> <ul class="ans__rows"><li class="arow">…</li></ul>
+     <div class="ans__foot"><a class="ext">Sve ustanove (27) i karta ↗</a><p class="ans__note">…</p></div>
+     <p class="ans__src">Izvor: HZZO, liste čekanja (CEZIH), ažurirano …</p>
+   </figure> */
+.ans {
+  /* The card's side padding, from its own width (the children resolve cqi against it). */
+  --ans-pad: clamp(0.9rem, 4.5cqi, 1.3rem);
+  container: ans / inline-size;
+  min-width: 0;
+  margin: 0;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  animation: card-rise var(--t-set) var(--ease) backwards;
+}
+
+.ans__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem 1.25rem;
+  padding: 1rem var(--ans-pad) 0.95rem;
+}
+.ans__titles {
+  flex: 1 1 11rem;
+  min-width: 0;
+}
+.ans__title {
+  font-size: 1.22rem;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+}
+.ans__sub {
+  margin-top: 0.2rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+}
+/* The key number: big and bold, what it counts in small grey under it. */
+.ans__fig {
+  display: grid;
+  flex: none;
+  justify-items: end;
+  max-width: 100%;
+  text-align: right;
+}
+.ans__n {
+  font-size: min(2.3rem, 12.5cqi); /* „1,29–1,82 €” stays on one line in a 320 px card at A++ */
+  font-variant-numeric: lining-nums;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.ans__unit {
+  margin-top: 0.2rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ans__fig--free .ans__n {
+  padding-top: 0.25rem;
+  color: var(--teal);
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+}
+
+/* Text in a card: the tool's own sentence when the assistant has not said it. */
+.ans__text {
+  max-width: 44em;
+  padding: 0 var(--ans-pad) 1rem;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+/* The answer's point: „Za 32 dana umjesto 68 dana, oko 17 km dalje”. */
+.ans__instead {
+  padding: 0 var(--ans-pad) 0.9rem;
+  color: var(--ink-2);
+  font-size: var(--fs-body);
+}
+.ans__instead b {
+  color: var(--teal);
+  font-size: 1.15em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ans__book {
+  padding: 0.9rem var(--ans-pad) 0.2rem;
+}
+.ans__book .booking {
+  box-shadow: none;
+}
+.ans__text b {
+  font-weight: 700;
+}
+
+/* Tickets inside an answer are its first rows: no frame of their own, a hairline between. */
+.ans .coupons {
+  display: block;
+}
+.ans .coupon {
+  padding: 1rem var(--ans-pad);
+  border: 0;
+  border-top: var(--border-w) solid var(--hair-2);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  animation: none;
+}
+.ans .coupon__name {
+  font-size: 1.08rem;
+}
+/* The card's own source line has the date: the list's date would be one line too many. */
+.ans .coupon__receipt {
+  display: none;
+}
+
+/* Rows: „[ustanova] … 34 dana · 17 km”. */
+.ans__rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.arow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.8rem var(--ans-pad);
+  border-top: var(--border-w) solid var(--hair-2);
+}
+.arow__main {
+  flex: 1 1 13rem;
+  min-width: 0;
+}
+.arow__name {
+  font-weight: 700;
+  line-height: 1.3;
+}
+.arow__name a {
+  font-weight: 700;
+}
+.arow__meta {
+  margin-top: 0.15rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+/* A phone number inside a line is a 44 px target: padding grows the area, not the line. */
+.arow__meta a.tel {
+  padding-block: 0.6rem;
+  color: var(--ink);
+  font-weight: 650;
+}
+.arow__val {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  line-height: 1.35;
+  text-align: right;
+}
+.arow__val b {
+  color: var(--ink);
+  font-size: var(--fs-ui);
+  font-weight: 750;
+  white-space: nowrap;
+}
+.arow__val--short b {
+  color: var(--num-short);
+}
+.arow__val--long b {
+  color: var(--num-long);
+}
+.arow__val--quiet {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.arow__val--list b {
+  font-size: inherit;
+}
+.arow__warn {
+  color: var(--red) !important;
+}
+/* A row with buttons (a practice: the phone and the map) centres them on its lines. */
+.arow--acts {
+  align-items: center;
+}
+.arow__acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+}
+.arow__map {
+  padding-block: 0.65rem;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+/* A narrow card: the value or the buttons go under the name, on the left. */
+@container ans (max-width: 26rem) {
+  .arow__val {
+    flex-basis: 100%;
+    text-align: left;
+  }
+  .arow__acts {
+    flex-basis: 100%;
+  }
+  .ans__fig {
+    justify-items: start;
+    text-align: left;
+  }
+  .arow a.tel.apill {
+    gap: 0.35rem;
+    padding-inline: 0.65rem 0.8rem;
+    font-size: var(--fs-meta);
+  }
+}
+
+/* The way on („Sve ustanove (27) i karta ↗”) and a short note. */
+.ans__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 1.4rem;
+  padding: 0.15rem var(--ans-pad) 0;
+  border-top: var(--border-w) solid var(--hair-2);
+}
+.ans__foot > a {
+  padding-block: 0.7rem;
+  font-size: var(--fs-ui);
+  font-weight: 700;
+}
+.ans__note {
+  flex-basis: 100%;
+  max-width: 46em;
+  padding-block: 0.15rem;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+.ans__foot > .ans__note:first-child {
+  padding-top: 0.75rem;
+}
+
+/* The source and its date, always the card's last line. */
+.ans__src {
+  padding: 0.7rem var(--ans-pad) 0.95rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+:is(.ans__rows, .coupons) + .ans__src {
+  border-top: var(--border-w) solid var(--hair-2);
+}
+:is(.ans__text, .ans__chips, .ans__head) + .ans__src {
+  padding-top: 0;
+}
+.ans__foot + .ans__src {
+  padding-top: 0.25rem;
+}
+:root[data-contrast="high"] .ans__src {
+  color: var(--ink);
+}
+
+/* An error: the title in red (the words say what happened). */
+.ans--alert .ans__title {
+  color: var(--red);
+}
+
+/* ------------------------------------------------------------ choices: an unclear question */
+.ans__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0 var(--ans-pad) 1rem;
+  list-style: none;
+}
+.achip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 1.05rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-ui);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--t-hover) var(--ease);
+}
+.achip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.achip > span:first-child {
+  text-decoration-line: none;
+}
+.achip .lucide {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+.achip--still {
+  font-weight: 650;
+  cursor: default;
+}
+.achip--still:hover {
+  border-color: var(--hair);
+}
+:root[data-contrast="high"] .achip {
+  border-width: 2px;
+  border-color: var(--ink);
+}
+
+/* ------------------------------------------------------------ Harvey balls
+   ● osnovna (full), ◐ dopunska (half), ○ not on the lists (empty); always next to a word. The
+   SVG paints itself in currentColor (HarveyBall in components/DrugStatus.tsx, used by the
+   conversation and /lijekovi); these rules give it its size and the list's colour. */
+.hb {
+  display: inline-block;
+  flex: none;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.08em;
+  overflow: visible;
+}
+.hb--oll {
+  color: var(--oll);
+}
+.hb--dll {
+  color: var(--dll);
+}
+.hb--none {
+  color: var(--nolist);
+}
+/* One ball, or two for both lists. */
+.hbs {
+  display: inline-flex;
+  gap: 0.2em;
+  vertical-align: -0.08em;
+}
+.hbs > .hb {
+  vertical-align: 0;
+}
+
+/* ------------------------------------------------------------ a medicine
+   The card's title is the medicine's name, big; the co-payment is the big number. */
+.ans--drug .ans__title {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+}
+.ans--drug .ans__sub {
+  margin-top: 0.4rem;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+}
+/* „◐ Dopunska lista HZZO-a · uz recept se plaća doplata” */
+.drug__list,
+.drug__alert {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.8rem var(--ans-pad);
+  border-top: var(--border-w) solid var(--hair-2);
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+}
+.drug__list > .hbs {
+  font-size: 1.15em;
+  transform: translateY(0.1em);
+}
+.drug__list b {
+  font-weight: 700;
+}
+.drug__alert {
+  display: block;
+}
+.drug__alert b {
+  color: var(--red);
+  font-weight: 700;
+}
+.ans__links {
+  padding-bottom: 0;
+}
+
+/* ------------------------------------------------------------ print
+   Tickets print whole, on white, without a shadow; the phone number is text; nothing is
+   animated, or a ticket would print empty. */
+@media print {
+  .coupon,
+  .ans {
+    animation: none !important;
+    box-shadow: none !important;
+  }
+  .coupons {
+    gap: 5mm;
+  }
+  .coupon {
+    background: #fff;
+    break-inside: avoid;
+  }
+  .coupon__mail {
+    min-height: 0;
+  }
+  .coupon__mail-w {
+    display: none !important;
+  }
+  .coupon__addr {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+  a.tel:is(.coupon__tel, .apill) {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+  }
+  .arow {
+    break-inside: avoid;
+  }
+}

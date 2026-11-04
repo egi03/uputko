@@ -1,0 +1,201 @@
+/* Uputko: design tokens.
+
+   A calm public-service look: white paper, near-black ink, one grotesque, rounded controls and
+   light hairlines. Ink is the action colour (buttons, the microphone); teal is the data colour
+   ("shorter": the sooner appointment, shorter than the median) and the brand mark's short bar;
+   red is only for emergencies (112) and "longer than the median". light-dark() picks the day or
+   night value from color-scheme, so a theme is a single property; high contrast redefines the
+   colours for both schemes. */
+
+:root {
+  color-scheme: light dark;
+
+  /* ------------------------------------------------------------ type
+     One family for everything, served from our own server (fontsource). */
+  --font-sans: "Schibsted Grotesk Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* rem follows the text-size setting: 1 rem = 18 / 21 / 24 px for A / A+ / A++. */
+  --fs-plate: 1.35rem; /* the wordmark */
+  --fs-num-l: 3.2rem;
+  --fs-num-s: 1.7rem;
+  --fs-h1: clamp(2.1rem, 3.6vw, 3.1rem);
+  --fs-h1-s: clamp(1.9rem, 3vw, 2.6rem);
+  --fs-search: clamp(1.6rem, 2.9vw, 2.5rem);
+  --fs-h2: 1.6rem;
+  --fs-h3: 1.2rem;
+  --fs-lede: 1.2rem;
+  --fs-body: 1.05rem;
+  --fs-ui: 1rem;
+  --fs-meta: 0.92rem;
+  --fs-small: 0.89rem; /* the floor for text that is read (16 px at A) */
+  --fs-graphic: 0.78rem; /* labels inside graphics only */
+
+  /* ------------------------------------------------------------ colour
+     Ink on white; grey bands set sections apart; red is the microphone, 112 and "longer than the
+     median"; teal is "shorter than the median" and links in data; yellow is only the keyboard
+     focus. Colour never stands alone: a word, number or shape goes with it. */
+  --paper: light-dark(#ffffff, #0f1012);
+  --paper-raised: light-dark(#ffffff, #1a1b1e); /* cards on a grey band, floating sheets */
+  --paper-sunk: light-dark(#f3f3f1, #18191c); /* grey bands, fields */
+  --hover: light-dark(#f0f0ed, #26272b);
+  --ink: light-dark(#111111, #f2f2ef);
+  --ink-2: light-dark(#3d3d3d, #c9c9c4);
+  --ink-3: light-dark(#666666, #9d9d98);
+  --rule: light-dark(#e4e4e0, #2b2c30); /* separators are hairlines, never heavy rules */
+  --hair: light-dark(#e4e4e0, #2b2c30);
+  --hair-2: light-dark(#eeeeeb, #222327); /* chart grid, list rows */
+  --teal: light-dark(#0b6b6d, #5cc2bd); /* data: shorter than the median */
+  --teal-fill: light-dark(#111111, #f2f2ef); /* the main button is ink */
+  --teal-fill-hover: light-dark(#333333, #ffffff);
+  --teal-tint: light-dark(#e3f0ed, #16302f);
+  --red: light-dark(#b00c27, #ff7a88); /* text */
+  --red-fill: #c8102e; /* the microphone, 112 */
+  --red-fill-hover: #a90d27;
+  --red-glow: light-dark(rgb(200 16 46 / 14%), rgb(255 90 110 / 18%));
+  --on-fill: light-dark(#ffffff, #111111);
+  --on-red: #ffffff;
+  --focus: #ffd60a;
+  --focus-ink: #0b0c0c;
+  /* The brand mark: an ink square, a long pale bar and a short teal one. */
+  --mark-bg: var(--ink);
+  --mark-long: light-dark(rgb(255 255 255 / 55%), rgb(15 16 18 / 45%));
+  --mark-short: light-dark(#5cc2bd, #0b6b6d);
+
+  /* ------------------------------------------------------------ data
+     Wait against the Croatian median, always with words and numbers next to the colour. */
+  --div-n2: light-dark(#0b6b6d, #5cc2bd); /* half or less (≤ 0.5 × median) */
+  --div-n1: light-dark(#86bfb8, #2d6662); /* shorter (≤ 0.85) */
+  --div-0: light-dark(#d9d2c5, #3a3f45); /* about the median (< 1.15) */
+  --div-p1: light-dark(#e2a1a1, #7c3a44); /* longer (< 1.6) */
+  --div-p2: light-dark(#a8172c, #ff7a88); /* much longer */
+  --hatch: light-dark(#b3ab9c, #4e555c); /* "bez liste": 45° hatching */
+  --map-stroke: var(--paper);
+  --wait-none: var(--paper); /* the ground under the --hatch lines */
+  --bar-short: var(--teal); /* bars and dots: shorter / about / longer than the median */
+  --bar-mid: light-dark(#7a7f86, #8e9196);
+  --bar-long: var(--red);
+  --num-short: var(--teal); /* the number on a coupon */
+  --num-mid: var(--ink);
+  --num-long: var(--red);
+  --oll: var(--teal); /* ● osnovna lista */
+  --dll: var(--ink); /* ◐ dopunska lista */
+  --nolist: var(--ink-3); /* ○ nije na listama */
+  --series-1: var(--teal); /* real data */
+  --grid: var(--hair-2);
+  --demo-bg: var(--paper-sunk); /* sample data: hatched grey, never a data colour */
+  --demo-line: var(--hatch);
+
+  /* ------------------------------------------------------------ grid, space, shape (4) */
+  --page: 72rem;
+  --gutter: clamp(1rem, 3vw, 2.5rem); /* 18 px on a phone at A */
+  --gap: 1.5rem;
+  --radius-control: 999px; /* buttons and fields are pills */
+  --radius-card: 18px; /* cards, tables and sheets */
+  --radius-s: 10px;
+  --border-w: 1px;
+  --shadow-card: 0 1px 2px light-dark(rgb(0 0 0 / 4%), rgb(0 0 0 / 30%));
+  --shadow-float: 0 12px 32px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 45%));
+  --shadow-sheet: 0 -10px 28px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 45%)); /* a sheet rising from the tab bar */
+  /* Layers: skip link, floating sheets, phone tab bar. */
+  --z-skip: 60;
+  --z-float: 50;
+  --z-tabbar: 40;
+  /* The top bar's height (the conversation fills the window under it). */
+  --top-h: 4.4rem;
+  /* Room the fixed tab bar takes at the bottom of a phone (0 where there is no tab bar). */
+  --tabbar-space: 0px;
+
+  /* ------------------------------------------------------------ motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-press: 120ms; /* a button going down by 1 px */
+  --t-hover: 180ms; /* colour, row shade, underline weight */
+  --t-set: 240ms; /* an answer card rising in */
+  --t-print: 280ms; /* a coupon rising in, one after the other */
+
+  font-size: 112.5%; /* 18 px */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+:root[data-nav="compact"] {
+  --tabbar-space: calc(3.8rem + 1px + env(safe-area-inset-bottom));
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Text size: everything is in rem, so the whole page grows with the root. */
+:root[data-text="large"] {
+  font-size: 131.25%; /* 21 px */
+}
+:root[data-text="xlarge"] {
+  font-size: 150%; /* 24 px */
+}
+
+/* Phones: the top bar, the big numerals and the headlines get their own
+   sizes, and the tab bar claims the bottom of the screen. */
+@media (max-width: 760px) {
+  :root {
+    --top-h: 3.6rem;
+    --fs-num-l: 2.8rem;
+    --fs-h1: clamp(1.9rem, 9vw, 2.4rem);
+    --fs-h1-s: clamp(1.75rem, 8vw, 2.2rem);
+    /* A section headline keeps a long word („Pristupačnost”) whole at A++ on a 320 px phone. */
+    --fs-h2: min(1.8rem, 10.5vw);
+  }
+}
+
+/* ------------------------------------------------------------ high contrast
+   Black on white or white on black, 2 px rules. */
+:root[data-contrast="high"] {
+  --paper: light-dark(#ffffff, #000000);
+  --paper-raised: light-dark(#ffffff, #000000);
+  --paper-sunk: light-dark(#ffffff, #000000);
+  --hover: light-dark(#ffffff, #000000);
+  --ink: light-dark(#000000, #ffffff);
+  --ink-2: light-dark(#000000, #ffffff);
+  --ink-3: light-dark(#1a1a1a, #e6e6e6);
+  --hair: light-dark(#000000, #ffffff);
+  --hair-2: light-dark(#000000, #ffffff);
+  --teal: light-dark(#004a4c, #7fe6e2);
+  --teal-fill: light-dark(#000000, #ffffff);
+  --teal-fill-hover: light-dark(#000000, #ffffff);
+  --teal-tint: light-dark(#ffffff, #000000); /* tinted areas get a dashed border instead */
+  --red: light-dark(#9b0019, #ff8a99);
+  --red-fill: light-dark(#9b0019, #ff8a99);
+  --red-fill-hover: light-dark(#7a0014, #ffb3bd);
+  --red-glow: transparent;
+  --on-fill: light-dark(#ffffff, #000000);
+  --on-red: light-dark(#ffffff, #000000);
+  --rule: light-dark(#000000, #ffffff);
+  --mark-long: var(--paper);
+  --mark-short: var(--paper);
+  --div-n2: light-dark(#004a4c, #7fe6e2);
+  --div-0: light-dark(#ffffff, #000000); /* with an outline */
+  --div-p2: light-dark(#9b0019, #ff8a99);
+  --hatch: light-dark(#000000, #ffffff);
+  --bar-mid: light-dark(#4d4d4d, #bfbfbf);
+  --map-stroke: var(--ink);
+  --shadow-card: none;
+  --shadow-float: none;
+  --shadow-sheet: none;
+  --border-w: 2px;
+}
+
+/* Print: white paper and black ink whatever the screen uses. */
+@media print {
+  :root,
+  :root[data-theme] {
+    color-scheme: light;
+  }
+  :root {
+    --paper: #ffffff;
+    --paper-raised: #ffffff;
+    --paper-sunk: #ffffff;
+    --hover: #ffffff;
+  }
+}

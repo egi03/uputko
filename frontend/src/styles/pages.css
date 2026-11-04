@@ -1,0 +1,152 @@
+/* Page-level layout shared by several pages: the page head, the pills to a
+   page's parts, the 404 / error and the loading page. Page-specific styles live in their own
+   files (assistant, termini, lijekovi, dashboard, about). Pages render inside .wrap
+   (components/Layout.tsx): no page adds its own outer wrapper. */
+
+/* ------------------------------------------------------------ page head
+   A short title and one sentence.
+   <header class="phead"><div class="phead__text"><h1>…</h1><p class="phead__lede">…</p>…</div></header> */
+.phead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem 2rem;
+  padding-top: clamp(1.5rem, 4vw, 3rem);
+}
+.phead__text {
+  min-width: 0;
+  padding-bottom: 0.4rem;
+}
+.phead h1 {
+  font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+  letter-spacing: -0.04em;
+}
+.phead__lede {
+  max-width: 36rem;
+  margin-top: 0.8rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-lede);
+  font-weight: 500;
+  line-height: 1.4;
+}
+/* Narrow: a smaller title and lede. */
+@container page (max-width: 40rem) {
+  .phead h1 {
+    font-size: min(2.2rem, 11vw);
+  }
+  .phead__lede {
+    font-size: var(--fs-body);
+  }
+}
+
+/* Pills to the parts of a long page, under its title: one tap to each. */
+.pnav {
+  margin-top: 1.4rem;
+}
+.pnav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.pnav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.35rem 1.05rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 650;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: border-color var(--t-hover) var(--ease);
+}
+.pnav a:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.pnav a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--ink);
+}
+:root[data-contrast="high"] .pnav a {
+  border-color: var(--ink);
+}
+@media print {
+  .pnav {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------ 404 and page errors
+   One headline, one sentence, one button. */
+.apology {
+  display: grid;
+  justify-items: center;
+  padding-block: clamp(1.5rem, 5vw, 3.5rem) clamp(3rem, 8vw, 6rem);
+  text-align: center;
+}
+.apology h1 {
+  margin-top: 1.4rem;
+  font-size: clamp(2rem, 4.4vw, 3.2rem);
+  letter-spacing: -0.04em;
+}
+.apology__text {
+  max-width: 30rem;
+  margin-top: 0.8rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-lede);
+  line-height: 1.45;
+}
+.apology__acts {
+  margin-top: 1.8rem;
+}
+.apology__acts .btn {
+  min-height: 3.2rem;
+  padding-inline: 1.6rem;
+}
+
+/* ------------------------------------------------------------ a page loading
+   One quiet line with a small spinner. The room is held from the first frame (the footer stays
+   below the fold); the loader appears after 240 ms (App.tsx). */
+.loading {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  min-height: 80vh;
+  padding-block: clamp(2rem, 6vw, 4.5rem) 2rem;
+  text-align: center;
+}
+.loading__in {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-lede);
+  font-weight: 600;
+  animation: loading-in 200ms var(--ease) both;
+}
+/* A ring with one darker quarter, turning (still with reduced motion: a quiet ring). */
+.spinner {
+  width: 1.3em;
+  height: 1.3em;
+  border: 3px solid var(--hair);
+  border-top-color: var(--ink-2);
+  border-radius: 50%;
+  animation: spin 900ms linear infinite;
+}
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+@keyframes loading-in {
+  from {
+    opacity: 0;
+  }
+}

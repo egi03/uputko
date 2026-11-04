@@ -1,0 +1,275 @@
+/* The front page (pages/Home.tsx): a short title and three large choices on
+   the left, a real case from the current lists on the right. On a phone: the title, the case,
+   the choices. No other text. */
+
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "title card"
+    "choices card";
+  column-gap: clamp(2rem, 5vw, 4.5rem);
+  row-gap: clamp(1.6rem, 3vw, 2.4rem);
+  align-items: start;
+  padding-block: clamp(2rem, 5vw, 4rem) clamp(2rem, 5vw, 3.5rem);
+}
+.home__h {
+  grid-area: title;
+  max-width: 12ch;
+  font-size: clamp(2.6rem, 5.4vw, 4.4rem);
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+.home > .ex {
+  grid-area: card;
+}
+
+/* ------------------------------------------------------------ the real case */
+.ex {
+  padding: 1.4rem 1.5rem 1.3rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-float);
+}
+:root[data-contrast="high"] .ex {
+  border: 2px solid var(--ink);
+}
+.ex__kicker {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.ex__title {
+  margin-top: 0.3rem;
+  font-size: var(--fs-h3);
+  line-height: 1.25;
+}
+.ex__place {
+  color: var(--ink-2);
+  font-weight: 650;
+}
+.ex__saving {
+  margin-top: 1.1rem;
+  color: var(--ink-2);
+  font-size: var(--fs-lede);
+  line-height: 1.35;
+}
+.ex__saving b {
+  color: var(--teal);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+.ex__acts {
+  margin-top: 1rem;
+}
+.ex__more {
+  margin-top: 1.3rem;
+  padding-top: 0.9rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+.ex__more-h {
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.ex__more ul {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: var(--fs-meta);
+}
+.ex__more a {
+  font-weight: 600;
+}
+.ex__more-n {
+  color: var(--ink-3);
+}
+.ex__more-n .num:first-child {
+  color: var(--teal);
+  font-weight: 750;
+}
+.ex__src {
+  margin-top: 1rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.ex--wait {
+  border: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+.ex__sk {
+  display: block;
+  height: 22rem;
+  border-radius: var(--radius-card);
+}
+
+/* The nearest appointment against the sooner one: two bars on one scale (components/Comparison). */
+.cmp {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.1rem;
+}
+.cmp__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "who days"
+    "track track";
+  gap: 0.4rem 1rem;
+}
+.cmp__who {
+  grid-area: who;
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+.cmp__label {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.cmp__name {
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.cmp__where {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.cmp__days {
+  grid-area: days;
+  align-self: end;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  white-space: nowrap;
+}
+.cmp__days b {
+  color: var(--ink);
+  font-size: var(--fs-num-s);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.cmp__row--short .cmp__days b {
+  color: var(--teal);
+}
+.cmp__track {
+  grid-area: track;
+  display: block;
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  background: var(--paper-sunk);
+}
+.cmp__bar {
+  display: block;
+  width: var(--w);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bar-mid);
+}
+.cmp__row--short .cmp__bar {
+  background: var(--teal);
+}
+:root[data-contrast="high"] .cmp__track {
+  outline: 2px solid var(--ink);
+}
+
+/* ------------------------------------------------------------ three choices */
+.choices {
+  grid-area: choices;
+  display: grid;
+  gap: 0.8rem;
+  max-width: 30rem;
+}
+.choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.9rem;
+  min-height: 5.4rem;
+  padding: 1.1rem 1.2rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color var(--t-hover) var(--ease),
+    background-color var(--t-hover) var(--ease);
+}
+.choice:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+:root[data-contrast="high"] .choice {
+  border: 2px solid var(--ink);
+}
+.choice__icon .lucide {
+  width: 1.7rem;
+  height: 1.7rem;
+  stroke-width: 1.8;
+}
+.choice__text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.choice__t {
+  font-size: var(--fs-h3);
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.choice__s {
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+}
+.choice__go {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--ink-3);
+  transition: translate var(--t-hover) var(--ease);
+}
+.choice:hover .choice__go {
+  color: var(--ink);
+  translate: 3px 0;
+}
+
+@container page (max-width: 48rem) {
+  .home {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      "title"
+      "card"
+      "choices";
+  }
+  .choices {
+    max-width: none;
+  }
+}
+@media (max-width: 760px) {
+  .home {
+    padding-top: 1.4rem;
+  }
+  .home__h {
+    font-size: clamp(2.2rem, 10.5vw, 2.9rem);
+  }
+  .ex {
+    padding: 1.1rem 1rem;
+  }
+}
+
+@media print {
+  .choices,
+  .ex__acts {
+    display: none !important;
+  }
+}

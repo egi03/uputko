@@ -1,0 +1,1369 @@
+/* /dashboard „Za općine”: the same real data, calm. A short head with pills
+   to the parts; each part opens with a headline and a pill that says whether its data are real;
+   big figures without tiles; tables with hairlines and pill controls; method notes folded in
+   <details>. Part B sits on a grey band with the map and the longest waits on white cards; part C
+   quarantines the sample data on a dashed, hatched, labelled sheet. Layout switches are container
+   queries in rem (they follow A / A+ / A++); the source order is the reading order. */
+
+.dash {
+  padding-bottom: 2rem;
+}
+
+/* ------------------------------------------------------------ parts */
+.dsec {
+  margin-top: 4.5rem;
+}
+/* Part B on a grey band across the whole window; its cards are white. */
+.dsec--band {
+  padding-block: 3.5rem;
+  background: var(--paper-sunk);
+  box-shadow: 0 0 0 100vmax var(--paper-sunk);
+  clip-path: inset(0 -100vmax);
+}
+.dsec--band + .dsec {
+  margin-top: 3.5rem;
+}
+:root[data-contrast="high"] .dsec--band {
+  border-block: 2px solid var(--ink);
+  clip-path: none;
+  box-shadow: none;
+}
+.dsec__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+}
+.dsec__head h2 {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.dsec__ctl {
+  margin-left: auto;
+}
+/* „Stvarni podaci”: a quiet pill with a teal dot; sample data hatch the pill. */
+.dtag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: var(--radius-control);
+  background: var(--paper-sunk);
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 650;
+  line-height: 1.3;
+}
+.dtag::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.dsec--band .dtag {
+  background: var(--paper-raised);
+}
+.dtag--demo {
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--ink-3);
+}
+.dtag--demo::before {
+  width: 0.85rem;
+  border-radius: 2px;
+  background: repeating-linear-gradient(-45deg, var(--demo-line) 0 1.6px, var(--demo-bg) 1.6px 4px);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+:root[data-contrast="high"] .dtag {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+/* ------------------------------------------------------------ big figures, no tiles */
+.dnums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1.5rem 2.5rem;
+  margin-top: 1.8rem;
+}
+.dnums--one {
+  grid-template-columns: minmax(0, 36rem);
+}
+.dnum {
+  min-width: 0;
+}
+.dnum__n {
+  font-family: var(--font-sans);
+  font-size: clamp(2.5rem, 5vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+.dnum__t {
+  max-width: 20rem;
+  margin-top: 0.45rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  line-height: 1.4;
+}
+.dnums--one .dnum__t {
+  max-width: 36rem;
+}
+/* A phone: each figure beside its words, the figures in one column, so three take three lines. */
+@container page (min-width: 17rem) and (max-width: 40rem) {
+  .dnums,
+  .dnums--one {
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem 0.9rem;
+  }
+  .dnum {
+    display: contents;
+  }
+  .dnum__n {
+    font-size: 2.3rem;
+  }
+  .dnum__t {
+    margin-top: 0;
+  }
+}
+
+/* ------------------------------------------------------------ „Provjeri mjesto [___]” */
+.dfind {
+  margin-top: 2.6rem;
+}
+.dfind__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.dfind__label {
+  color: var(--ink-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+}
+.dfind__field {
+  flex: 1 1 15rem;
+  max-width: 26rem;
+  border-width: 2px;
+  border-color: var(--ink);
+}
+.dfind__field input {
+  font-weight: 600;
+}
+/* The browser's own clear cross gives way to „Obriši upis”, as in every other field. */
+.dfind__field input::-webkit-search-cancel-button {
+  appearance: none;
+}
+.dfind__answer {
+  max-width: 44rem;
+  min-height: 1.5em;
+  margin-top: 0.7rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.dfind__answer b {
+  color: var(--ink);
+  font-weight: 700;
+}
+.dfilter__clear {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink-3);
+}
+.dfilter__clear:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+/* An empty field keeps the cross's place, so typing never moves the row. */
+.dfilter__clear[hidden] {
+  display: grid;
+  visibility: hidden;
+}
+.dfilter__clear .lucide {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+/* ------------------------------------------------------------ figures, keys */
+.dfig {
+  margin: 1.2rem 0 0;
+}
+/* The legend in words: a sign, then what it means. */
+.dkey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1.25rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+/* Each entry hangs on its sign, so a wrapped entry lines up under its own words. */
+.dkey__i {
+  padding-left: 1.75rem;
+  text-indent: -1.75rem;
+}
+.dkey__i > i {
+  display: inline-block;
+  margin-right: 0.5rem;
+  vertical-align: 0.12em;
+}
+.dkey__dot {
+  width: 0.62rem;
+  height: 0.62rem;
+  margin-inline: 0.31rem 0.81rem !important;
+  border-radius: 50%;
+}
+.dkey__dot--long {
+  background: var(--bar-long);
+}
+.dkey__dot--mid {
+  background: var(--bar-mid);
+}
+.dkey__dash {
+  width: 1.25rem;
+  vertical-align: 0.3em !important;
+  border-top: 1.25px dashed var(--ink);
+}
+.dkey__sw {
+  width: 1.25rem;
+  height: 0.62rem;
+  border-radius: 2px;
+}
+.dkey__sw--real {
+  background: var(--series-1);
+}
+.dkey__sw--demo,
+.mbar__demo {
+  background: repeating-linear-gradient(-45deg, var(--demo-line) 0 1.6px, var(--demo-bg) 1.6px 4.6px);
+}
+/* The hatching alone is too faint against the paper to show where a bar ends (WCAG 1.4.11): a
+   hairline of --ink-3 draws its edge. */
+.dkey__sw--demo,
+.mbar__demo {
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+.dcols__demo {
+  stroke: var(--ink-3);
+  stroke-width: 1;
+}
+:root[data-contrast="high"] .dkey__dot,
+:root[data-contrast="high"] .dkey__sw {
+  outline: 1px solid var(--ink);
+  outline-offset: -1px;
+}
+.dash .credit {
+  max-width: 46rem;
+}
+/* Tooltips are as wide as their words (up to 18 rem) wherever the point is; Tip keeps them in. */
+.dash .tooltip {
+  width: max-content;
+  max-width: min(18rem, 100%);
+  border-color: var(--hair);
+  border-radius: 12px;
+}
+
+/* ------------------------------------------------------------ part A: the outlier chart */
+.ochart {
+  position: relative;
+  margin-top: 0.9rem;
+}
+.ochart__svg {
+  display: block;
+  overflow: visible;
+  touch-action: pan-y;
+}
+/* The places the filter leaves keep their colour; the rest fade back. */
+.ochart .is-dim {
+  opacity: 0.22;
+}
+/* Dates and „10.000” in the graphics: proportional figures. */
+.dash .ch__tick {
+  font-variant-numeric: lining-nums proportional-nums;
+}
+.ochart__quad {
+  fill: var(--red);
+}
+.ochart__bracket {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+:root[data-contrast="high"] .ochart__bracket {
+  stroke-width: 1.5;
+}
+.ochart__kind {
+  font-weight: 400;
+}
+
+/* ------------------------------------------------------------ part A: the table */
+.dstock {
+  min-width: 0;
+  margin-top: 3.2rem;
+  container: dstock / inline-size;
+}
+.dstock__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.3rem 1.5rem;
+}
+.dstock__head h3 {
+  font-size: var(--fs-h3);
+  font-weight: 750;
+}
+/* The count holds the width of its widest reading („556 od 556”, the ghost under it). */
+.dfilter__count {
+  display: inline-grid;
+  justify-items: end;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.dfilter__count > * {
+  grid-area: 1 / 1;
+}
+.dfilter__ghost {
+  visibility: hidden;
+}
+.dfilter__count b {
+  color: var(--ink);
+  font-weight: 700;
+}
+.dfilter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+/* A list box as a pill, like the fields. */
+.dash select.select {
+  min-height: 2.9rem;
+  padding: 0 2.6rem 0 1.1rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  background-color: var(--paper);
+  font-size: var(--fs-meta);
+  transition: border-color var(--t-hover) var(--ease);
+}
+.dash select.select:hover {
+  border-color: var(--ink-3);
+}
+.dash select.select:focus-visible {
+  border-color: var(--ink);
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+:root[data-contrast="high"] .dash select.select {
+  border: 2px solid var(--ink);
+  box-shadow: none;
+}
+.dfilter__county {
+  flex: 0 1 17rem;
+  min-width: 0;
+}
+.dstock__key {
+  margin-top: 0.8rem;
+  color: var(--ink-3);
+}
+.dstock__dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin: 0 0.15rem !important;
+  vertical-align: 0.05em;
+}
+.dstock__tick {
+  display: inline-block;
+  width: 1.5px;
+  height: 0.9em;
+  margin-inline: 0.15rem 0.2rem;
+  vertical-align: -0.1em;
+  background: var(--ink);
+}
+.dstock__wrap {
+  margin-top: 0.6rem;
+}
+/* Fixed columns: typing or picking a county changes the rows, never the grid. */
+.dtbl {
+  table-layout: fixed;
+}
+.dtbl thead th {
+  border-bottom-width: var(--border-w);
+}
+.dtbl thead .dtbl__name {
+  width: max(9rem, 16%);
+}
+.dtbl thead .dtbl__county {
+  width: 12.5rem;
+}
+.dtbl thead .dtbl__gp {
+  width: 7.75rem;
+}
+.dtbl thead .dtbl__pop {
+  width: 5.75rem;
+}
+@container dstock (min-width: 66rem) {
+  .dtbl thead .dtbl__gp {
+    width: 12.75rem;
+  }
+}
+/* The name column keeps a margin for the red dot of a place in the chart's red quarter. */
+.dtbl .dtbl__name {
+  position: relative;
+  padding-left: 1.15rem;
+}
+.dtbl .tbl__name {
+  font-size: 1.02rem;
+  font-weight: 650;
+}
+.dtbl__gap {
+  position: absolute;
+  top: 1.1rem;
+  left: 0.15rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--bar-long);
+}
+:root[data-contrast="high"] .dtbl__gap {
+  outline: 1px solid var(--ink);
+}
+.dtbl th[scope="row"]:focus {
+  outline: none;
+}
+.dtbl th[scope="row"]:focus-visible .tbl__name {
+  background: var(--focus);
+  color: var(--focus-ink);
+}
+.dtbl thead .tbl__sort .lucide {
+  width: 0.95em;
+  height: 0.95em;
+  margin-bottom: 0.15em;
+}
+.dtbl .tbl__sort {
+  padding-inline: 0.2em;
+  margin-inline: -0.2em;
+}
+.dtbl :is(th, td) {
+  vertical-align: baseline;
+}
+.dtbl td:is(.dtbl__gp, .dtbl__pop) {
+  white-space: nowrap;
+}
+.dtbl__narrow {
+  display: none;
+}
+.dtbl__empty td {
+  padding: 1.4rem 0;
+  color: var(--ink-2);
+  text-align: left !important;
+}
+/* A value with its bar: the Croatian average is the ink tick across the bar (as on /termini). */
+.cbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.7rem;
+}
+.cbar__track {
+  position: relative;
+  align-self: center;
+  flex: 1;
+  max-width: 9rem;
+  min-width: 2.5rem;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--hair-2);
+}
+.cbar__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 4px;
+}
+.cbar__fill--long {
+  background: var(--bar-long);
+}
+.cbar__fill--mid {
+  background: var(--bar-mid);
+}
+.cbar__fill--short {
+  background: var(--bar-short);
+}
+.cbar__tick {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 1.5px;
+  background: var(--ink);
+}
+.cbar__n {
+  flex: none;
+  min-width: 3rem;
+  white-space: nowrap;
+}
+.dtbl__pzz .cbar__n {
+  min-width: 2.4rem;
+}
+@media screen {
+  .dtbl tr.is-extra {
+    display: none;
+  }
+}
+.dstock__more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1.2rem;
+}
+/* A narrow column (a tablet, a phone, large letters): every place is three lines. The name with
+   its kind and county; both values side by side, each with its bar and tick; then general
+   practice and the population, in words. The header is a key in the same two columns, so every
+   column is still there and sortable. */
+@container dstock (max-width: 50rem) {
+  .dtbl,
+  .dtbl thead,
+  .dtbl tbody {
+    display: block;
+  }
+  .dtbl thead tr,
+  .dtbl tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 1.1rem;
+  }
+  .dtbl thead tr {
+    border-bottom: var(--border-w) solid var(--hair);
+  }
+  .dtbl thead th {
+    display: block;
+    width: auto !important;
+    padding: 0;
+    border: 0;
+    text-align: left;
+  }
+  .dtbl thead th.r {
+    text-align: left;
+  }
+  .dtbl thead .dtbl__name {
+    padding-left: 1.15rem;
+  }
+  .dtbl .tbl__sort {
+    min-height: 44px;
+    align-items: center;
+  }
+  .dtbl .r .tbl__sort {
+    justify-content: flex-start;
+  }
+  .dtbl tbody tr {
+    row-gap: 0.3rem;
+    padding: 0.6rem 0 0.65rem;
+    border-bottom: var(--border-w) solid var(--hair);
+  }
+  .dtbl tbody th,
+  .dtbl tbody td,
+  .dtbl tbody td.r {
+    display: block;
+    width: auto !important;
+    padding: 0;
+    border: 0;
+    text-align: left;
+  }
+  .dtbl tbody th {
+    grid-column: 1 / -1;
+    padding-left: 1.15rem;
+  }
+  .dtbl tbody th :is(.tbl__name, .tbl__sub) {
+    display: inline;
+  }
+  .dtbl__gap {
+    top: 0.42rem;
+  }
+  .dtbl tbody td.dtbl__county {
+    display: none;
+  }
+  .dtbl__narrow {
+    display: inline;
+  }
+  .dtbl tbody td:is(.dtbl__gp, .dtbl__pop) {
+    color: var(--ink-2);
+    font-size: var(--fs-small);
+    white-space: normal;
+  }
+  .dtbl tr.dtbl__empty {
+    display: block;
+  }
+  .cbar {
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+  .cbar__track {
+    min-width: 2rem;
+    max-width: none;
+    height: 6px;
+  }
+  .cbar__tick {
+    top: -3px;
+    bottom: -3px;
+  }
+  .cbar__n {
+    min-width: 0;
+    text-align: right;
+  }
+  .dtbl__share .cbar__n {
+    width: 3.6em;
+  }
+  .dtbl__pzz .cbar__n {
+    width: 2.6em;
+  }
+}
+/* Very narrow (320 px, large letters): the number above its bar, the bar the column's width. */
+@container dstock (max-width: 17rem) {
+  .cbar {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.2rem;
+  }
+  .cbar__track {
+    flex: none;
+    align-self: stretch;
+    min-width: 0;
+  }
+  .cbar__n {
+    width: auto !important;
+    text-align: left;
+  }
+  .dtbl tbody td:is(.dtbl__gp, .dtbl__pop) {
+    grid-column: 1 / -1;
+  }
+  .dtbl tbody td.dtbl__pop {
+    margin-top: -0.3rem;
+  }
+}
+
+/* ------------------------------------------------------------ a checkbox as a pill */
+.check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.9rem;
+  padding: 0.3rem 1.1rem 0.3rem 0.75rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 650;
+  line-height: 1.25;
+  cursor: pointer;
+  transition:
+    border-color var(--t-hover) var(--ease),
+    background-color var(--t-hover) var(--ease);
+}
+.check:hover {
+  border-color: var(--ink-3);
+}
+.check input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.check__box {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+.check__box svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  visibility: hidden;
+}
+/* On: the pill is inked, as the chosen option in „Prikaz”. */
+.check:has(input:checked) {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+.check input:checked + .check__box svg {
+  visibility: visible;
+}
+.check:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+:root[data-contrast="high"] .check {
+  border: 2px solid var(--ink);
+}
+@media (forced-colors: active) {
+  .check:has(input:checked) {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ------------------------------------------------------------ folded notes */
+.dmore {
+  max-width: 46rem;
+  margin-top: 2rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+.dmore summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  min-height: 44px;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 650;
+  list-style: none;
+  cursor: pointer;
+}
+.dmore summary::-webkit-details-marker {
+  display: none;
+}
+/* A plus that turns into a minus. */
+.dmore summary::before {
+  content: "+";
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1.5px solid var(--hair);
+  border-radius: 50%;
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1;
+}
+.dmore[open] summary::before {
+  content: "−";
+}
+.dmore summary:hover {
+  color: var(--ink);
+}
+.dmore summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.dmore__body {
+  padding-bottom: 0.4rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+.dmore__body > p + p {
+  margin-top: 0.5rem;
+}
+.dmore__body b {
+  color: var(--ink);
+  font-weight: 650;
+}
+.dhow dt {
+  color: var(--ink);
+  font-weight: 700;
+}
+.dhow dd {
+  margin: 0.1rem 0 0.7rem;
+}
+
+/* ------------------------------------------------------------ part B: waiting lists */
+.dproc {
+  max-width: 34rem;
+  margin-top: 2.2rem;
+}
+.dmapgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.25rem;
+  margin-top: 1.4rem;
+}
+.dcard {
+  min-width: 0;
+  padding: 1.3rem 1.4rem 1.4rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+.dcard h3 {
+  font-size: var(--fs-h3);
+  font-weight: 750;
+}
+.dmap {
+  margin: 0;
+}
+.dmap__cap {
+  scroll-margin-top: 0.75rem;
+}
+.dmap__cap:focus {
+  outline: none;
+}
+.dmap__title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--fs-h3);
+  font-weight: 750;
+  line-height: 1.2;
+}
+.dmap__title .visit {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+.dlong__sub {
+  margin-top: 0.2rem;
+}
+.dlong__more {
+  margin-top: 1rem;
+}
+.dsec--band > .credit {
+  margin-top: 1rem;
+}
+.dash-fail {
+  max-width: 40rem;
+  margin-top: 1.2rem;
+}
+.dash-empty {
+  max-width: 40rem;
+  margin-top: 1.2rem;
+}
+
+/* ------------------------------------------------------------ part C: the sample sheet
+   Sample data never mix with the rest of the page: they sit on a sheet with a dashed edge and a
+   hatched label that says so, in words. The real part of every bar is teal, the sample hatched. */
+.demo {
+  margin-top: 2.2rem;
+  padding: 0 clamp(0.9rem, 2.4vw, 1.6rem) 1.5rem;
+  border: 2px dashed var(--ink-3);
+  border-radius: var(--radius-card);
+  container: demo / inline-size;
+}
+.demo__stamp {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: calc(-0.85em - 2px) 0 0 -0.2rem;
+  padding: 0.25rem 0.9rem 0.25rem 0.4rem;
+  border: 1.5px solid var(--ink-3);
+  border-radius: 1.2rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.demo__stamp::before {
+  content: "";
+  flex: none;
+  width: 1.4rem;
+  height: 1.1rem;
+  border-radius: var(--radius-control);
+  background: repeating-linear-gradient(-45deg, var(--demo-line) 0 1.6px, var(--demo-bg) 1.6px 4px);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+:root[data-contrast="high"] .demo,
+:root[data-contrast="high"] .demo__stamp {
+  border-color: var(--ink);
+}
+.demo__lede {
+  max-width: 40rem;
+  margin-top: 1rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.45;
+}
+.demo .dkey {
+  margin-top: 0.4rem;
+}
+.dquiet {
+  max-width: 40rem;
+  margin-top: 1.2rem;
+}
+.dstats {
+  container: dstats / inline-size;
+}
+.dstats__credit {
+  margin-top: 1.6rem;
+}
+.dfig--days {
+  margin-top: 1.4rem;
+}
+.dcols__cap,
+.mult__h {
+  padding-top: 0.6rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+.dcols__cap .dfig__title,
+.mult__h {
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  line-height: 1.3;
+}
+/* The day in hand is read out on the title's line, at its right end. */
+.dcols__cap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem 1.5rem;
+}
+.dcols__read {
+  font-variant-numeric: lining-nums proportional-nums;
+}
+.dcols__read b {
+  color: var(--ink);
+  font-weight: 700;
+}
+.dcols__idle {
+  color: var(--ink-3);
+}
+@container dstats (max-width: 40rem) {
+  .dcols__read {
+    flex-basis: 100%;
+  }
+}
+@container dstats (max-width: 13.5rem) {
+  .dcols__read {
+    min-height: 2.9em;
+    min-height: 2lh;
+  }
+}
+.dcols {
+  position: relative;
+  margin-top: 0.6rem;
+}
+.dcols__svg {
+  display: block;
+  overflow: visible;
+}
+.dcols__svg:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 6px;
+}
+.dcols__real {
+  fill: var(--series-1);
+}
+.dcols__hover {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+/* Three columns on a wide sheet, the two short multiples stacked in the first. */
+.mults {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 2rem var(--gap);
+  margin-top: 2rem;
+}
+.mults__stack {
+  display: grid;
+  gap: 2rem;
+  min-width: 0;
+}
+.mult {
+  min-width: 0;
+  container: mult / inline-size;
+}
+@container mult (max-width: 16rem) {
+  .mult .mbar li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mult .mbar__n {
+    text-align: left;
+    white-space: normal;
+  }
+}
+.mult__more {
+  display: none;
+  margin-top: 0.75rem;
+}
+.mult__rest {
+  margin-top: 0.15rem;
+  color: var(--ink-2);
+}
+.mult__rest--folded {
+  display: none;
+}
+@container dstats (max-width: 58rem) {
+  .mults {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mults__stack {
+    display: contents;
+  }
+}
+@container dstats (max-width: 30rem) {
+  .mults {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1.6rem;
+  }
+  .mbar__more {
+    display: none !important;
+  }
+  .mult.is-open .mbar__more {
+    display: grid !important;
+  }
+  .mult__more {
+    display: inline-flex;
+  }
+  .mult:not(.is-open) .mult__rest--open {
+    display: none;
+  }
+  .mult:not(.is-open) .mult__rest--folded {
+    display: block;
+  }
+}
+/* Small multiples: rounded bars, the label and the count above each. */
+.mbar {
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.3;
+}
+.mbar li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.75rem;
+  padding: 0.25rem 0 0.4rem;
+}
+.mbar__l {
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 600;
+}
+.mbar__sub {
+  display: block;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+.mbar__n {
+  color: var(--ink);
+  font-weight: 650;
+  text-align: right;
+  white-space: nowrap;
+}
+.mbar__rn {
+  color: var(--teal);
+}
+.mbar__bar {
+  display: flex;
+  grid-column: 1 / -1;
+  height: 0.55rem;
+  margin-top: 0.3rem;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.mbar__real {
+  flex: none;
+  background: var(--series-1);
+}
+.mbar__demo {
+  flex: none;
+}
+
+/* ------------------------------------------------------------ sources */
+.dtt {
+  margin-top: 1.6rem;
+  container: dtt / inline-size;
+}
+.dtt__fold {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.5rem;
+  padding: 1rem 1.25rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+.dtt__sum {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.35;
+}
+.dtt__sum b {
+  font-weight: 750;
+}
+/* A dot beside the words: teal in order, red when a source is not (the words say which). */
+.dtt__dot {
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-top: 0.3em;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 0 4px var(--teal-tint);
+}
+.dtt__dot--bad {
+  background: var(--red-fill);
+  box-shadow: 0 0 0 4px var(--red-glow);
+}
+.dtt__newest {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+}
+@media screen {
+  .dtt.is-folded :is(.dtt__t, .dtt__key) {
+    display: none;
+  }
+}
+.dtt__t {
+  margin-top: 1.2rem;
+}
+.dtt__t thead th {
+  border-bottom-width: var(--border-w);
+}
+.dtt__t .tbl__name {
+  font-size: 1rem;
+  font-weight: 650;
+}
+.dtt__t :is(th, td) {
+  vertical-align: baseline;
+}
+.dtt__t .dtt__state {
+  padding-left: 1.5rem;
+}
+.dtt__at .tbl__sub,
+.dtt__state .tbl__sub {
+  margin-top: 0.1rem;
+}
+.dtt__meta {
+  display: none;
+}
+/* The sources read once at setup share one row only in a narrow column (see onceGroups). */
+.dtt__once {
+  display: none;
+}
+.dtt__members {
+  margin-top: 0.3rem;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 400;
+  line-height: 1.4;
+}
+.dtt__members li + li {
+  margin-top: 0.15rem;
+}
+.dstate {
+  font-weight: 600;
+}
+.dstate--late {
+  font-weight: 750;
+}
+.dstate--stale,
+.dstate--error {
+  color: var(--red);
+  font-weight: 700;
+}
+.dtt__key {
+  max-width: 46rem;
+  margin-top: 0.9rem;
+}
+.dtt__note {
+  max-width: 46rem;
+  margin-top: 1rem;
+  color: var(--ink-3);
+}
+/* A narrow column: every source is two lines, the name with its state on the right, then one
+   line of when · how often · how many (the three cells give way to it). */
+@container dtt (max-width: 42rem) {
+  .dtt__t thead {
+    display: none;
+  }
+  .dtt__t,
+  .dtt__t tbody {
+    display: block;
+  }
+  .dtt__t tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: var(--border-w) solid var(--hair);
+  }
+  .dtt__t tbody th,
+  .dtt__t td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .dtt__t :is(.dtt__at, .dtt__every, .dtt__n) {
+    display: none;
+  }
+  .dtt__t tr.dtt__once {
+    display: grid;
+  }
+  .dtt__t tr.dtt__row--grouped {
+    display: none;
+  }
+  .dtt__meta {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--ink-2);
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  .dtt__t .dtt__state {
+    padding-left: 0;
+    text-align: right;
+  }
+  .dtt__t :is(.dtt__row--error, .dtt__row--stale) .dtt__state {
+    grid-column: 1 / -1;
+    margin-top: 0.3rem;
+    text-align: left;
+  }
+}
+@container dtt (max-width: 17rem) {
+  .dtt__t tr {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dtt__t .dtt__state {
+    margin-top: 0.3rem;
+    text-align: left;
+  }
+}
+
+/* ------------------------------------------------------------ loading: still blocks */
+.dash :is(.dash-sk-nums, .dash-sk-chart, .dash-sk-table, .dash-sk-map, .dash-sk-longest, .dash-sk-proof) {
+  border-radius: var(--radius-card);
+}
+.dash-sk-nums {
+  height: 6rem;
+  margin-top: 1.8rem;
+}
+.dash-sk-chart {
+  height: 26rem;
+  margin-top: 1.6rem;
+}
+.dash-sk-table {
+  height: 30rem;
+  margin-top: 2rem;
+}
+.dash-sk-map {
+  height: 26rem;
+  margin-top: 1rem;
+}
+.dash-sk-longest {
+  height: 22rem;
+  margin-top: 0.8rem;
+}
+.dash-sk-proof {
+  height: 30rem;
+  margin-top: 2rem;
+}
+
+/* ------------------------------------------------------------ phones */
+@media (max-width: 760px) {
+  .dsec {
+    margin-top: 3.2rem;
+  }
+  .dsec--band {
+    padding-block: 2.6rem;
+  }
+  .dsec--band + .dsec {
+    margin-top: 2.6rem;
+  }
+  .dnums {
+    gap: 1.2rem;
+    margin-top: 1.4rem;
+  }
+  .dcard {
+    padding: 1rem 1rem 1.1rem;
+  }
+  .dash-sk-chart {
+    height: 20rem;
+  }
+  .dsec__ctl {
+    margin-left: 0;
+  }
+}
+
+/* ------------------------------------------------------------ print: the tables in full */
+@media print {
+  .dfilter,
+  .dfind,
+  .dstock__more,
+  .check,
+  .dproc,
+  .ochart,
+  .dcols,
+  .mult__more,
+  .dlong__more,
+  .dtt__fold .btn {
+    display: none !important;
+  }
+  .mbar__more {
+    display: grid !important;
+  }
+  .mult__rest--folded {
+    display: none !important;
+  }
+  .mult__rest--open {
+    display: block !important;
+  }
+  .dsec--band {
+    box-shadow: none;
+    background: none;
+  }
+  .dcard,
+  .dtt__fold {
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "type": "webhook",
+  "name": "find_health_facilities",
+  "description": "Nearest health facilities to a place (primary care practices, hospitals and other institutions) with address and distance, from HZZO open data. Does not give medical advice.",
+  "response_timeout_secs": 5,
+  "api_schema": {
+    "url": "{PUBLIC_BASE_URL}/tools/find_health_facilities",
+    "method": "POST",
+    "content_type": "application/json",
+    "request_headers": {
+      "X-Tool-Secret": {
+        "secret_id": "SET_ELEVENLABS_TOOL_SECRET_ID"
+      },
+      "X-Profile": "premium"
+    },
+    "request_body_schema": {
+      "type": "object",
+      "description": "Arguments for find_health_facilities",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "Place name in nominative case, e.g. 'Vinkovci'. After an ambiguous place send the option the user chose as the answer named it, e.g. 'Luka u gradu Vrbovec'."
+        },
+        "facility_type": {
+          "type": "string",
+          "description": "Maps to HZZO categories: family_medicine = opća/obiteljska medicina, pediatrics = pedijatrija, gynecology = ginekologija, dentistry = dentalna zdravstvena zaštita, hospital = opće i kliničke bolnice; any = all of these. Locations are known to settlement level only. Default: any.",
+          "enum": [
+            "family_medicine",
+            "pediatrics",
+            "gynecology",
+            "dentistry",
+            "hospital",
+            "any"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "description": "How many facilities to return (1-5). Use 3 unless the user asks for more."
+        },
+        "conversation_id": {
+          "type": "string",
+          "dynamic_variable": "system__conversation_id"
+        }
+      },
+      "required": [
+        "location"
+      ]
+    }
+  }
+}

@@ -1,0 +1,1006 @@
+/* Shared components: icons, links, buttons, fields, the combobox and the sentence search, the
+   segmented control, run-in notices, tables, loading, tooltips and small type. */
+
+/* ------------------------------------------------------------ icons
+   Lucide only next to an action (phone, e-mail, microphone, end call, send, location, print,
+   share, ↗, ×, →), never next to a headline. .ico is our own drawing on the same grid. */
+.lucide,
+.ico {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  stroke-width: 1.9;
+}
+.ico {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ------------------------------------------------------------ links */
+/* A link-button (Prikaz, Ispiši popis, Podijeli poveznicu, Moja lokacija): an action that reads
+   like a link, in ink, with a hairline underline. */
+.linkbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: inherit;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--hair);
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--t-hover) var(--ease);
+}
+.linkbtn:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+.linkbtn:disabled,
+.linkbtn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+:root[data-contrast="high"] .linkbtn {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
+}
+
+/* Links that end in an arrow: ExtLink (↗, opens a new tab) and MoreLink (→, leads on). Only the
+   words are underlined; the arrow follows in .link__tail behind a no-break space, so a narrow
+   column never leaves it alone on a line. They carry their own spacing: no flex gap needed. */
+:is(.ext, .more) {
+  text-decoration-line: none;
+}
+:is(.ext, .more) > span:first-child {
+  text-decoration-line: underline;
+  text-decoration-color: inherit;
+  text-decoration-thickness: inherit;
+  text-underline-offset: inherit;
+}
+:is(.ext, .more):focus-visible > span:first-child {
+  text-decoration-line: none;
+}
+.link__tail {
+  white-space: nowrap;
+}
+/* Lucide draws its arrows inside a third of empty box on each side: the negative right margin
+   takes that back, so a full stop after „hzzo.hr ↗” sits next to the arrow, not a space away,
+   and a right-aligned „Karta ↗” ends on the column's edge with its ink. */
+.link__tail > .lucide {
+  display: inline-block;
+  margin-right: -0.22em;
+  vertical-align: -0.16em;
+}
+
+/* A telephone number as the action (components/TelLink.tsx): ink with a hairline under the
+   digits, never broken across lines. With the handset in front (the coupon) it is a 48 px row. */
+.tel {
+  color: var(--ink);
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+a.tel {
+  text-decoration-color: var(--hair);
+}
+a.tel:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+a.tel:has(> .lucide) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 48px;
+}
+
+/* A link that leads on (components/MoreLink.tsx): „Sve ustanove, karta i tablica →”. It is one box
+   (the arrow stays with the last word when a narrow column wraps it), so the focus marker is one
+   block over all its lines: as an inline its second line's marker would paint over the first.
+   The padding makes a 44 px target, in the flow. */
+.more {
+  display: inline-block;
+  max-width: 100%;
+  padding-block: 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+/* Hand-written markup (<a class="more"><span>…</span><ArrowRight/></a>) still gets its arrow inline. */
+.more > .lucide,
+.more > .ico {
+  display: inline-block;
+  margin-left: 0.4rem;
+  vertical-align: -0.16em;
+}
+
+/* ------------------------------------------------------------ buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3rem;
+  padding: 0.55rem 1.3rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-ui);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--t-hover) var(--ease),
+    border-color var(--t-hover) var(--ease),
+    color var(--t-hover) var(--ease),
+    transform var(--t-press) var(--ease);
+}
+.btn:hover {
+  border-color: var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn--teal {
+  border-color: var(--teal-fill);
+  background: var(--teal-fill);
+  color: var(--on-fill);
+}
+.btn--teal:hover {
+  border-color: var(--teal-fill-hover);
+  background: var(--teal-fill-hover);
+  color: var(--on-fill);
+}
+/* Only "Završi razgovor". */
+.btn--red {
+  border-color: var(--red-fill);
+  background: var(--red-fill);
+  color: var(--on-red);
+}
+.btn--red:hover {
+  border-color: var(--red-fill-hover);
+  background: var(--red-fill-hover);
+  color: var(--on-red);
+}
+.btn--sm {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.9rem;
+  font-size: var(--fs-meta);
+}
+/* Icon-only buttons exist for „Ukloni lokaciju”, „Obriši upis” and „Zatvori” (with aria-label). */
+.btn--icon {
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-color: transparent;
+  color: var(--ink-2);
+}
+.btn--icon:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.btn--icon .lucide {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.btn:focus-visible {
+  outline: 3px solid transparent;
+  border-color: var(--focus-ink);
+  background: var(--focus);
+  color: var(--focus-ink);
+  box-shadow: 0 4px 0 var(--focus-ink);
+}
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn:disabled:hover,
+.btn[aria-disabled="true"]:hover {
+  background: transparent;
+  color: var(--ink);
+}
+.btn--teal:disabled:hover,
+.btn--teal[aria-disabled="true"]:hover {
+  background: var(--teal-fill);
+  color: var(--on-fill);
+}
+:root[data-contrast="high"] .btn {
+  border-width: 2px;
+}
+
+/* ------------------------------------------------------------ fields */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 1.1rem 0.35rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  transition: border-color var(--t-hover) var(--ease);
+}
+.field:hover {
+  border-color: var(--ink-3);
+}
+.field:focus-within {
+  border-color: var(--ink);
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.field input,
+.field textarea {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 3.1rem;
+  padding: 0.6rem 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--ink-3);
+  opacity: 1;
+}
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.field__label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+/* The action inside a field („Pošalji”): an ink pill at the end of the line. */
+.field__btn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.6rem;
+  min-width: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+.field__btn:hover {
+  background: var(--ink-2);
+  color: var(--paper);
+}
+.field__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.field__btn:focus-visible {
+  outline: 3px solid transparent;
+  background: var(--focus);
+  color: var(--focus-ink);
+  box-shadow: 0 4px 0 var(--focus-ink);
+}
+/* An error under a field is a run-in with a red label (role=status); the field is aria-invalid. */
+.field:has(> [aria-invalid="true"]) {
+  border-bottom-color: var(--red);
+}
+:root[data-contrast="high"] .field {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+:root[data-contrast="high"] .field:focus-within {
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 0 0 6px var(--focus-ink);
+}
+
+/* A list box in the same dress as a field (dashboard filters). */
+select.select {
+  max-width: 100%;
+  min-height: 3.1rem;
+  padding: 0 2.4rem 0 0.75rem;
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+  border-radius: var(--radius-control) var(--radius-control) 0 0;
+  background:
+    linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 1.2rem) 55% / 0.4rem 0.4rem
+      no-repeat,
+    linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 0.8rem) 55% / 0.4rem 0.4rem
+      no-repeat,
+    var(--paper-sunk);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 600;
+  appearance: none;
+  cursor: pointer;
+}
+:root[data-contrast="high"] select.select {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+/* ------------------------------------------------------------ combobox
+   components/Combobox.tsx. Default: a labelled pill field. combo--slot: a blank in a sentence that turns back into a labelled field on a phone. */
+.combo {
+  position: relative;
+}
+.combo .combo__label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+.combo .combo__clear {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink-3);
+}
+.combo .combo__clear:hover {
+  color: var(--ink);
+}
+.combo .combo__clear .lucide {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.combo .combo__hint {
+  margin-top: 0.4rem;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+}
+/* The suggestions: a floating rounded sheet. */
+.combo .combo__list {
+  position: absolute;
+  z-index: var(--z-float);
+  top: calc(100% + 0.45rem);
+  left: 0;
+  right: 0;
+  max-height: 22rem;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: var(--border-w) solid var(--hair);
+  border-radius: 16px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-float);
+  font-family: var(--font-sans);
+}
+.combo .combo__option {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 48px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 11px;
+  color: var(--ink);
+  font-size: var(--fs-ui);
+  line-height: 1.3;
+  cursor: pointer;
+}
+.combo .combo__option + .combo__option {
+  margin-top: 1px;
+}
+.combo .combo__option strong {
+  font-weight: 700;
+}
+.combo .combo__option[aria-selected="true"] {
+  background: var(--paper-sunk);
+}
+:root[data-contrast="high"] .combo .combo__list {
+  border: 2px solid var(--ink);
+}
+:root[data-contrast="high"] .combo .combo__option[aria-selected="true"] {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+  box-shadow: inset 0 0 0 6px var(--focus-ink);
+}
+.combo__text {
+  display: grid;
+  min-width: 0;
+}
+.combo .combo__meta {
+  display: block;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 400;
+}
+
+/* The blank in the sentence: a grey pill in the line of words, the chosen words in bold ink, the
+   example („npr. MR koljena”) in grey; a dark edge when pointed at, the yellow ring when typed in. */
+.combo--slot {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+.combo--slot .combo__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.combo--slot .field {
+  display: inline-flex;
+  max-width: 100%;
+  margin: 0.06em 0;
+  padding: 0 0.12em 0 0.45em;
+  gap: 0;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  line-height: 1.2;
+  vertical-align: baseline;
+}
+.combo--slot .field:hover {
+  border-color: var(--ink-3);
+}
+.combo--slot .field:focus-within {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.combo--slot .field input {
+  width: auto;
+  min-width: 3ch;
+  min-height: 0;
+  padding: 0.1em 0;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 750;
+  letter-spacing: inherit;
+  field-sizing: content;
+}
+.combo--slot .field input::placeholder {
+  color: var(--ink-3);
+  font-weight: 500;
+}
+/* An empty blank has no clear button: the placeholder's last letter keeps off the edge. */
+.combo--slot .field:not(:has(.combo__clear)) {
+  padding-right: 0.45em;
+}
+.combo--slot .combo__clear {
+  align-self: center;
+}
+/* High contrast prints the placeholder as black as typed words: the example is set in italics so
+   „npr. MR koljena” never reads as something already chosen. */
+:root[data-contrast="high"] .combo--slot .field {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+:root[data-contrast="high"] .combo--slot .field input::placeholder {
+  font-style: italic;
+}
+.combo--slot .combo__list {
+  right: auto;
+  width: max(100%, 24rem);
+  max-width: calc(100vw - 2 * var(--gutter));
+  font-size: var(--fs-ui);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+@media (max-width: 760px) {
+  .combo--slot {
+    display: block;
+  }
+  .combo--slot .combo__label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+  .combo--slot .field {
+    display: flex;
+    margin: 0;
+    padding-inline: 1rem 0.25rem;
+    gap: 0.5rem;
+  }
+  .combo--slot .field input {
+    flex: 1;
+    min-height: 3.1rem;
+    padding: 0.6rem 0;
+    font-family: var(--font-sans);
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: 0;
+    field-sizing: fixed;
+  }
+  .combo--slot .combo__list {
+    right: 0;
+    width: auto;
+  }
+}
+
+/* ------------------------------------------------------------ the sentence search
+   <form class="ask-line" role="search"><div class="ask-line__s"><span class="ask-line__w">Tražim
+   termin za</span> <ProcedureSearch variant="slot"/> <span class="ask-line__w">u blizini
+   mjesta</span> <span class="ask-line__end"><PlaceSearch variant="slot"/><button
+   class="ask-line__go"/></span></div> <p class="ask-line__tools">…</p></form>
+   One big bold sentence; the blanks are grey pills, the search button a black circle at its end.
+   On a phone the blanks become labelled fields, one under the other. */
+.ask-line {
+  margin-top: 1.1rem;
+}
+.ask-line__s {
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-search);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.028em;
+  text-wrap: pretty;
+}
+.ask-line__w {
+  color: var(--ink);
+}
+/* The last blank and the button travel together: the button is never alone on a line. */
+.ask-line__end {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.22em;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+.ask-line__end > .combo {
+  min-width: 0;
+}
+.ask-line__go {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.42em;
+  height: 1.42em;
+  min-width: 44px;
+  min-height: 44px;
+  margin-left: 0.1em;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  transition:
+    background-color var(--t-hover) var(--ease),
+    transform var(--t-press) var(--ease);
+}
+.ask-line__go:hover {
+  background: var(--ink-2);
+}
+.ask-line__go:active {
+  transform: translateY(1px);
+}
+.ask-line__go .lucide {
+  width: 0.62em;
+  height: 0.62em;
+  stroke-width: 2.6;
+}
+.ask-line__go-w {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.ask-line__go:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--focus-ink);
+}
+.ask-line__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.4rem;
+  margin-top: 0.35rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+}
+.ask-line__tools .linkbtn {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.ask-line__tools .linkbtn:hover {
+  color: var(--ink);
+}
+.ask-line__tools .lucide {
+  width: 1.05em;
+  height: 1.05em;
+}
+/* On a phone with a result: "MR koljena · od mjesta Vinkovci  [Promijeni]"; the form folds away
+   (ask-line--folded) until „Promijeni” opens it. */
+.ask-short {
+  display: none;
+}
+@media (max-width: 760px) {
+  /* One labelled field under the other, the button under them. The track never grows past the
+     column: an input's size attribute (a long placeholder) would otherwise widen it. */
+  .ask-line__s {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    font-size: var(--fs-ui);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  .ask-line__s > .combo {
+    min-width: 0;
+  }
+  .ask-line__w {
+    display: none;
+  }
+  .ask-line__end {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+  .ask-line__go {
+    display: inline-flex;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: auto;
+    min-height: 3.1rem;
+    margin: 0;
+    border-radius: var(--radius-control);
+    font-family: var(--font-sans);
+    font-size: var(--fs-ui);
+    font-weight: 700;
+  }
+  .ask-line__go .lucide {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+  .ask-line__go-w {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+  .ask-line--folded {
+    display: none;
+  }
+  /* A long name („Kolonoskopija s biopsijom · od mjesta Slavonski Brod”) sends „Promijeni” under
+     the words instead of squeezing them to a word per line. */
+  .ask-short {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 0.8rem;
+    margin-top: 0.6rem;
+    padding: 0.6rem 0.6rem 0.6rem 1.1rem;
+    border-radius: var(--radius-card);
+    background: var(--paper-sunk);
+    font-family: var(--font-sans);
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+  .ask-short p {
+    flex: 1 1 9rem;
+    min-width: 0;
+  }
+  .ask-short b {
+    font-weight: 750;
+  }
+  :root[data-contrast="high"] .ask-short {
+    border: 2px solid var(--ink);
+  }
+}
+
+/* ------------------------------------------------------------ segmented control */
+/* As tabs: text options, the chosen one in ink with a 2 px line ("Poredaj: najbliže / …"). */
+.seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 1.1rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 650;
+}
+.seg button {
+  min-height: 2.75rem;
+  padding: 0 0.1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--ink-2);
+  font-weight: 650;
+}
+.seg button:hover {
+  color: var(--ink);
+}
+.seg button[aria-pressed="true"] {
+  border-bottom-color: var(--ink);
+  color: var(--ink);
+  font-weight: 700;
+}
+/* As a row of boxes (the „Prikaz” sheet): radio inputs in a fieldset, the chosen one inked. */
+.seg--box {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  align-items: stretch; /* every cell the row's height, so the dividers run from edge to edge */
+  column-gap: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-control);
+}
+.seg--box label {
+  position: relative;
+  display: grid;
+  place-content: center;
+  min-height: 44px;
+  padding: 0.35rem 0.4rem;
+  color: var(--ink);
+  font-weight: 650;
+  line-height: 1.15;
+  text-align: center;
+  cursor: pointer;
+}
+.seg--box label + label {
+  border-left: 1.5px solid var(--ink);
+}
+.seg--box input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.seg--box label:hover {
+  background: var(--hover);
+}
+.seg--box label:has(input:checked) {
+  background: var(--ink);
+  color: var(--paper);
+}
+.seg--box label:has(input:focus-visible) {
+  z-index: 1;
+  outline: 3px solid var(--focus);
+  box-shadow: 0 0 0 6px var(--focus-ink);
+}
+.seg__sub {
+  font-size: var(--fs-small);
+  font-weight: 400;
+}
+:root[data-contrast="high"] .seg--box,
+:root[data-contrast="high"] .seg--box label + label {
+  border-width: 2px;
+}
+
+/* Windows high contrast: forced colours drop the inked ground of a chosen box and repaint every
+   transparent bar in the text colour, so the choice would vanish from the „Prikaz” sheet and
+   every option of „Poredaj” would look chosen. The system's own colours put them back: the
+   selection colour for a chosen box (or the highlighted suggestion), a bar only under the chosen
+   option. */
+@media (forced-colors: active) {
+  .seg--box label:has(input:checked),
+  .combo .combo__option[aria-selected="true"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+  .seg button {
+    border-bottom-color: Canvas;
+  }
+  .seg button[aria-pressed="true"] {
+    border-bottom-color: CanvasText;
+  }
+}
+
+/* ------------------------------------------------------------ run-in notices
+   No box, no icon: a bold label runs into the text. <p class="runin"><b>Napomena.</b> …</p>
+   runin--warn: the label in red (shortage). runin--alert: an error (role=alert), with a 3 px red
+   rule on top. */
+.runin {
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+}
+.runin b,
+.runin strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+.runin--warn :is(b, strong):first-child,
+.runin--alert :is(b, strong):first-child {
+  color: var(--red);
+}
+.runin--alert {
+  padding-top: 0.55rem;
+  border-top: 3px solid var(--red);
+}
+.runin > p + p {
+  margin-top: 0.35rem;
+}
+.runin__acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1.5rem;
+  margin-top: 0.6rem;
+}
+
+/* ------------------------------------------------------------ tables */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+.tbl caption {
+  text-align: left;
+}
+.tbl thead th {
+  padding: 0 0.75rem 0.5rem 0;
+  border-bottom: 2px solid var(--rule);
+  color: var(--ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  text-align: left;
+  vertical-align: bottom;
+}
+.tbl td,
+.tbl tbody th {
+  padding: 0.7rem 0.75rem 0.7rem 0;
+  border-bottom: var(--border-w) solid var(--hair);
+  font-weight: 400;
+  text-align: left;
+  vertical-align: top;
+}
+.tbl :is(th, td):last-child {
+  padding-right: 0;
+}
+.tbl tbody tr {
+  transition: background-color var(--t-hover) var(--ease);
+}
+/* By day the row lifts to the raised paper; at night that step is too small to see, so the row
+   takes the pointer's ground (--hover), on which the grey place names still read at 4.5:1. */
+.tbl tbody tr:hover {
+  background: light-dark(var(--paper-raised), var(--hover));
+}
+.tbl .r {
+  text-align: right;
+}
+/* The row header: a name with its place underneath. */
+.tbl__name {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 1.12rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.tbl__sub {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+/* Sorting: a button in th[aria-sort]; the arrow shows only next to the active column. */
+.tbl__sort {
+  display: inline-flex;
+  align-items: flex-end; /* the label sits on the header's baseline, like its neighbours */
+  gap: 0.3rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: inherit;
+}
+.tbl__sort:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--hair);
+  text-underline-offset: 0.25em;
+}
+.tbl .r .tbl__sort {
+  justify-content: flex-end;
+}
+
+/* ------------------------------------------------------------ loading
+   Still blocks of the future content's size, no shimmer; the section's rule is already drawn.
+   The section carries aria-busy="true" and a hidden „Učitavanje…”. */
+.skeleton {
+  display: block;
+  background: var(--paper-sunk);
+}
+/* A refetch keeps the previous answer on the page, dimmed. */
+.is-refreshing {
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity var(--t-hover) var(--ease);
+}
+
+/* ------------------------------------------------------------ tooltip */
+.tooltip {
+  position: absolute;
+  z-index: var(--z-float);
+  max-width: 18rem;
+  padding: 0.5rem 0.7rem 0.55rem;
+  border: var(--border-w) solid var(--ink);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-float);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  pointer-events: none;
+}
+.tooltip strong,
+.tooltip b {
+  display: block;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ small type */
+/* The transcript's first line: „Srijeda, 28. listopada 2026., od 10:38 · glasom · Uputko ne sprema
+   ni snimku ni zapis” */
+.byline {
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+}
+.small {
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+.small b {
+  color: var(--ink);
+}
+/* Under a graphic: „Izvor: HZZO, liste čekanja (CEZIH), 29. 10. 2026.” */
+.credit {
+  margin-top: 0.5rem;
+  color: var(--ink-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+.credit b {
+  color: var(--ink-2);
+  font-weight: 650;
+}

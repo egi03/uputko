@@ -1,0 +1,168 @@
+/* „Kako se naručiti?” (components/BookingGuide.tsx): a button that opens the guide right under it,
+   on /termini under the suggested appointments and in a conversation's waiting-list answer. Four
+   numbered steps, the contacts from the lists, three short notes. */
+
+/* The call to action after the appointments: a filled ink button, as large as the page's
+   other main actions. */
+.booking-cta__btn {
+  min-height: 3.4rem;
+  padding-inline: 1.5rem;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--fs-ui);
+}
+.booking-cta__btn:hover {
+  border-color: var(--ink-2);
+  background: var(--ink-2);
+  color: var(--paper);
+}
+.booking-cta__btn .lucide {
+  width: 1.2em;
+  height: 1.2em;
+}
+/* Open: the button steps back to an outline, the guide under it takes the eye. */
+.booking-cta__btn[aria-expanded="true"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+.booking-cta__btn[aria-expanded="true"]:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.booking-cta__panel {
+  margin-top: 1rem;
+}
+.booking-cta__panel[hidden] {
+  display: none;
+}
+
+.booking {
+  max-width: 48rem;
+  padding: 1.4rem 1.5rem 1.5rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+:root[data-contrast="high"] .booking {
+  border: 2px solid var(--ink);
+}
+.booking__h {
+  font-size: var(--fs-h3);
+}
+.booking__steps {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: 1.1rem;
+  counter-reset: step;
+}
+.booking__steps > li {
+  position: relative;
+  padding-left: 2.6rem;
+  counter-increment: step;
+}
+/* The step's number in an ink circle. */
+.booking__steps > li::before {
+  content: counter(step);
+  position: absolute;
+  top: -0.05rem;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--fs-small);
+  font-weight: 800;
+}
+.booking__k {
+  font-size: var(--fs-ui);
+  font-weight: 750;
+  letter-spacing: 0;
+}
+.booking__steps p {
+  margin-top: 0.2rem;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+}
+.booking__contacts {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.booking__contacts li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem 1rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: var(--radius-s);
+  background: var(--paper-sunk);
+}
+.booking__who {
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+.booking__how {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 1rem;
+  font-size: var(--fs-meta);
+}
+.booking__how .tel,
+.booking__mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  font-weight: 700;
+}
+.booking__how .lucide {
+  width: 1.05em;
+  height: 1.05em;
+}
+.booking__mail span {
+  overflow-wrap: anywhere;
+}
+.booking__notes {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1.3rem;
+  padding-top: 1rem;
+  border-top: var(--border-w) solid var(--hair);
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+.booking__notes b {
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .booking {
+    padding: 1.1rem 1rem 1.2rem;
+  }
+  .booking__steps > li {
+    padding-left: 2.3rem;
+  }
+}
+
+/* On paper the guide goes with the answer, open or not; the button does not. */
+@media print {
+  .booking-cta__btn {
+    display: none !important;
+  }
+  .booking-cta__panel[hidden] {
+    display: block !important;
+  }
+  .booking {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

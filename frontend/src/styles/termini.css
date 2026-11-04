@@ -1,0 +1,1030 @@
+/* /termini (pages/Termini.tsx, pages/termini/*, components/waiting/*). A short title and the
+   sentence search, then the answer in the order a visitor needs it: the headline („Za 32 dana
+   umjesto 68”), the suggested appointments with their telephones, „Kako se naručiti?”, every
+   institution in one card on a grey band, and only then the statistics (median, map, chart,
+   trend) and the sources. The sentence search and the combobox are in components.css, the map in
+   map.css, the charts in charts.css, the cards (coupons) in cards.css, the booking guide in
+   booking.css, print in print.css. */
+
+/* ------------------------------------------------------------ the top: title and search */
+.tr-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: clamp(1.75rem, 4vw, 3rem) 0 clamp(2rem, 4vw, 3rem);
+}
+.tr-top__title {
+  font-size: var(--fs-h1-s);
+  letter-spacing: -0.035em;
+}
+/* With an answer the title steps back: the answer's headline takes over below. */
+.tr-top--asked .tr-top__title {
+  color: var(--ink-3);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.tr-ask {
+  margin-top: 0.9rem;
+}
+.tr-often {
+  margin-top: 1.5rem;
+}
+.tr-top--asked {
+  padding-bottom: 1.5rem;
+}
+/* A location that could not be found, under the tools of the sentence search. */
+.ask-line__note {
+  margin-top: 0.15rem;
+}
+/* The folded search on a phone („MR koljena · od mjesta Vinkovci”): the place and its words are
+   one piece that goes to the next line whole; a piece wider than the line wraps inside. */
+.ask-short__place {
+  display: inline-block;
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+@media (max-width: 760px) {
+  .tr-top {
+    padding: 1rem 0 1.5rem;
+  }
+  .tr-ask {
+    margin-top: 1.2rem;
+  }
+  .tr-top--asked {
+    padding-bottom: 0.75rem;
+  }
+}
+
+/* ------------------------------------------------------------ pills
+   Popular searches (quiet, grey) and the choices of a question to clarify (outlined). */
+.tr-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tr-pills > li {
+  max-width: 100%;
+}
+.tr-pill {
+  display: inline-block;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 0.62rem 1.1rem;
+  border: 1.5px solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-ui);
+  font-weight: 650;
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    border-color var(--t-hover) var(--ease),
+    background-color var(--t-hover) var(--ease);
+}
+.tr-pill:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+.tr-pill__sub {
+  margin-left: 0.45rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 450;
+}
+.tr-pill--quiet {
+  border-color: transparent;
+  background: var(--paper-sunk);
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+}
+.tr-pill--quiet:hover {
+  border-color: transparent;
+  background: var(--hover);
+}
+.tr-pill[aria-current="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+:root[data-contrast="high"] .tr-pill {
+  border: 2px solid var(--ink);
+}
+
+/* ------------------------------------------------------------ the answer: headline and cards */
+.tr-res {
+  padding-top: 0.5rem;
+}
+.tr-head__h {
+  max-width: 24ch;
+  font-size: var(--fs-h1);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.tr-head__n {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+/* What the sooner appointment saves, under the headline. */
+.tr-head__saving {
+  max-width: 44rem;
+  margin-top: 0.5rem;
+  color: var(--ink-2);
+  font-size: var(--fs-lede);
+  line-height: 1.4;
+}
+.tr-head__saving b {
+  color: var(--teal);
+  font-weight: 750;
+}
+.tr-head__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.2rem 1.5rem;
+  margin-top: 0.6rem;
+}
+.tr-src {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+.tr-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1.2rem;
+  font-size: var(--fs-meta);
+}
+.tr-acts .linkbtn {
+  color: var(--ink-2);
+  font-weight: 600;
+  text-decoration: none;
+}
+.tr-acts .linkbtn:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.tr-acts .lucide {
+  width: 1.05em;
+  height: 1.05em;
+}
+/* The share note („Poveznica je kopirana.”) takes no room until it says something. */
+.tr-acts__note {
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+}
+.tr-acts__note:empty {
+  display: none;
+}
+.tr-picks {
+  margin-top: 1.6rem;
+}
+.tr-picks .coupons > li {
+  max-width: 34rem;
+}
+.tr-lede {
+  max-width: 44rem;
+  margin-top: 1.4rem;
+  color: var(--ink-2);
+  font-size: var(--fs-lede);
+  line-height: 1.5;
+}
+/* What the colour of a card's number and of a bar means. */
+.wkey {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 1.1rem;
+  margin-top: 1rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.6;
+}
+.wkey__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.wkey__i {
+  display: block;
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+}
+.wkey__i--short {
+  background: var(--bar-short);
+}
+.wkey__i--mid {
+  background: var(--bar-mid);
+}
+.wkey__i--long {
+  background: var(--bar-long);
+}
+:root[data-contrast="high"] .wkey__i {
+  outline: 1px solid var(--ink);
+}
+
+/* Without a place: the one card and, beside it, a card asking for the place. The pair is the
+   cards' container, so the card beside the question has the layout of half the width. */
+.tr-pair {
+  container: coupons / inline-size;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: 1.5rem;
+}
+.tr-pair > .coupons {
+  container-type: normal;
+}
+.askc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 34rem;
+  padding: 1.05rem 1.15rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+.askc__role {
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+.askc__text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.askc__acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1.2rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+  font-size: var(--fs-meta);
+}
+:root[data-contrast="high"] .askc {
+  border: 2px solid var(--ink);
+}
+
+/* ------------------------------------------------------------ grey bands and sections */
+.tr-band {
+  margin-top: 3.5rem;
+  padding-block: 3rem;
+  background: var(--paper-sunk);
+  box-shadow: 0 0 0 100vmax var(--paper-sunk);
+  clip-path: inset(0 -100vmax);
+}
+.tr-band + .tr-band {
+  margin-top: 0;
+}
+:root[data-contrast="high"] .tr-band {
+  border-block: 2px solid var(--ink);
+  box-shadow: none;
+  clip-path: none;
+}
+.tr-sec {
+  margin-top: 4rem;
+}
+.tr-band + .tr-sec {
+  margin-top: 3.5rem;
+}
+.tr-sec__h,
+.fig__h {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.tr-count {
+  display: inline-block;
+  margin-left: 0.2rem;
+  padding: 0.05em 0.5em;
+  border-radius: var(--radius-control);
+  background: var(--paper-sunk);
+  color: var(--ink-2);
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0;
+  vertical-align: 0.12em;
+}
+.tr-credit {
+  margin-top: 0.9rem;
+}
+
+/* Two big numbers above the table: the median in Croatia, how many lists have a slot. */
+.tr-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 3.5rem;
+  margin: 0 0 1.6rem;
+}
+.tr-facts > div {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.tr-facts dt {
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+}
+.tr-facts dd {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+.tr-facts b {
+  font-size: var(--fs-num-l);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------ every institution (EntriesTable)
+   One white card on the grey band: headline with its count and the sort, a one-line key, the
+   table with hairlines, „Prikaži sve” at its foot. */
+.all {
+  container: tbl / inline-size;
+  padding: 1.25rem 1.5rem 0.4rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+:root[data-contrast="high"] .all {
+  border: 2px solid var(--ink);
+}
+.all__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1.5rem;
+  margin-bottom: 0.6rem;
+}
+.all__h {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.all__count {
+  display: inline-block;
+  margin-left: 0.25rem;
+  padding: 0.08em 0.55em;
+  border-radius: var(--radius-control);
+  background: var(--paper-sunk);
+  color: var(--ink-2);
+  font-size: 0.75em;
+  font-weight: 700;
+  letter-spacing: 0;
+  vertical-align: 0.1em;
+}
+/* The sort as a pill switch. */
+.all .all__sort {
+  display: inline-grid;
+  grid-auto-columns: minmax(0, auto);
+  grid-auto-flow: column;
+  gap: 0;
+  max-width: 100%;
+  padding: 3px;
+  border-radius: 1.45rem;
+  background: var(--paper-sunk);
+}
+.all .all__sort button {
+  min-height: 2.5rem;
+  padding: 0.3rem 0.95rem;
+  border: 0;
+  border-radius: 1.3rem;
+  color: var(--ink-2);
+  font-weight: 650;
+  line-height: 1.15;
+}
+.all .all__sort button[aria-pressed="true"] {
+  background: var(--paper-raised);
+  box-shadow: 0 1px 3px light-dark(rgb(0 0 0 / 12%), rgb(0 0 0 / 50%));
+  color: var(--ink);
+}
+:root[data-contrast="high"] .all .all__sort button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: none;
+}
+@media (pointer: coarse) {
+  .all .all__sort button {
+    min-height: 44px;
+  }
+}
+.all__filter {
+  margin: 0 0 0.6rem;
+}
+.all__filter .linkbtn {
+  min-height: 2.75rem;
+}
+.wt__key {
+  margin: 0 0 0.4rem;
+  color: var(--ink-3);
+}
+.wt__key-tick {
+  display: inline-block;
+  width: 2px;
+  height: 0.95rem;
+  margin-right: 0.3rem;
+  background: var(--ink);
+  vertical-align: -0.15em;
+}
+.wt thead th {
+  padding-top: 0.6rem;
+  border-bottom: var(--border-w) solid var(--hair);
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.wt tbody tr:last-child > * {
+  border-bottom: 0;
+}
+/* Every cell starts on the baseline of the institution's name. */
+.wt :is(tbody th, td) {
+  vertical-align: baseline;
+}
+.wt tbody th {
+  padding-right: 1rem;
+}
+.wt .tbl__name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.wt__km,
+.wt__date,
+.wt__tel {
+  white-space: nowrap;
+}
+.wt__km,
+.wt__date {
+  color: var(--ink-2);
+}
+.wt__wait {
+  width: 26%;
+}
+/* The bar on the scale of the whole answer, its colour against the median, and the median as
+   a tick on every bar, so a row reads without the chart. */
+.wt__w {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+}
+.wt__bar {
+  position: relative;
+  flex: 1;
+  align-self: center;
+  min-width: 3.5rem;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--paper-sunk);
+}
+.wt__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--w) * 100%);
+  border-radius: 4px;
+}
+.wt__fill--short {
+  background: var(--bar-short);
+}
+.wt__fill--mid {
+  background: var(--bar-mid);
+}
+.wt__fill--long {
+  background: var(--bar-long);
+}
+.wt__tick {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: calc(var(--m) * 100%);
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--ink);
+}
+:root[data-contrast="high"] .wt__bar {
+  outline: 1px solid var(--ink);
+}
+.wt__days {
+  flex: none;
+  width: 4.6rem;
+  font-size: var(--fs-meta);
+  white-space: nowrap;
+}
+/* The count right-aligned in a three-figure box: units under units. */
+.wt__days b {
+  display: inline-block;
+  min-width: 3ch;
+  font-size: 1.05rem;
+  font-weight: 750;
+  text-align: right;
+}
+.wt__tel .tel {
+  font-weight: 700;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+/* On a touch screen the telephone (the row's action) is a 44 px target: an inline link's padding
+   grows the area it answers to, not the line. */
+@media (pointer: coarse) {
+  .wt__tel :is(a.tel, .wt__mail),
+  .tr-none__tel :is(a.tel, .wt__mail),
+  .tr-prov a.tel {
+    padding-block: 0.65rem;
+  }
+}
+/* No number on the list, only an e-mail: the word on screen, the address on paper. */
+.wt__mail {
+  font-family: var(--font-sans);
+  font-weight: 700;
+}
+.wt__mail-addr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.all__more {
+  margin: 0 -1.5rem;
+  padding: 0.9rem 1.5rem;
+  border-top: var(--border-w) solid var(--hair);
+  text-align: center;
+}
+.all__foot {
+  margin: 0 -1.5rem;
+  padding: 0.9rem 1.5rem 0.6rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+/* „Prikaži sve” moves the focus to the first new row: an ink bar marks where the reader landed. */
+.wt tbody th[tabindex="-1"]:focus-visible {
+  box-shadow: inset 4px 0 0 var(--ink);
+}
+.wt tbody tr:has(> th[tabindex="-1"]:focus-visible) {
+  background: var(--paper-sunk);
+}
+/* The row of the institution pointed at in a card or the chart (useLinkedHighlight). */
+.wt tbody tr[data-linked] {
+  background: var(--paper-sunk);
+}
+:root[data-contrast="high"] .wt tbody tr[data-linked] > * {
+  box-shadow:
+    inset 0 -2px 0 var(--ink),
+    inset 0 2px 0 var(--ink);
+}
+/* Below 42rem a row is three lines: name | km, first appointment | telephone, the bar. The
+   column headers stay for screen readers. */
+@container tbl (max-width: 42rem) {
+  .wt thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .wt,
+  .wt tbody {
+    display: block;
+  }
+  .wt tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: var(--border-w) solid var(--hair);
+  }
+  .wt tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .wt tr.is-extra {
+    display: none;
+  }
+  .wt :is(tbody th, td) {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .wt tbody th {
+    grid-area: 1 / 1;
+  }
+  .wt .wt__km {
+    grid-area: 1 / 2;
+    text-align: right;
+  }
+  .wt .wt__date {
+    grid-area: 2 / 1;
+    margin-top: 0.35rem;
+  }
+  .wt .wt__tel {
+    grid-area: 2 / 2;
+    margin-top: 0.35rem;
+    text-align: right;
+  }
+  .wt .wt__wait {
+    grid-area: 3 / 1 / auto / -1;
+    width: auto;
+    margin-top: 0.5rem;
+  }
+  .wt__days {
+    width: auto;
+    text-align: right;
+  }
+}
+/* Narrower still (320 px with large letters): the name takes the whole line; distance, date and
+   telephone follow on as they fit, the bar last. */
+@container tbl (max-width: 16.5rem) {
+  .wt tr {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.9rem;
+  }
+  .wt tbody th,
+  .wt .wt__tel,
+  .wt .wt__wait {
+    flex: 1 0 100%;
+  }
+  .wt .wt__km,
+  .wt .wt__date {
+    margin-top: 0.35rem;
+    text-align: left;
+  }
+  .wt .wt__tel {
+    margin-top: 0.2rem;
+    text-align: left;
+  }
+}
+@media (max-width: 760px) {
+  .all {
+    padding: 1rem 1rem 0.3rem;
+  }
+  .all__more,
+  .all__foot {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
+  .all__more .btn {
+    width: 100%;
+  }
+}
+
+/* Contract with HZZO, no list: a short list under the table, each with its telephone. */
+.tr-prov {
+  margin-top: 1.4rem;
+}
+.tr-prov__h {
+  font-size: var(--fs-ui);
+  font-weight: 750;
+}
+.tr-prov ul {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tr-prov li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.2rem 1.2rem;
+  padding: 0.65rem 0;
+  border-top: var(--border-w) solid var(--hair);
+}
+.tr-prov li:last-child {
+  border-bottom: var(--border-w) solid var(--hair);
+}
+.tr-prov li > span {
+  min-width: 0;
+}
+.tr-prov b {
+  font-weight: 700;
+}
+.tr-prov .tel {
+  font-weight: 700;
+}
+.tr-prov__fine {
+  margin-top: 0.5rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+
+/* No free appointment anywhere: the institutions that keep a list, each with its telephone. */
+.tr-none {
+  margin-top: 2rem;
+}
+.tr-none__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  column-gap: var(--gap);
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tr-none__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.75rem 0;
+  border-bottom: var(--border-w) solid var(--hair);
+}
+.tr-none__who {
+  min-width: 0;
+}
+.tr-none__tel {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tr-none__kids {
+  margin-top: 1.1rem;
+}
+.tr-kids {
+  margin-top: 1.6rem;
+}
+
+/* ------------------------------------------------------------ the map and the chart */
+.tr-map > .tr-sec__h {
+  margin-bottom: 0.3rem;
+}
+.tr-map__sk {
+  display: block;
+  height: 24rem;
+  margin-top: 0.8rem;
+  border-radius: var(--radius-card);
+}
+.tr-map__err {
+  margin-top: 0.6rem;
+}
+.fig__dek {
+  max-width: 44rem;
+  margin-top: 0.35rem;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+}
+.fig__plot {
+  margin-top: 1rem;
+}
+
+/* ------------------------------------------------------------ the booking guide's place */
+.tr-book {
+  margin-top: 1.6rem;
+}
+
+/* ------------------------------------------------------------ the statistics, after the answer
+   Grouped under one title at the end: they compare, they do not lead to an appointment. */
+.tr-stats {
+  margin-top: 4rem;
+  padding-top: 2.4rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+.tr-stats__h {
+  margin-bottom: 1.6rem;
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.tr-stats .tr-sec {
+  margin-top: 3rem;
+}
+.tr-stats .tr-sec__h,
+.tr-stats .fig__h {
+  font-size: var(--fs-h3);
+}
+.tr-stats__more {
+  margin-top: 2rem;
+}
+
+/* ------------------------------------------------------------ the trend, folded */
+.tr-more {
+  margin-top: 2.5rem;
+  border-block: var(--border-w) solid var(--hair);
+}
+.tr-more > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.4rem;
+  font-weight: 700;
+  list-style: none;
+  cursor: pointer;
+}
+.tr-more > summary::-webkit-details-marker {
+  display: none;
+}
+.tr-more > summary::after {
+  content: "+";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--paper-sunk);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.tr-more[open] > summary::after {
+  content: "−";
+}
+.tr-more > .trend {
+  max-width: 34rem;
+  margin: 0;
+  padding: 0 0 1.2rem;
+  border: 0;
+}
+
+/* ------------------------------------------------------------ sources and notes */
+.tr-notes {
+  margin-top: 3rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+.tr-band + .tr-notes,
+.tr-more + .tr-notes {
+  margin-top: 2.2rem;
+}
+.tr-notes__h {
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.tr-notes ul {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tr-notes li + li {
+  margin-top: 0.2rem;
+}
+
+/* ------------------------------------------------------------ without a question
+   Today's real cases of a much shorter wait nearby, each a link to its answer. */
+.tr-ex {
+  margin-top: 1rem;
+}
+.tr-ex__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.tr-ex__link {
+  display: grid;
+  gap: 0.3rem;
+  height: 100%;
+  padding: 1.1rem 1.25rem 1.2rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color var(--t-hover) var(--ease);
+}
+.tr-ex__link:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.tr-ex__what {
+  font-weight: 750;
+  line-height: 1.3;
+}
+.tr-ex__nums {
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+}
+.tr-ex__nums b {
+  color: var(--teal);
+  font-size: var(--fs-num-s);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.tr-ex__where {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.tr-ex__none {
+  margin-top: 1rem;
+  color: var(--ink-2);
+}
+:root[data-contrast="high"] .tr-ex__link {
+  border: 2px solid var(--ink);
+}
+.tr-ov__sk {
+  display: block;
+  height: 30rem;
+  border-radius: var(--radius-card);
+}
+.tr-ov__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+.tr-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.tr-go .lucide {
+  width: 1.05em;
+  height: 1.05em;
+  transition: translate var(--t-hover) var(--ease);
+}
+.tr-go:hover .lucide {
+  translate: 3px 0;
+}
+
+/* ------------------------------------------------------------ ambiguous or unknown */
+.tr-clarify {
+  max-width: 46rem;
+  padding-top: 0.5rem;
+}
+.tr-clarify__q {
+  margin-top: 0.5rem;
+  color: var(--ink-2);
+  font-size: var(--fs-lede);
+  line-height: 1.45;
+}
+.tr-clarify .tr-pills {
+  margin-top: 1.1rem;
+}
+.tr-clarify__more {
+  margin-top: 1.8rem;
+}
+.tr-clarify__sub {
+  font-size: var(--fs-ui);
+  font-weight: 750;
+}
+
+/* ------------------------------------------------------------ errors and loading */
+.tr-error {
+  max-width: 40rem;
+  margin-top: 1rem;
+}
+.tr-res--loading .skeleton {
+  display: block;
+  border-radius: var(--radius-s);
+}
+.tr-sk-h {
+  max-width: 34rem;
+  height: calc(var(--fs-h1) * 1.1);
+}
+.tr-sk-meta {
+  max-width: 22rem;
+  height: 1.2rem;
+  margin-top: 0.9rem;
+}
+.tr-sk-picks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: 1.5rem;
+  margin-top: 2.2rem;
+}
+.tr-res--loading .tr-sk-picks .skeleton {
+  height: 13rem;
+  border-radius: var(--radius-card);
+}
+
+/* ------------------------------------------------------------ phones: the answer a little tighter */
+@media (max-width: 760px) {
+  .tr-head__h {
+    font-size: min(1.75rem, 9vw);
+  }
+  .tr-head__meta {
+    margin-top: 0.45rem;
+  }
+  .tr-picks {
+    margin-top: 1.1rem;
+  }
+  .tr-band {
+    margin-top: 2.5rem;
+    padding-block: 2rem;
+  }
+  .tr-sec {
+    margin-top: 3rem;
+  }
+}

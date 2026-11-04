@@ -1,0 +1,34 @@
+{
+  "type": "webhook",
+  "name": "get_drug_info",
+  "description": "Facts about a medicine authorised in Croatia from the HALMED database and HZZO's lists of medicines: active substance, whether it needs a prescription, whether it is on HZZO's basic list (no co-payment on prescription) or supplementary list (with the co-payment in euros), market and shortage status, and a link to the patient leaflet. Use for 'Je li Andol na listi HZZO-a?', 'Koja je djelatna tvar u Lekadolu?', 'Treba li za Voltaren recept?'. Never gives dosage or treatment advice.",
+  "response_timeout_secs": 5,
+  "api_schema": {
+    "url": "{PUBLIC_BASE_URL}/tools/get_drug_info",
+    "method": "POST",
+    "content_type": "application/json",
+    "request_headers": {
+      "X-Tool-Secret": {
+        "secret_id": "SET_ELEVENLABS_TOOL_SECRET_ID"
+      },
+      "X-Profile": "premium"
+    },
+    "request_body_schema": {
+      "type": "object",
+      "description": "Arguments for get_drug_info",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Protected name of the medicine as on the box (e.g. 'Andol', 'Voltaren', 'Lekadol Forte') or an active substance (e.g. 'paracetamol'). After an ambiguous answer send the exact name the user chose."
+        },
+        "conversation_id": {
+          "type": "string",
+          "dynamic_variable": "system__conversation_id"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+  }
+}

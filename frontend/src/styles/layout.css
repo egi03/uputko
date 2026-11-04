@@ -1,0 +1,492 @@
+/* The shell: a quiet top bar (wordmark, a few links, „Prikaz”, 112), the page
+   grid, the phone tab bar, the „Prikaz” sheet and a black footer. */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ------------------------------------------------------------ grid */
+.wrap {
+  width: 100%;
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+}
+
+/* ------------------------------------------------------------ main
+   Layout switches follow the text size: container queries in rem on the page. The container
+   stays inside .app, so the fixed tab bar is not contained by it. */
+.main {
+  flex: 1 0 auto;
+  container: page / inline-size;
+  overflow-x: clip; /* full-bleed bands never widen the page */
+}
+.main [id] {
+  scroll-margin-top: 5rem;
+}
+
+/* ------------------------------------------------------------ top bar */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-tabbar);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  font-family: var(--font-sans);
+}
+.top--front {
+  position: relative;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.top__in {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: var(--top-h);
+}
+.top__home {
+  margin-right: auto;
+  color: var(--ink);
+  text-decoration: none;
+}
+.top__home:hover {
+  color: var(--ink);
+}
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-plate);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.wordmark__mark {
+  width: 1.45em;
+  height: 1.45em;
+  flex: none;
+}
+.mark__bg {
+  fill: var(--mark-bg);
+}
+.mark__long {
+  fill: var(--mark-long);
+}
+.mark__short {
+  fill: var(--mark-short);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.nav a {
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius-control);
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color var(--t-hover) var(--ease),
+    background-color var(--t-hover) var(--ease);
+}
+.nav a:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.nav a[aria-current="page"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.top__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.top__btn,
+.sos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.9rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    background-color var(--t-hover) var(--ease),
+    border-color var(--t-hover) var(--ease);
+}
+.top__btn svg,
+.sos svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+.top__btn:hover,
+.top__btn[aria-expanded="true"] {
+  border-color: var(--ink);
+  background: var(--hover);
+}
+.sos {
+  border-color: transparent;
+  background: var(--red-fill);
+  color: var(--on-red);
+  font-weight: 800;
+}
+.sos:hover {
+  background: var(--red-fill-hover);
+  color: var(--on-red);
+}
+
+/* ------------------------------------------------------------ the „Prikaz” sheet */
+.settings {
+  position: relative;
+}
+.settings__panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: var(--z-float);
+  display: grid;
+  gap: 1rem;
+  width: min(23rem, calc(100vw - 2rem));
+  padding: 0.9rem 1.1rem 1rem;
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-float);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  line-height: 1.35;
+  animation: settings-in 120ms var(--ease);
+}
+@keyframes settings-in {
+  from {
+    opacity: 0;
+  }
+}
+.settings__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-right: -0.6rem;
+}
+.settings__head h2 {
+  font-size: var(--fs-h3);
+}
+.settings__group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.settings__group legend {
+  margin-bottom: 0.4rem;
+  padding: 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+.settings__reset {
+  justify-self: start;
+}
+/* A narrow sheet (a small phone with larger text): each choice gets a line of its own. */
+.settings__panel {
+  container: prikaz / inline-size;
+}
+@container prikaz (max-width: 15.5rem) {
+  .settings__group .seg--box {
+    grid-auto-flow: row;
+  }
+  .settings__group .seg--box label + label {
+    border-top: 1.5px solid var(--ink);
+    border-left: 0;
+  }
+  .settings__group .seg--box label {
+    grid-auto-flow: column;
+    justify-content: start;
+    column-gap: 0.5rem;
+    align-items: baseline;
+    padding-inline: 0.75rem;
+    text-align: left;
+  }
+  /* „A obično”, „A+ veće”, „A++ najveće”: the letters fill a column of their own, so the words
+     after them start on one line, as in a list. */
+  .settings__group .seg--box label:has(.seg__sub) {
+    grid-template-columns: 2.4em minmax(0, 1fr);
+    grid-auto-flow: row;
+    justify-content: stretch;
+  }
+}
+
+
+/* ------------------------------------------------------------ footer */
+.foot {
+  margin-top: 5rem;
+  background: #111111;
+  color: #d9d9d4;
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+}
+.foot__in {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem 2rem;
+  padding-block: 2.2rem 2rem;
+}
+.foot__brand {
+  color: #ffffff;
+}
+.foot__brand .wordmark {
+  font-size: 1.15rem;
+}
+/* On the black footer the mark is a white square with dark bars. */
+.foot__brand .mark__bg {
+  fill: #ffffff;
+}
+.foot__brand .mark__long {
+  fill: rgb(17 17 17 / 45%);
+}
+.foot__brand .mark__short {
+  fill: #0b6b6d;
+}
+.foot__links {
+  grid-column: 1 / -1;
+  color: #a6a6a1;
+}
+.foot__mid {
+  text-align: center;
+}
+.foot__fine {
+  grid-column: 1 / -1;
+  padding-top: 1.1rem;
+  border-top: 1px solid #2c2c2c;
+  color: #a6a6a1;
+  font-size: var(--fs-small);
+}
+.foot a {
+  color: #ffffff;
+  text-decoration-color: rgb(255 255 255 / 40%);
+}
+.foot a:hover {
+  color: #ffffff;
+  text-decoration-color: #ffffff;
+}
+:root[data-contrast="high"] .foot {
+  background: #000000;
+  color: #ffffff;
+}
+:root[data-contrast="high"] .foot__fine {
+  color: #ffffff;
+}
+
+/* ------------------------------------------------------------ phone tab bar */
+.tabbar {
+  display: none;
+}
+
+/* ------------------------------------------------------------ phones (≤ 760 px) */
+@media (max-width: 760px) {
+  .grid {
+    display: block;
+  }
+  .top__in {
+    gap: 0.75rem;
+  }
+  .top__btn {
+    padding-inline: 0.75rem;
+  }
+
+  /* „Prikaz” becomes a sheet across the screen, standing on the tab bar. */
+  .settings__panel {
+    position: fixed;
+    inset: auto 0 var(--tabbar-space);
+    width: auto;
+    max-height: calc(100dvh - var(--tabbar-space) - 3rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem var(--gutter) 1.2rem;
+    border: 0;
+    border-top: var(--border-w) solid var(--hair);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    box-shadow: var(--shadow-sheet);
+  }
+
+  .foot {
+    margin-top: 3.5rem;
+  }
+  .foot__in {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+  .foot__mid {
+    text-align: left;
+  }
+
+}
+
+/* ------------------------------------------------------------ compact navigation
+   Where the top bar no longer holds its links (prefs.ts sets data-nav from the window width and
+   the text size), they move to a tab bar at the bottom. */
+:root[data-nav="compact"] .nav {
+  display: none;
+}
+:root[data-nav="compact"] .tabbar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: var(--z-tabbar);
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 0.3rem calc(0.3rem + env(safe-area-inset-right)) calc(0.3rem + env(safe-area-inset-bottom))
+    calc(0.3rem + env(safe-area-inset-left));
+  border-top: var(--border-w) solid var(--hair);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+}
+/* A word that no longer fits its tab breaks at its syllable („Asi-stent”, soft hyphens in
+   Layout.tsx) and stays inside its tab. */
+:root[data-nav="compact"] .tabbar a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.15rem;
+  min-width: 0;
+  min-height: 3.2rem;
+  padding: 0.35rem 3px 0.25rem;
+  border-radius: 14px;
+  color: var(--ink-3);
+  font-family: var(--font-sans);
+  font-size: clamp(max(12.5px, 0.65rem), 3.9vw, 0.78rem);
+  font-weight: 600;
+  line-height: 1.1;
+  text-decoration: none;
+}
+:root[data-nav="compact"] .tabbar a span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+:root[data-nav="compact"] .tabbar a:hover {
+  color: var(--ink);
+}
+:root[data-nav="compact"] .tabbar .ico {
+  width: 1.4rem;
+  height: 1.4rem;
+  stroke-width: 1.8;
+}
+:root[data-nav="compact"] .tabbar a[aria-current="page"] {
+  background: var(--hover);
+  color: var(--ink);
+  font-weight: 750;
+}
+:root[data-nav="compact"] .tabbar a[aria-current="page"] .ico {
+  stroke-width: 2.2;
+}
+:root[data-nav="compact"] .tabbar a:focus-visible {
+  box-shadow: inset 0 0 0 3px var(--focus-ink);
+}
+/* The page ends above the tab bar, and whatever receives focus scrolls clear of it. */
+:root[data-nav="compact"] .app {
+  padding-bottom: var(--tabbar-space);
+}
+:root[data-nav="compact"] html {
+  scroll-padding-bottom: calc(var(--tabbar-space) + 0.75rem);
+}
+
+/* The narrowest phones (and larger text on small ones): „Prikaz” keeps only its icon (the name
+   stays for screen readers) and the bar tightens, so 112 always stays on screen. */
+@media (max-width: 420px) {
+  .top__in {
+    gap: 0.5rem;
+  }
+  .wordmark {
+    font-size: min(var(--fs-plate), 6.4vw);
+  }
+  .sos {
+    padding-inline: 0.7rem;
+  }
+}
+@media (max-width: 380px) {
+  .top__btn,
+  :root[data-text="xlarge"] .top__btn {
+    justify-content: center;
+    min-width: 44px;
+    gap: 0;
+    font-size: 0;
+  }
+  .top__btn svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+/* ------------------------------------------------------------ Windows high contrast */
+@media (forced-colors: active) {
+  .nav a[aria-current="page"],
+  .tabbar a[aria-current="page"] {
+    outline: 2px solid CanvasText;
+  }
+}
+
+/* ------------------------------------------------------------ print: no shell */
+@media print {
+  .top,
+  .tabbar,
+  .foot,
+  .skip-link,
+  .settings {
+    display: none !important;
+  }
+  .app {
+    padding-bottom: 0;
+  }
+}
+
+/* Larger text on a phone: „Prikaz” keeps only its icon there too. */
+@media (max-width: 520px) {
+  :root:is([data-text="large"], [data-text="xlarge"]) .top__btn {
+    justify-content: center;
+    min-width: 44px;
+    gap: 0;
+    font-size: 0;
+  }
+  :root:is([data-text="large"], [data-text="xlarge"]) .top__btn svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+/* The narrowest phones at the largest text: the bar keeps fixed sizes, so 112 stays whole. */
+@media (max-width: 380px) {
+  :root[data-text="xlarge"] .wordmark,
+  :root[data-text="large"] .wordmark {
+    font-size: 19px;
+  }
+  :root[data-text="xlarge"] .sos,
+  :root[data-text="large"] .sos {
+    min-height: 44px;
+    padding-inline: 10px;
+    font-size: 17px;
+  }
+}

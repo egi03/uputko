@@ -1,0 +1,683 @@
+/* /lijekovi: medicines (pages/Lijekovi.tsx, components/Shortages.tsx).
+   One centred column: a short title and one sentence on what the page answers, the sentence
+   „Provjeri lijek [___] →”, then a grey band with the answer as one card, or (without a query)
+   two quiet panels: HZZO's lists and HALMED's shortages. */
+
+.drugs {
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+/* ------------------------------------------------------------ the top
+   The title, what the page answers, the sentence to complete, a few examples. */
+.dh {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-top: 2.6rem;
+}
+.dh__title {
+  font-size: var(--fs-h1-s);
+  letter-spacing: -0.035em;
+}
+.dh__form {
+  min-width: 0;
+  margin-top: 1.4rem;
+}
+.dh .dh__line {
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 4.6cqi, 3.1rem);
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+}
+/* The blank and its arrow keep together on one line. */
+.dh__blank {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12em;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+.dh__blank > .combo {
+  min-width: 0;
+}
+/* The blank: a pill drawn in ink, the written name as heavy as the sentence. */
+.dh .combo--slot .field {
+  margin-inline: 0.15em 0.1em;
+  padding-left: 0.45em;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+}
+.dh .combo--slot .field:not(:has(.combo__clear)) {
+  padding-right: 0.45em;
+}
+.dh .combo--slot .field input {
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+.dh .combo--slot .field input::placeholder {
+  color: var(--ink-3);
+  font-weight: 500;
+}
+/* The arrow that sends it: an ink circle at the end of the sentence. */
+.dh__go {
+  display: inline-grid;
+  place-items: center;
+  width: 1.3em;
+  height: 1.3em;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  vertical-align: middle;
+  transition:
+    background-color var(--t-hover) var(--ease),
+    transform var(--t-press) var(--ease);
+}
+.dh__go .lucide {
+  width: 52%;
+  height: 52%;
+  stroke-width: 2.4;
+}
+.dh__go:hover {
+  background: var(--ink-2);
+}
+.dh__go:active {
+  transform: translateY(1px);
+}
+.dh__go:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+:root[data-contrast="high"] .dh__go {
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+}
+
+/* A few examples as quiet pills. */
+.dh__ex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.3rem 0 2.6rem;
+  padding: 0;
+  list-style: none;
+}
+.dchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0.3rem 1rem;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: left;
+  text-decoration: none;
+  transition:
+    border-color var(--t-hover) var(--ease),
+    color var(--t-hover) var(--ease),
+    background-color var(--t-hover) var(--ease);
+}
+.dchip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+.dchip[aria-current="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+.dchip:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--focus-ink);
+}
+:root[data-contrast="high"] .dchip {
+  border-color: var(--ink);
+}
+
+/* ------------------------------------------------------------ the grey band
+   It runs down to the black footer (the footer's own gap is dropped on this page). */
+.main:has(.dband) + .foot {
+  margin-top: 0;
+}
+.dband {
+  padding-block: 2.6rem 4rem;
+  background: var(--paper-sunk);
+  box-shadow: 0 0 0 100vmax var(--paper-sunk);
+  clip-path: inset(0 -100vmax);
+}
+.dadvice {
+  margin-top: 1.4rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------ the answer: one card */
+.dresult:focus {
+  outline: none;
+}
+.dshown {
+  margin-bottom: 0.7rem;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+}
+.lkcard {
+  padding: clamp(1.2rem, 4cqi, 2.2rem);
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  container: lkcard / inline-size;
+}
+.lkcard > .skeleton {
+  display: block;
+}
+.lkcard__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.2rem 2rem;
+}
+.lkcard__id {
+  min-width: 0;
+}
+.lkcard__name {
+  font-size: clamp(2.1rem, 8cqi, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+}
+.lkcard__sub {
+  margin-top: 0.45rem;
+  color: var(--ink-2);
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+.lkcard__title {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+.lkcard__lede {
+  max-width: 42rem;
+  margin-top: 0.7rem;
+  color: var(--ink-2);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.lkcard__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+
+/* The figure: what the visitor meets at the pharmacy, large. */
+.lkcard__fig {
+  text-align: right;
+}
+.lkcard__n {
+  display: block;
+  font-size: clamp(2rem, 7cqi, 3.2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+.lkcard__fig--market .lkcard__n {
+  color: var(--red);
+}
+.lkcard__cap {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.3;
+}
+@container lkcard (max-width: 36rem) {
+  .lkcard__head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lkcard__fig {
+    text-align: left;
+  }
+  .lkcard__n {
+    white-space: normal;
+  }
+}
+
+/* Three facts in a row, each under a hairline. */
+.dfacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0 1.6rem;
+  margin: 1.8rem 0 0;
+}
+.dfacts > div {
+  padding-block: 0.8rem 0.3rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+.dfacts dt {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.dfacts dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.dfacts dd.is-warn {
+  color: var(--red);
+}
+.dfacts__sub {
+  display: block;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  font-weight: 400;
+}
+
+/* HZZO's list marks (the balls themselves are drawn by HarveyBall). */
+.drugs .hb--oll {
+  color: var(--oll);
+}
+.drugs .hb--dll {
+  color: var(--dll);
+}
+.drugs .hb--none {
+  color: var(--nolist);
+}
+.dballs {
+  display: inline-flex;
+  gap: 0.15em;
+  margin-right: 0.4em;
+  white-space: nowrap;
+}
+.dballs .hb {
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.08em;
+}
+
+.lkcard__h {
+  margin-top: 1.8rem;
+  color: var(--ink);
+  font-size: var(--fs-ui);
+  font-weight: 700;
+}
+.lkcard__count {
+  margin-left: 0.3rem;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* The forms: a plain list of hairlines. */
+.dforms__list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.dforms__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.2rem 1.2rem;
+  padding-block: 0.7rem;
+  border-top: var(--border-w) solid var(--hair-2);
+}
+.dforms__row:last-child {
+  border-bottom: var(--border-w) solid var(--hair-2);
+}
+.dforms__main {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+.dforms__name {
+  color: var(--ink);
+  font-size: var(--fs-ui);
+  font-weight: 600;
+  line-height: 1.35;
+}
+a.dforms__name {
+  text-decoration-color: var(--hair);
+  text-underline-offset: 0.2em;
+}
+a.dforms__name:hover {
+  text-decoration-color: currentColor;
+}
+.dforms__name .link__tail .lucide {
+  color: var(--ink-3);
+}
+.dforms__meta {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+}
+.dforms__part + .dforms__part::before {
+  content: " · ";
+}
+.dforms__copay {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.dwarn,
+.dchip__warn {
+  color: var(--red);
+  font-weight: 700;
+}
+.dchip__warn {
+  font-size: 0.85em;
+}
+
+.lkcard__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.5rem;
+  margin-top: 1.6rem;
+}
+.lkcard__leaflet.ext > span:first-child {
+  text-decoration-line: none;
+}
+.dsrc {
+  margin-top: 0.9rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+.lkcard__foot .dsrc {
+  margin-top: 0;
+}
+
+/* Names as pills (a substance's medicines, similar names). */
+.dpills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.dgroup--away .dchip {
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------ without a query: two panels */
+.dpanels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1.25rem;
+}
+@container page (max-width: 50rem) {
+  .dpanels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.dpanel {
+  min-width: 0;
+  padding: clamp(1.2rem, 3cqi, 1.8rem);
+  border: var(--border-w) solid var(--hair);
+  border-radius: var(--radius-card);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+.dpanel > .skeleton {
+  display: block;
+}
+.dpanel__h {
+  font-size: var(--fs-h3);
+  font-weight: 750;
+  letter-spacing: -0.015em;
+}
+.dpanel__lede {
+  margin-top: 0.8rem;
+  color: var(--ink-2);
+  font-size: var(--fs-ui);
+  line-height: 1.5;
+}
+.dpanel__big {
+  margin-top: 0.8rem;
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  line-height: 1.35;
+}
+.dpanel__big b {
+  display: block;
+  color: var(--ink);
+  font-size: clamp(2.4rem, 5cqi, 3rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.dpanel__big span {
+  display: block;
+  margin-top: 0.3rem;
+}
+
+/* The honest bar: on a list (teal) of all forms in HALMED's base; the rest hatched. */
+.dbar {
+  display: flex;
+  height: 12px;
+  margin-top: 1.1rem;
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  background: repeating-linear-gradient(45deg, var(--hatch) 0 1.5px, transparent 1.5px 5px), var(--paper-sunk);
+}
+.dbar__on {
+  width: var(--p);
+  border-radius: var(--radius-control) 0 0 var(--radius-control);
+  background: var(--teal);
+}
+:root[data-contrast="high"] .dbar {
+  outline: 2px solid var(--ink);
+}
+.lkkey {
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.lkkey li {
+  display: grid;
+  grid-template-columns: 1.2rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding-block: 0.6rem;
+  border-top: var(--border-w) solid var(--hair-2);
+  font-size: var(--fs-ui);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.lkkey .hb {
+  width: 0.95rem;
+  height: 0.95rem;
+  align-self: center;
+}
+.lkkey b {
+  font-weight: 750;
+}
+.lkkey__sub {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-weight: 400;
+}
+
+/* The shortages: a filter and a plain list of names. */
+.lkfind {
+  margin-top: 1.1rem;
+  background: var(--paper);
+}
+.lkfind input {
+  min-height: 2.8rem;
+  font-size: var(--fs-ui);
+}
+.dlist {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.dlist li + li {
+  border-top: var(--border-w) solid var(--hair-2);
+}
+.dlist__b {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.5rem 0.2rem;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  text-align: left;
+  transition: background-color var(--t-hover) var(--ease);
+}
+.dlist__t {
+  flex: 1;
+  min-width: 0;
+}
+.dlist__name {
+  display: block;
+  font-size: var(--fs-ui);
+  font-weight: 650;
+  line-height: 1.3;
+}
+.dlist__sub {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.dlist__go {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--ink-3);
+  opacity: 0;
+  transition:
+    opacity var(--t-hover) var(--ease),
+    translate var(--t-hover) var(--ease);
+}
+.dlist__b:hover {
+  background: var(--hover);
+}
+.dlist__b:hover .dlist__go {
+  opacity: 1;
+  translate: 2px 0;
+}
+.dlist__b:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 0;
+  background: var(--focus);
+  color: var(--focus-ink);
+}
+.dlist__b:focus-visible :is(.dlist__sub, .dlist__go) {
+  color: var(--focus-ink);
+  opacity: 1;
+}
+.dpanel__more {
+  margin-top: 0.9rem;
+}
+
+/* ------------------------------------------------------------ phones */
+@media (max-width: 760px) {
+  .dh {
+    padding-block: 1.4rem 1.6rem;
+  }
+  .dh__form {
+    margin-top: 1rem;
+  }
+  /* „Provjeri lijek” stays a sentence above the field; the field and the arrow share a line. */
+  .dh .dh__line {
+    display: block;
+    font-size: var(--fs-h2);
+  }
+  .dh .ask-line__w {
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .dh__blank {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .dh__blank > .combo {
+    flex: 1;
+  }
+  .dh .combo--slot .combo__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .dh .combo--slot .field {
+    margin: 0;
+    padding-inline: 1rem 0.25rem;
+  }
+  .dh .combo--slot .field input {
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: 0;
+  }
+  .dh__go {
+    flex: none;
+    width: 3.1rem;
+    height: 3.1rem;
+    margin: 0;
+  }
+  .dh__ex {
+    margin: 1rem 0 0;
+  }
+  /* With an answer on a phone the examples step aside, so the card starts higher. */
+  .dh--asked .dh__ex {
+    display: none;
+  }
+  .dband {
+    padding-block: 1.4rem 2.2rem;
+  }
+}
+
+@media print {
+  .dh__ex,
+  .dh__go,
+  .lkfind,
+  .dpanel__more {
+    display: none !important;
+  }
+  .dband {
+    box-shadow: none;
+    background: none;
+  }
+  .lkcard,
+  .dpanel {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

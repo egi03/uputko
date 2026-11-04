@@ -1,0 +1,39 @@
+# No client addresses in the logs: these loggers write the request (IP address, URL) with a
+# proxy or server error; certificate and start-up messages stay.
+{
+	log default {
+		exclude http.log.error http.handlers.reverse_proxy http.stdlib
+	}
+}
+
+# DOMAIN=example.hr gets an automatic HTTPS certificate; DOMAIN=:80 serves plain HTTP locally.
+{$DOMAIN::80} {
+	encode zstd gzip
+
+	# API, webhook tools and the SSE card stream go to the backend.
+	@backend path /api/* /tools/* /health /docs /openapi.json
+	handle @backend {
+		reverse_proxy backend:8000 {
+			flush_interval -1
+		}
+	}
+
+	# React app with client-side routes (/asistent, /termini, /lijekovi, /dashboard, /o-projektu).
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "microphone=(self), geolocation=(self), camera=()"
+		# No framing (clickjacking), no <base> or plugins; scripts and connections are not
+		# restricted here, the voice agent connects to ElevenLabs.
+		Content-Security-Policy "frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+		Cross-Origin-Opener-Policy same-origin
+		-Server
+	}
+}

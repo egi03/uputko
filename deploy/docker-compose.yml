@@ -1,0 +1,75 @@
+# Backend always runs. Profiles (run from the repository root):
+#   premium: Caddy (HTTPS) + React app      docker compose --env-file .env -f deploy/docker-compose.yml --profile premium up -d --build
+#   open:    Pipecat bot + page (port 7860)  docker compose --env-file .env -f deploy/docker-compose.yml --profile open up --build
+# --env-file .env matters: ${DOMAIN} and ${VITE_PUBLIC_URL} below are filled from the env file
+# Compose reads, and without the flag that is deploy/.env. Without DOMAIN, Caddy serves plain
+# HTTP on :80, and browsers allow the microphone only on HTTPS (or localhost).
+name: uputko
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_URL: sqlite:////app/backend/data/uputko.db
+    volumes:
+      - backend-data:/app/backend/data
+    ports:
+      # Only on this machine: for the open bot (host network) and webhook tunnels. From outside,
+      # requests go through Caddy, so client addresses for the rate limit cannot be forged.
+      - "127.0.0.1:8000:8000"
+    restart: unless-stopped
+
+  caddy:
+    profiles: ["premium"]
+    build:
+      context: ..
+      dockerfile: deploy/caddy.Dockerfile
+      args:
+        VITE_PUBLIC_URL: ${VITE_PUBLIC_URL:-}
+    environment:
+      DOMAIN: ${DOMAIN:-:80}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  open-bot:
+    profiles: ["open"]
+    build:
+      context: ..
+      dockerfile: open/Dockerfile
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      # The image has Groq and the CPU voice only (no faster-whisper/Ollama group), so a local
+      # OPEN_MODE=local in .env must not leak in here.
+      OPEN_MODE: groq
+      # Host network: WebRTC audio flows directly between the browser and the bot (UDP).
+      TOOLS_BASE_URL: http://localhost:8000
+      OPEN_PUBLIC_API_URL: http://localhost:8000
+    network_mode: host
+    volumes:
+      - tts-models:/root/.local/share/tts
+      - piper-voices:/root/.cache/pipecat
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:
+  caddy-data:
+  caddy-config:
+  tts-models:
+  piper-voices:

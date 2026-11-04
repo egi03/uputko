@@ -1,0 +1,461 @@
+/* Charts: no frame, --grid lines, a 1.5 px ink baseline, words instead of
+   legends, short italic notes on the plot. Every SVG chart is drawn 1 unit = 1 px from the width
+   of its column (useElementWidth), so text set here in rem follows A / A+ / A++; layout maths
+   (label collisions) uses the same sizes from useRootFontSize: 0.78 × root for ticks and labels,
+   0.83 × root for the italic comment, 0.72 × root for city names. */
+
+/* ------------------------------------------------------------ primitives (.ch__*)
+   Shared by WaitScatter, WaitTrend and the dashboard's own SVG charts. */
+/* :where() keeps this at the weight of a bare element, so a class on the text still wins. */
+:where(.ch) text {
+  font-family: var(--font-sans);
+}
+.ch__grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+.ch__base {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.ch__band {
+  fill: var(--teal-tint);
+}
+/* The band's name knocks out any line that would cross it (a halo of the band's own tint; paper in
+   high contrast, where the band has no fill). */
+.ch__bandlabel {
+  fill: var(--teal);
+  font-size: var(--fs-graphic);
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: var(--teal-tint);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+.ch__tick {
+  fill: var(--ink-2);
+  font-size: var(--fs-graphic);
+  font-variant-numeric: tabular-nums;
+}
+.ch__tick--b {
+  fill: var(--ink);
+  font-weight: 700;
+}
+/* Dates and months are never tabular: Schibsted widens the full stop in that mode. */
+.ch__tick--t {
+  font-variant-numeric: lining-nums proportional-nums;
+}
+/* „danas”, „medijan u Hrvatskoj: 119 dana”, „udaljenost”: words on the chart's frame. */
+.ch__small {
+  fill: var(--ink-2);
+  font-size: var(--fs-graphic);
+}
+.ch__axis {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.ch__today {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.ch__median {
+  stroke: var(--ink);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 4;
+}
+.ch__dot {
+  stroke: var(--paper);
+  stroke-width: 1.5;
+}
+.ch__dot--short {
+  fill: var(--bar-short);
+}
+.ch__dot--mid {
+  fill: var(--bar-mid);
+}
+.ch__dot--long {
+  fill: var(--bar-long);
+}
+.ch__ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+/* The dot under the pointer, or the one whose coupon or table row is under it. */
+.ch__ring--hover {
+  stroke-width: 2;
+}
+.ch__leader {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.ch__line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.ch__last {
+  fill: var(--teal);
+  stroke: var(--paper);
+  stroke-width: 1.5;
+}
+/* Labels and comments sit on a halo of paper (paint-order), so they stay legible over dots. */
+.ch__lab,
+.ch__halo {
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+.ch__lab {
+  fill: var(--ink);
+  font-size: var(--fs-graphic);
+  font-weight: 700;
+}
+.ch__note {
+  fill: var(--ink-2);
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: calc(var(--fs-graphic) * 1.07);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+/* A label on the band's tint takes the tint as its halo, so no paper-coloured outline shows round
+   its letters (in high contrast the band has no fill, and the paper halo stays). */
+.ch__lab.is-inband,
+.ch__note.is-inband,
+.ch__halo.is-inband {
+  stroke: var(--teal-tint);
+}
+:root[data-contrast="high"] .ch__lab.is-inband,
+:root[data-contrast="high"] .ch__note.is-inband,
+:root[data-contrast="high"] .ch__halo.is-inband {
+  stroke: var(--paper);
+}
+/* The frontier („ništa nije i bliže i ranije”): the institutions nothing beats on both counts,
+   joined by steps under the dots, a shade lighter and thinner than the axes it may run beside. */
+.ch__front {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.25;
+  stroke-linejoin: miter;
+}
+:root[data-contrast="high"] .ch__band {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+/* Black grid lines would shout over the data: dotted in high contrast. */
+:root[data-contrast="high"] .ch__grid {
+  stroke-dasharray: 1 3;
+}
+
+/* ------------------------------------------------------------ the plot of a figure (WaitScatter)
+   The page sets the figure (termini.css: .fig rule, headline, dek, .fig__plot); inside it:
+   <div class="fig__frame"><svg class="ch fig__svg">…</svg>(tooltip)</div><p class="credit">…</p> */
+.fig__frame {
+  position: relative;
+}
+.fig__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+.fig__frame + .credit,
+.fig__key + .credit {
+  max-width: 48rem;
+  margin-top: 0.6rem;
+}
+/* Where a corner of the plot is too crowded for words, a ringed option carries a number and its
+   note stands here, under the plot: „1 Zagreb, 102 dana: najbliže, u vašem mjestu.” */
+.fig__key {
+  display: grid;
+  gap: 0.15rem;
+  max-width: 48rem;
+  margin-top: 0.55rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+}
+.fig__key b {
+  color: var(--ink);
+  font-weight: 700;
+}
+.fig__key-n {
+  display: inline-block;
+  min-width: 1.1em;
+}
+/* The number on a ring: paper with an ink rim over whatever is under it, the figure in ink. */
+.ch__badge circle {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.25;
+}
+.ch__badge text {
+  fill: var(--ink);
+  font-size: var(--fs-graphic);
+  font-weight: 750;
+}
+/* A dot whose coupon or table row is pointed at grows a little ([data-linked], set by the page). */
+.ch__dot[data-linked] {
+  r: 7.5px;
+}
+
+/* The tooltip of a dot: it reads within the column, even on a 320 px phone. */
+.ch-tip {
+  width: max-content;
+  max-width: min(18rem, 100%);
+}
+
+/* ------------------------------------------------------------ trend (WaitTrend)
+   A compact figure, folded at the end of the statistics; only drawn once there are three daily
+   snapshots. */
+.trend {
+  margin: 1.3rem 0 0;
+  padding-top: 0.6rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+.trend figcaption {
+  text-wrap: pretty;
+}
+.trend__plot {
+  margin-top: 0.35rem;
+}
+.trend__plot svg {
+  display: block;
+  overflow: visible;
+}
+
+/* ------------------------------------------------------------ longest waits (LongestList)
+   A calendar: every bar starts at „danas” on one ruler of months (the hairlines in each track are
+   the firsts of the months, labelled over the list) and ends in the month written beside it. The
+   bars are ink; length carries the value. Each row is a button. The bar's column has the same
+   width in every row and in the ruler (fixed columns for the figures), so the months line up.
+   The row's ground bleeds half a rem past the column on hover; its hairline stays as wide as the
+   column. On a wide column the procedure, its bar and its figures share one line. */
+.lwait {
+  container: lwait / inline-size;
+}
+.lwait__axis,
+.lwait__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.6rem 7rem;
+  grid-template-areas:
+    "name name name"
+    "bar n when";
+  column-gap: 0.8rem;
+  width: calc(100% + 1rem);
+  margin-inline: -0.5rem;
+  padding-inline: 0.5rem;
+}
+.lwait__axis {
+  grid-template-areas: "bar n when";
+}
+.lwait__ruler {
+  position: relative;
+  grid-area: bar;
+  height: 1.35rem;
+}
+.lwait__mon {
+  position: absolute;
+  bottom: 0.25rem;
+  margin-left: 3px;
+  color: var(--ink-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-graphic);
+  line-height: 1;
+  white-space: nowrap;
+}
+.lwait__mon--today {
+  left: 0;
+  margin-left: 0;
+  color: var(--ink-2);
+}
+.lwait__mon--b {
+  color: var(--ink);
+  font-weight: 700;
+}
+.lwait__list {
+  border-top: var(--border-w) solid var(--hair);
+}
+.lwait__row {
+  position: relative;
+  row-gap: 0.4rem;
+  align-items: center;
+  padding-block: 0.6rem 0.7rem;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--t-hover) var(--ease);
+}
+.lwait__row::after {
+  content: "";
+  position: absolute;
+  inset: auto 0.5rem 0;
+  border-bottom: var(--border-w) solid var(--hair);
+}
+.lwait__name {
+  grid-area: name;
+  font-family: var(--font-sans);
+  font-size: 1.08rem;
+  font-weight: 650;
+  line-height: 1.25;
+  text-underline-offset: 0.2em;
+  text-wrap: pretty;
+}
+.lwait__name .visit {
+  color: var(--ink-2);
+  font-weight: 400;
+}
+/* The way on: the name underlined and an arrow after it, on hover and on the keyboard's focus. */
+/* Inline, glued to the last word by a no-break space (as MoreLink's arrow), so it never takes a
+   line of its own. */
+.lwait__go {
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity var(--t-hover) var(--ease);
+}
+.lwait__go .lucide {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.14em;
+}
+.lwait__row:is(:hover, :focus-visible) .lwait__name {
+  text-decoration: underline var(--border-w);
+}
+.lwait__row:is(:hover, :focus-visible) .lwait__go {
+  opacity: 1;
+}
+.lwait__row:hover {
+  background: var(--paper-raised);
+}
+/* The procedure the dashboard shows: sunk paper and a bolder name, like the selected county in the
+   ranked list beside the map (an ink bar here would stand next to the column rule as a second
+   line). High contrast has no tint, so the row is outlined in ink instead. */
+.lwait__row[aria-pressed="true"] {
+  background: var(--paper-sunk);
+}
+.lwait__row[aria-pressed="true"] .lwait__name {
+  font-weight: 700;
+}
+:root[data-contrast="high"] .lwait__row[aria-pressed="true"]:not(:focus-visible) {
+  outline: var(--border-w) solid var(--ink);
+  outline-offset: calc(var(--border-w) * -1);
+}
+/* The track: a hairline for the whole year, the months as ticks across it, the wait in ink. */
+.lwait__bar {
+  position: relative;
+  grid-area: bar;
+  height: 8px;
+  background: linear-gradient(var(--hair), var(--hair)) center / 100% 1px no-repeat;
+}
+.lwait__tick {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--hair);
+}
+.lwait__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 4px;
+  background: var(--ink);
+}
+/* The last row ends on its card's edge, without a hairline of its own. */
+.lwait__list > li:last-child > .lwait__row::after {
+  display: none;
+}
+:root[data-contrast="high"] .lwait__tick {
+  background: var(--ink);
+}
+.lwait__n {
+  grid-area: n;
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  white-space: nowrap;
+}
+.lwait__n b {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.lwait__when {
+  grid-area: when;
+  color: var(--ink-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+/* A wide column: the procedure, its bar and its figures on one line (all ten fit the first
+   screen); the ruler stands over the bars' column. */
+@container lwait (min-width: 40rem) {
+  .lwait__axis,
+  .lwait__row {
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, 36%) 4.6rem 7rem;
+    grid-template-areas: "name bar n when";
+  }
+  .lwait__row {
+    padding-block: 0.5rem;
+  }
+}
+/* A narrow column (a phone, the dashboard's margin): the figures beside the name, the bar under
+   them across the whole column, so the months of the ruler have room. */
+@container lwait (max-width: 30rem) {
+  .lwait__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "name n"
+      "name when"
+      "bar bar";
+    row-gap: 0.1rem;
+  }
+  .lwait__axis {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "bar";
+  }
+  .lwait__n,
+  .lwait__when {
+    text-align: right;
+  }
+  .lwait__bar {
+    margin-top: 0.45rem;
+  }
+}
+/* Narrower still (320 px with large letters): the name gets the whole line, so no word is cut;
+   the days and the month follow it on one line. */
+@container lwait (max-width: 16.5rem) {
+  .lwait__row {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "name name"
+      "n when"
+      "bar bar";
+    column-gap: 0.6rem;
+  }
+  .lwait__n,
+  .lwait__when {
+    margin-top: 0.15rem;
+    text-align: left;
+  }
+}
+
+/* ------------------------------------------------------------ print: charts and maps are not printed */
+@media print {
+  .fig:has(> .fig__frame),
+  .trend {
+    display: none !important;
+  }
+}

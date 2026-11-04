@@ -1,0 +1,345 @@
+/* /o-projektu: short and scannable. A head with pills to the sections; how
+   it works as four steps; every source and licence in one table; privacy, accessibility and
+   limitations as short lists; the two profiles side by side; the colophon.
+   No drop caps, bylines or heavy rules: sections are set apart by white space and a hairline. */
+
+.ab {
+  padding-bottom: 2rem;
+}
+.ab-sec {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: var(--border-w) solid var(--hair);
+}
+.ab-sec h2 {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.ab-sec h2 + * {
+  margin-top: 1.4rem;
+}
+.ab-p {
+  max-width: 42rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+.ab-note {
+  max-width: 46rem;
+  margin-top: 1.2rem;
+  color: var(--ink-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+.ab-err {
+  max-width: 46rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ------------------------------------------------------------ how it works: four steps
+   Numbered circles on one hairline across; down the left edge where there is no room. */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  max-width: 62rem;
+}
+.steps__i {
+  position: relative;
+  min-width: 0;
+}
+/* The line that joins a step to the next one. */
+.steps__i:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1.25rem;
+  left: 3.1rem;
+  right: -1.1rem;
+  border-top: 1.5px solid var(--hair);
+}
+.steps__n {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+/* The answer is the last step: the microphone's red. */
+.steps__i:last-child .steps__n {
+  background: var(--red-fill);
+  color: var(--on-red);
+}
+.steps h3 {
+  margin-top: 0.9rem;
+  font-size: var(--fs-h3);
+  font-weight: 750;
+}
+.steps p {
+  margin-top: 0.35rem;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+}
+:root[data-contrast="high"] .steps__i:not(:last-child)::after {
+  border-top-color: var(--ink);
+}
+@container page (max-width: 48rem) {
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .steps__i {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    column-gap: 1rem;
+    padding-bottom: 1.4rem;
+  }
+  .steps__n {
+    grid-row: span 2;
+  }
+  .steps h3 {
+    align-self: center;
+    margin-top: 0.45rem;
+  }
+  .steps__i:not(:last-child)::after {
+    top: 2.9rem;
+    bottom: 0.4rem;
+    left: 1.25rem;
+    right: auto;
+    border-top: 0;
+    border-left: 1.5px solid var(--hair);
+  }
+  :root[data-contrast="high"] .steps__i:not(:last-child)::after {
+    border-left-color: var(--ink);
+  }
+}
+
+/* ------------------------------------------------------------ short lists */
+.ab-list {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 44rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.ab-list li {
+  position: relative;
+  padding-left: 1.6rem;
+  color: var(--ink-2);
+}
+/* Each item opens on a short rule. */
+.ab-list li::before {
+  content: "";
+  position: absolute;
+  top: 0.72em;
+  left: 0.1rem;
+  width: 0.7rem;
+  height: 2px;
+  background: var(--ink-3);
+}
+.ab-list b {
+  color: var(--ink);
+  font-weight: 700;
+}
+.ab-sos {
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ the sources table */
+.srcs {
+  container: srcs / inline-size;
+}
+.srcs__t thead th {
+  border-bottom-width: var(--border-w);
+}
+.srcs__t .tbl__name {
+  font-size: 1.02rem;
+  font-weight: 650;
+}
+.srcs__t :is(th, td) {
+  vertical-align: baseline;
+}
+.srcs__about {
+  max-width: 30rem;
+}
+.srcs__when .tbl__sub {
+  margin-top: 0.15rem;
+}
+/* The run-in copies of the publisher and the count show only where the columns give way. */
+.srcs__in {
+  display: none;
+}
+.srcs__n {
+  white-space: nowrap;
+}
+@container srcs (min-width: 44rem) {
+  .srcs__got {
+    white-space: nowrap;
+  }
+}
+.srcs__bad {
+  color: var(--red);
+  font-weight: 700;
+}
+.srcs__none {
+  color: var(--ink-3);
+}
+.srcs__skel {
+  display: inline-block;
+  width: 8rem;
+  height: 0.9rem;
+  border-radius: 4px;
+}
+.srcs__skel--n {
+  width: 3rem;
+}
+/* Narrow: each source is an entry. Name and what it holds; „HZZO · licence”; „Svakih 12 sati ·
+   10.734 zapisa”, then when it was read. */
+@container srcs (max-width: 44rem) {
+  .srcs__t thead,
+  .srcs__t .srcs__pub,
+  .srcs__t .srcs__n {
+    display: none;
+  }
+  .srcs__t,
+  .srcs__t tbody {
+    display: block;
+  }
+  .srcs__t tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.3rem;
+    padding: 0.85rem 0;
+    border-bottom: var(--border-w) solid var(--hair);
+  }
+  .srcs__t tbody :is(th, td) {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .srcs__t :is(.srcs__lic, .srcs__when) {
+    color: var(--ink-2);
+    font-size: var(--fs-small);
+  }
+  .srcs__in {
+    display: inline;
+  }
+  .srcs__in b {
+    color: var(--ink);
+    font-weight: 650;
+  }
+}
+
+/* ------------------------------------------------------------ the two profiles */
+.profs {
+  max-width: 56rem;
+  margin-top: 1.4rem;
+  container: profs / inline-size;
+}
+.profs__t thead th {
+  border-bottom-width: var(--border-w);
+  vertical-align: bottom;
+}
+.profs__name {
+  display: block;
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.profs__sub {
+  display: block;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+.profs__t :is(tbody, tfoot) th {
+  width: 30%;
+  text-align: left;
+  color: var(--ink);
+  font-weight: 650;
+}
+.profs__t tfoot :is(th, td) {
+  border-bottom: 0;
+}
+.profs__t tfoot td {
+  font-weight: 650;
+}
+.profs__k {
+  display: none;
+}
+@container profs (max-width: 30rem) {
+  .profs__t thead {
+    display: none;
+  }
+  .profs__t,
+  .profs__t :is(tbody, tfoot) {
+    display: block;
+  }
+  .profs__t tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.25rem;
+    padding: 0.75rem 0;
+    border-bottom: var(--border-w) solid var(--hair);
+  }
+  .profs__t :is(tbody, tfoot) :is(th, td) {
+    display: block;
+    width: auto;
+    padding: 0;
+    border: 0;
+  }
+  .profs__t tfoot tr {
+    border-bottom: 0;
+  }
+  .profs__k {
+    display: inline;
+    color: var(--ink-3);
+    font-weight: 650;
+  }
+}
+
+/* ------------------------------------------------------------ colophon */
+.colo {
+  display: grid;
+  max-width: 44rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+}
+.colo > div {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: 0.2rem 1rem;
+  padding: 0.6rem 0;
+  border-bottom: var(--border-w) solid var(--hair);
+}
+.colo dt {
+  color: var(--ink-3);
+  font-weight: 650;
+}
+.colo dd {
+  color: var(--ink);
+}
+@container page (max-width: 26rem) {
+  .colo > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------ phones */
+@media (max-width: 760px) {
+  .ab-sec {
+    margin-top: 2.8rem;
+    padding-top: 1.6rem;
+  }
+}

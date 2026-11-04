@@ -1,0 +1,637 @@
+/* The AI assistant (/asistent, pages/Assistant.tsx, pages/assistant/*). Before the first
+   conversation: a short title, what to ask, the microphone in its voice indicator, the typed
+   question and example questions. During one: the controls on the left (status line, voice
+   indicator, microphone lamp, time, „Završi razgovor”), the transcript on the right, the question
+   field always at the bottom. */
+
+.assistant {
+  position: relative;
+}
+
+/* ------------------------------------------------------------ before the first conversation */
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+  padding-block: clamp(1.75rem, 4vw, 3.5rem) 1rem;
+}
+.intro__h {
+  font-size: var(--fs-h1);
+}
+.intro__lede {
+  max-width: 36rem;
+  margin-top: 0.9rem;
+  color: var(--ink-2);
+  font-size: var(--fs-lede);
+  line-height: 1.45;
+}
+.intro__talk {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 2.2rem;
+}
+.intro__voice {
+  flex: none;
+  width: 6.5rem;
+}
+.intro__label {
+  font-size: var(--fs-h3);
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+.intro__hint {
+  max-width: 24rem;
+  margin-top: 0.3rem;
+  color: var(--ink-3);
+}
+.intro__error {
+  max-width: 34rem;
+  margin-top: 1.5rem;
+}
+.intro__ask {
+  margin-top: 2rem;
+}
+.intro__loc {
+  margin-top: 0.6rem;
+}
+.intro__ex {
+  padding: 1.5rem 1.6rem 1.6rem;
+  border-radius: var(--radius-card);
+  background: var(--paper-sunk);
+}
+.intro__ex-h {
+  font-size: var(--fs-h3);
+}
+.intro__chips {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+/* An example question: one press asks it. */
+.qchip {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-s);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  transition: border-color var(--t-hover) var(--ease);
+}
+.qchip:hover {
+  border-color: var(--ink);
+}
+.qchip:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--focus-ink);
+}
+:root[data-contrast="high"] .qchip {
+  border-color: var(--ink);
+}
+.intro__fine {
+  margin-top: 1.2rem;
+  color: var(--ink-2);
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------------ the voice indicator
+   A round frame around the microphone (before a session) or a quiet sign (during one). Two rings
+   follow the real voice level (--level, 0 to 1, set by the page): teal while the visitor speaks,
+   ink while the assistant does; a turning arc while it connects or looks up the data. Nothing
+   moves with reduced motion; the status line says the same in words. */
+.voice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  isolation: isolate;
+}
+.voice::before,
+.voice::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.voice::before {
+  background: var(--paper-sunk);
+  scale: calc(1.08 + var(--level, 0) * 0.32);
+  transition: scale 90ms linear;
+}
+.voice::after {
+  border: 2px solid transparent;
+  scale: 1.18;
+}
+.voice[data-state="listening"]::before {
+  background: color-mix(in srgb, var(--teal) 22%, transparent);
+}
+.voice[data-state="speaking"]::before {
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+.voice[data-state="thinking"]::after {
+  border-color: var(--hair);
+  border-top-color: var(--ink-2);
+  animation: spin 1s linear infinite;
+}
+.voice[data-state="error"]::before {
+  background: color-mix(in srgb, var(--red) 14%, transparent);
+}
+.voice__sign {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+}
+.voice[data-state="listening"] .voice__sign {
+  background: var(--teal);
+  color: var(--paper);
+}
+.voice__sign .lucide {
+  width: 40%;
+  height: 40%;
+  stroke-width: 2.2;
+}
+:root[data-contrast="high"] .voice::before {
+  display: none;
+}
+:root[data-contrast="high"] .voice[data-state="listening"] .voice__sign {
+  box-shadow: 0 0 0 4px var(--paper), 0 0 0 7px var(--ink);
+}
+
+/* The status line: what is happening now, in a few words (quiet for screen readers). */
+.vstatus {
+  font-size: var(--fs-ui);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* ------------------------------------------------------------ the microphone */
+.mic {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  transition:
+    background-color var(--t-hover) var(--ease),
+    scale 220ms var(--ease);
+}
+.mic .lucide {
+  width: 36%;
+  height: 36%;
+  stroke-width: 2.2;
+}
+.mic:hover {
+  background: var(--ink-2);
+  scale: 1.03;
+}
+.mic:active {
+  scale: 0.97;
+}
+.mic:focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 0.9rem;
+}
+.mic:disabled,
+.mic[aria-disabled="true"] {
+  cursor: progress;
+  opacity: 0.7;
+}
+:root[data-contrast="high"] .mic {
+  box-shadow: 0 0 0 4px var(--paper), 0 0 0 7px var(--ink);
+}
+
+/* The typed question: its label, the field and „Pošalji”. */
+.ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  width: 100%;
+}
+.ask .field__label {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--fs-ui);
+  font-weight: 700;
+}
+.ask .field {
+  flex: 1 1 18rem;
+  border-color: var(--ink);
+  border-width: 2px;
+}
+.ask .field input {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ a conversation in progress
+   The conversation fills the window under the top bar and stands still: the controls on the
+   left, the messages scrolling on their own on the right, the question field always at the
+   bottom. The footer steps aside meanwhile, so the page itself never scrolls (layout.css keeps
+   the bar). */
+.app:has(.convo) .foot {
+  display: none;
+}
+.convo {
+  height: calc(100dvh - var(--top-h) - var(--tabbar-space));
+  padding-top: 1rem;
+}
+.convo__grid {
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr);
+}
+.booth {
+  grid-column: 1 / span 5;
+  align-self: center;
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  max-height: 100%;
+  overflow-y: auto;
+  padding-block: 1rem;
+  text-align: center;
+}
+.booth__voice {
+  width: 6rem;
+  margin-block: 1.2rem 0.4rem;
+}
+.booth__text {
+  display: grid;
+  gap: 0.2rem;
+}
+.booth__mic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+.booth__mic--off {
+  color: var(--ink-3);
+}
+.lamp {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--teal);
+  animation: lamp 1.6s ease-in-out infinite;
+}
+@keyframes lamp {
+  50% {
+    opacity: 0.35;
+  }
+}
+.booth__time {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+}
+/* The voice line: a hairline that fills with the real voice level (--level on the booth). */
+.booth__level {
+  display: block;
+  width: min(100%, 14rem);
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(var(--teal), var(--teal)) left / calc(var(--level, 0) * 100%) 100% no-repeat,
+    var(--hair);
+  transition: background-size 90ms linear;
+}
+.booth__end {
+  min-height: 3.2rem;
+  padding-inline: 1.5rem;
+}
+.booth__hint,
+.booth__place {
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.booth__hint {
+  max-width: 22rem;
+  margin-top: 0.8rem;
+}
+.booth__error {
+  text-align: left;
+}
+
+.transcript {
+  grid-column: 6 / -1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+/* Only the messages scroll; scrolling past their end does not move the page. */
+.transcript__scroll {
+  position: relative; /* hidden screen-reader labels inside stay inside it, not below the page */
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: var(--border-w) solid var(--hair);
+  scrollbar-width: thin;
+  scrollbar-color: var(--hair) transparent;
+}
+/* Few messages sit at the bottom, next to the field, as in a messenger. */
+.transcript__flow {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100%;
+}
+.transcript__h {
+  font-size: var(--fs-h2);
+  letter-spacing: -0.025em;
+}
+.transcript__by {
+  margin-top: 0.35rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+.turns {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.turn {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.1rem;
+  border-bottom: var(--border-w) solid var(--hair);
+}
+.who {
+  padding-top: 0.15rem;
+  color: var(--ink-3);
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+.turn--up .who {
+  color: var(--teal);
+}
+.turn__body {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.said {
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+.turn--you .said {
+  font-weight: 650;
+}
+.said--hint {
+  color: var(--ink-3);
+}
+.turns__end {
+  padding-block: 1.2rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+  text-align: center;
+}
+/* Under the questions a failed start left unsent, in line with their text. */
+.unsent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem 0 1rem 6.5rem;
+  border-bottom: var(--border-w) solid var(--hair);
+  color: var(--ink-2);
+  font-size: var(--fs-meta);
+  font-weight: 650;
+}
+
+/* Waiting for the answer: three dots rising. */
+.typing {
+  display: inline-flex;
+  gap: 0.35rem;
+  padding-block: 0.4rem;
+}
+.typing i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--ink);
+  animation: typing 1.2s ease-in-out infinite;
+}
+.typing i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    translate: 0 0;
+    opacity: 0.35;
+  }
+  30% {
+    translate: 0 -6px;
+    opacity: 1;
+  }
+}
+
+/* The question field closes the column, always in view. */
+.composer {
+  flex: none;
+  justify-content: flex-start;
+  padding-block: 0.9rem 1.1rem;
+  border-top: var(--border-w) solid var(--hair);
+  background: var(--paper);
+}
+.composer .field__label {
+  font-size: var(--fs-ui);
+}
+
+.sources {
+  padding-block: 1rem 0.5rem;
+  color: var(--ink-3);
+  font-size: var(--fs-small);
+}
+
+/* ------------------------------------------------------------ the place line */
+.place-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--fs-meta);
+}
+.place-line .lucide,
+.linkbtn .lucide {
+  width: 1.1em;
+  height: 1.1em;
+}
+.place-note {
+  max-width: 34rem;
+  font-size: var(--fs-small);
+}
+
+/* ------------------------------------------------------------ phones */
+@media (max-width: 760px) {
+  .intro {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 1.4rem;
+  }
+  .intro__lede {
+    font-size: var(--fs-body);
+  }
+  .intro__talk {
+    margin-top: 1.6rem;
+  }
+  .intro__voice {
+    width: 5.5rem;
+  }
+  .intro__ex {
+    padding: 1.2rem;
+  }
+
+  /* In a conversation the controls become a strip at the top: the indicator, the status line,
+     the button. The panel becomes a column: the strip, the messages, the field. */
+  .convo {
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+  }
+  .convo__grid {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  .transcript {
+    flex: 1;
+  }
+  .transcript__by {
+    display: none;
+  }
+  /* The page's headline is not shown here, but screen readers still read it and a keyboard's
+     focus still goes to it when a conversation starts (as .visually-hidden, styles/base.css). */
+  .transcript__h {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    border: 0;
+    white-space: nowrap;
+  }
+  .transcript__scroll {
+    margin-top: 0;
+    border-top: 0;
+  }
+  .booth {
+    flex: none;
+    align-self: stretch;
+    overflow: visible;
+    grid-template-columns: 3.2rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      "voice status act"
+      "voice text act";
+    justify-items: start;
+    align-items: center;
+    gap: 0.1rem 0.8rem;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 0.5rem var(--gutter);
+    border-bottom: var(--border-w) solid var(--hair);
+    background: var(--paper);
+    text-align: left;
+  }
+  .booth__voice {
+    grid-area: voice;
+    width: 3.2rem;
+    margin: 0.3rem 0;
+  }
+  .booth__status {
+    grid-area: status;
+    font-size: var(--fs-meta);
+  }
+  .booth__text {
+    grid-area: text;
+  }
+  .booth__end {
+    grid-area: act;
+    margin: 0;
+  }
+  .booth__end {
+    min-height: 2.9rem;
+    padding-inline: 1rem;
+  }
+  /* The strip keeps what one needs: the state, the lamp and the button to end. */
+  .booth__end-w,
+  .booth__time,
+  .booth__hint,
+  .booth__level {
+    display: none;
+  }
+  .booth__place,
+  .booth__error {
+    grid-column: 1 / -1;
+  }
+  /* The label and the field share one line where they fit. */
+  .composer {
+    padding-block: 0.6rem 0.7rem;
+  }
+  .composer .field__label {
+    font-size: var(--fs-meta);
+  }
+  .composer .field {
+    flex-basis: 10rem;
+  }
+  /* „Pošalji” keeps only its arrow here (its name stays for screen readers), so the field is wide
+     enough for its example. */
+  .composer .field__btn {
+    width: 2.75rem;
+    padding: 0;
+    justify-content: center;
+    font-size: 0;
+  }
+  .composer .field__btn .lucide {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .turn {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+  .unsent {
+    padding-left: 0;
+  }
+}
+
+/* ------------------------------------------------------------ print */
+@media print {
+  .intro,
+  .booth,
+  .composer {
+    display: none !important;
+  }
+}

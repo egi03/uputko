@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Uputko, AI asistent za zdravstvo (otvoreni profil): gdje se najkraće čeka na pregled, koja je ambulanta najbliža i je li lijek na listi HZZO-a.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="preload" href="/static/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<title>Uputko · AI asistent za zdravstvo (otvoreni profil)</title>
+<style>
+/* Design tokens for this page only, modelled on the premium app (frontend/src/styles/tokens.css). */
+@font-face { font-family: "Schibsted Grotesk Variable"; font-style: normal; font-display: swap; font-weight: 400 900;
+  src: url(/static/fonts/schibsted-grotesk-latin-ext-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "Schibsted Grotesk Variable"; font-style: normal; font-display: swap; font-weight: 400 900;
+  src: url(/static/fonts/schibsted-grotesk-latin-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+:root {
+  color-scheme: light;
+  --font: "Schibsted Grotesk Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* The premium app's calm palette: ink, white, teal for data, red only for emergencies. */
+  --teal-50: #eef8f8; --teal-300: #82c8c8; --teal-500: #0f8b8d; --teal-700: #0b6e70; --teal-800: #08575a;
+  --red-500: #c8102e; --amber-50: #fff8ea; --amber-500: #e09a1f; --amber-700: #8a5300;
+  --bg: #f3f3f1; --surface: #fff; --surface-2: #f8f8f6; --surface-3: #ececea;
+  --line: #e4e4e0; --line-strong: #c9c9c4; --ink: #111111; --ink-2: #3d3d3d; --ink-3: #666666;
+  --halo: var(--surface-3); --primary: var(--ink); --primary-ink: #fff; --primary-hover: #26333f;
+  --accent: var(--teal-700); --accent-fill: var(--teal-500); --link: var(--teal-700); --focus: #1f5fbf;
+  --hot: var(--red-500);
+  --danger: #c8102e; --danger-hover: #a90d27; --danger-soft: #fdf1f3;
+  --warn-ink: var(--amber-700); --warn-soft: var(--amber-50);
+  --oll: var(--teal-500); --oll-soft: var(--teal-50); --oll-ink: var(--teal-800);
+  --dll: var(--amber-500); --dll-soft: var(--amber-50); --dll-ink: var(--amber-700);
+  --nolist: #8a96a3; --nolist-soft: #eef1f4; --nolist-ink: #4a5663; --typing-dot: #111111;
+  --radius-sm: 12px; --radius: 18px; --radius-lg: 28px; --radius-pill: 999px;
+  --shadow-1: 0 1px 2px rgb(23 33 43 / 6%), 0 1px 1px rgb(23 33 43 / 4%);
+  --shadow-2: 0 1px 2px rgb(23 33 43 / 5%), 0 10px 28px -6px rgb(23 33 43 / 12%);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  font: 112.5%/1.55 var(--font);
+  color: var(--ink); background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0d141b; --surface: #151f29; --surface-2: #1a2531; --surface-3: #212e3b;
+    --line: #283543; --line-strong: #3a4959; --ink: #eef2f5; --ink-2: #b6c1cc; --ink-3: #97a4b1;
+    --halo: var(--surface-3); --primary: #eef2f5; --primary-ink: #0d141b; --primary-hover: #fff;
+    --accent: #5fc9c6; --accent-fill: #2aa9a8; --link: #6fd3d0; --focus: #8db4f1;
+    --hot: #ff5a6e; --danger: #ff5a6e; --danger-hover: #ff7383; --danger-soft: #3a141b;
+    --warn-ink: #ffcf73; --warn-soft: #33270d;
+    --oll: #2aa9a8; --oll-soft: #10302f; --oll-ink: #a6e6e3; --dll: #e0a43a; --dll-soft: #33270d; --dll-ink: #ffd88f;
+    --nolist: #7d8a97; --nolist-soft: #212e3b; --nolist-ink: #c5ced7; --typing-dot: #b6c1cc;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 30%); --shadow-2: 0 2px 6px rgb(0 0 0 / 30%), 0 12px 32px rgb(0 0 0 / 25%);
+  }
+}
+@media (prefers-contrast: more) {
+  :root { --line: var(--ink-2); --line-strong: var(--ink); --ink-2: var(--ink); --ink-3: var(--ink); }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
+h1, h2, h3, p { margin: 0; }
+a { color: var(--link); text-underline-offset: .18em; }
+button, input { font: inherit; color: inherit; }
+svg { flex: none; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+.sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: 1rem; top: -4rem; z-index: 10; padding: .7rem 1.1rem; border-radius: var(--radius-sm);
+        background: var(--primary); color: var(--primary-ink); font-weight: 800; text-decoration: none; }
+.skip:focus { top: 1rem; }
+.i { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* top bar */
+.topbar { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 85%, transparent);
+          backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.topbar__in { max-width: 72rem; margin: 0 auto; padding: .6rem clamp(1rem, 3vw, 2rem); display: flex; align-items: center;
+              justify-content: space-between; gap: 1rem; }
+.brand, .chip { white-space: nowrap; }
+.brand { display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); text-decoration: none; font-weight: 900;
+         font-size: 1.15rem; letter-spacing: -.01em; }
+.brand__logo { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; }
+.mark__bg { fill: var(--ink); } .mark__long { fill: var(--surface); fill-opacity: .55; } .mark__short { fill: #5cc2bd; }
+.chip { flex: none; display: inline-flex; align-items: center; gap: .4rem; min-height: 2rem; padding: .2rem .8rem; border-radius: var(--radius-pill);
+        background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); font-size: .82rem; font-weight: 800; }
+.chip .i { width: 1rem; height: 1rem; }
+
+/* layout */
+.app { flex: 1; width: 100%; max-width: 72rem; margin: 0 auto; padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 2rem;
+       display: grid; gap: clamp(1rem, 3vw, 2rem); align-items: start; }
+@media (min-width: 960px) {
+  .app { grid-template-columns: minmax(0, 25rem) minmax(0, 1fr); }
+  .stage { position: sticky; top: 5.5rem; }
+}
+
+/* stage: the voice indicator, status, talk */
+.stage { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; }
+.halo { --level: 0; position: relative; display: grid; place-items: center; width: min(17rem, 70vw); aspect-ratio: 1;
+        border-radius: 50%; background: var(--halo); isolation: isolate; transition: width 300ms var(--ease); }
+.halo::before, .halo::after { content: ""; position: absolute; inset: 0; border-radius: 50%; z-index: -1; pointer-events: none; }
+.halo::before { border: 3px solid var(--accent-fill); opacity: calc(.25 + var(--level) * .75);
+                transform: scale(calc(1.02 + var(--level) * .12)); transition: transform 90ms linear, opacity 90ms linear; }
+.halo[data-state="idle"]::before, .halo[data-state="sad"]::before { opacity: 0; }
+.halo[data-state="listening"]::after { background: var(--halo); animation: halo-pulse 2s ease-out infinite; }
+@keyframes halo-pulse { from { transform: scale(1); opacity: .7; } to { transform: scale(1.22); opacity: 0; } }
+.stage__title { font-size: clamp(1.7rem, 4vw, 2.2rem); line-height: 1.15; font-weight: 900; letter-spacing: -.02em; }
+.stage__lead { color: var(--ink-2); max-width: 26rem; }
+.stage__hint { font-size: .85rem; color: var(--ink-3); max-width: 24rem; }
+
+.status-pill { display: inline-flex; align-items: center; gap: .55rem; min-height: 40px; padding: .35rem 1rem;
+               border-radius: var(--radius-pill); background: var(--surface); border: 1px solid var(--line);
+               box-shadow: var(--shadow-1); font-weight: 800; }
+.status-pill__dot { position: relative; width: .7rem; height: .7rem; border-radius: 50%; background: var(--line-strong); }
+[data-state="listening"] .status-pill__dot { background: #22a559; }
+[data-state="listening"] .status-pill__dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: inherit;
+                                                   animation: ping 1.6s ease-out infinite; }
+[data-state="speaking"] .status-pill__dot { background: var(--accent-fill); }
+[data-state="thinking"] .status-pill__dot { background: var(--ink); animation: blink-dot 1s ease-in-out infinite; }
+[data-state="sad"] .status-pill__dot { background: var(--danger); }
+@keyframes ping { to { transform: scale(2.6); opacity: 0; } }
+@keyframes blink-dot { 50% { opacity: .3; } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 48px; padding: 0 1.4rem;
+       border: 2px solid transparent; border-radius: var(--radius-pill); background: var(--primary); color: var(--primary-ink);
+       font-weight: 800; cursor: pointer; text-decoration: none;
+       transition: background 200ms var(--ease), transform 200ms var(--ease), box-shadow 200ms var(--ease); }
+.btn:hover { background: var(--primary-hover); }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .55; cursor: progress; }
+.btn--talk { min-height: 64px; padding: 0 2.2rem; font-size: 1.2rem; box-shadow: var(--shadow-2); }
+.btn--talk .i { width: 1.5rem; height: 1.5rem; }
+.btn--end { background: var(--danger); color: #fff; }
+.btn--end:hover { background: var(--danger-hover); }
+.notice { display: flex; gap: .6rem; align-items: flex-start; padding: .75rem 1rem; border-radius: var(--radius-sm);
+          text-align: left; font-weight: 650; }
+.notice--danger { background: var(--danger-soft); color: var(--danger); }
+.notice--warn { background: var(--warn-soft); color: var(--warn-ink); }
+.notice .i { margin-top: .15em; }
+
+/* conversation panel */
+.convo { display: flex; flex-direction: column; min-height: min(38rem, 70dvh); background: var(--surface);
+         border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-2); }
+@media (max-width: 959px) { .convo { min-height: 0; } }
+.convo__body { flex: 1; padding: clamp(1rem, 2.5vw, 1.6rem); display: flex; flex-direction: column; gap: 1rem; }
+.topics__title { font-weight: 900; font-size: 1.15rem; }
+.topics__sub { color: var(--ink-3); font-size: .9rem; margin-top: .15rem; }
+.topics ul { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: .7rem; }
+@media (min-width: 640px) { .topics ul { grid-template-columns: 1fr 1fr; } }
+.topic { display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 84px; padding: .9rem 1rem; text-align: left;
+         border: 1px solid var(--line); border-radius: 18px; background: var(--surface-2); cursor: pointer;
+         transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease), transform 200ms var(--ease); }
+.topic:hover { border-color: var(--teal-300); box-shadow: var(--shadow-2); transform: translateY(-2px); }
+.topic__text { display: grid; gap: .1rem; flex: 1; }
+.topic__title { font-weight: 900; }
+.topic__q { color: var(--ink-2); font-size: .92rem; }
+.tile { display: grid; place-items: center; width: 2.9rem; height: 2.9rem; flex: none; color: var(--ink); }
+.tile .i { width: 1.6rem; height: 1.6rem; }
+
+.timeline > li { scroll-margin-bottom: 6.5rem; }
+.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .9rem; }
+.msg { display: flex; align-items: flex-end; gap: .6rem; animation: msg-in 280ms var(--ease) both; }
+@keyframes msg-in { from { opacity: 0; transform: translateY(6px); } }
+.msg--user { justify-content: flex-end; }
+.msg__avatar { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: none; border-radius: 50%; background: var(--halo); overflow: hidden; }
+.msg__bubble { max-width: min(85%, 36rem); padding: .75rem 1.05rem; border-radius: 20px; }
+.msg--agent .msg__bubble { background: var(--surface-2); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.msg--user .msg__bubble { background: var(--primary); color: var(--primary-ink); border-bottom-right-radius: 6px; }
+.timeline__card { margin-left: 3.1rem; animation: msg-in 280ms var(--ease) both; }
+@media (max-width: 560px) { .timeline__card { margin-left: 0; } }
+.typing { display: inline-flex; gap: .3rem; padding: .2rem 0; }
+.typing i { width: .6rem; height: .5rem; border-radius: 50%; background: var(--typing-dot); animation: bounce 1.2s ease-in-out infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-6px); opacity: 1; } }
+
+.composer { position: sticky; bottom: 0; padding: .85rem clamp(.85rem, 2vw, 1.25rem) clamp(.85rem, 2vw, 1.25rem);
+            border-top: 1px solid var(--line); background: var(--surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.field { display: flex; align-items: center; gap: .4rem; padding: .3rem .35rem .3rem 1.1rem; border: 2px solid var(--line-strong);
+         border-radius: var(--radius-pill); background: var(--surface); transition: border-color 200ms var(--ease); }
+.field:focus-within { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent); }
+.field input { flex: 1; min-width: 0; min-height: 44px; border: 0; background: none; outline: none; }
+.field input::placeholder { color: var(--ink-3); }
+.btn--send { width: 46px; min-width: 46px; min-height: 46px; padding: 0; }
+
+/* response cards */
+.rcard { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+         box-shadow: var(--shadow-1); padding: 1.1rem 1.2rem 1rem 1.45rem; display: grid; gap: .8rem; }
+.rcard::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; background: var(--tone, var(--ink)); }
+.rcard--teal { --tone: var(--accent-fill); } .rcard--red { --tone: var(--hot); } .rcard--ink { --tone: var(--ink); }
+.rcard__stat { margin-left: auto; text-align: right; line-height: 1; }
+.rcard__stat b { display: block; font-size: 1.7rem; font-weight: 900; color: var(--accent); letter-spacing: -.03em; }
+.rcard__stat span { font-size: .72rem; font-weight: 800; color: var(--ink-3); }
+.rcard__head { display: flex; gap: .85rem; align-items: flex-start; }
+.rcard__titles { flex: 1; min-width: 0; }
+.rcard__kicker { font-size: .78rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.rcard__title { font-size: 1.25rem; font-weight: 900; line-height: 1.25; }
+.rcard__sub { color: var(--ink-2); font-size: .9rem; }
+.rcard__summary { color: var(--ink-2); }
+.rcard__source { display: flex; gap: .45rem; align-items: center; padding-top: .7rem; border-top: 1px solid var(--line);
+                 font-size: .8rem; color: var(--ink-3); }
+.rcard__source .i { width: 1rem; height: 1rem; }
+.rcard ol, .rcard ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .6rem; }
+.muted { color: var(--ink-2); font-size: .9rem; }
+.hc { display: flex; gap: .8rem; align-items: flex-start; padding: .8rem; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); }
+.hc__n { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--primary);
+         color: var(--primary-ink); font-weight: 900; flex: none; }
+/* waiting-list ticket: the stub says how long, the body where and when */
+.ticket { --stub-w: 5.6rem; display: grid; grid-template-columns: var(--stub-w) minmax(0, 1fr); border-radius: 16px; background: var(--surface-2);
+          border: 1px solid var(--line); overflow: hidden; animation: ticket-print 620ms cubic-bezier(.16, 1, .3, 1) both; }
+/* tickets come out of the queue machine one after another, top edge first */
+li:nth-child(2) > .ticket { animation-delay: 120ms; } li:nth-child(3) > .ticket { animation-delay: 240ms; }
+@keyframes ticket-print { from { clip-path: inset(0 0 100% 0); transform: translateY(-18px); } to { clip-path: inset(0); transform: none; } }
+.ticket__stub { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: .6rem .3rem; text-align: center;
+                background: var(--surface-3); color: var(--ink); border-right: 2px dashed var(--line-strong); }
+.ticket--ink .ticket__stub { background: #17212b; color: #fff; } .ticket--teal .ticket__stub { background: #0b6e70; color: #fff; }
+.ticket--red .ticket__stub { background: #c8102e; color: #fff; }
+.ticket__big { font-size: 2.1rem; font-weight: 900; line-height: .95; letter-spacing: -.04em; }
+.ticket__small { font-size: .72rem; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+.ticket__body { padding: .7rem .9rem; display: grid; gap: .15rem; }
+.ticket__role { font-size: .7rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.ticket--teal .ticket__role { color: var(--accent); } .ticket--red .ticket__role { color: var(--hot); }
+.ticket__name { font-weight: 850; line-height: 1.25; }
+.booking { border-top: 1px solid var(--line); padding-top: .6rem; }
+.booking > summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border-radius: var(--radius-pill);
+                     background: var(--primary); color: var(--primary-ink); font-weight: 800; cursor: pointer; list-style: none; }
+.booking > summary::-webkit-details-marker { display: none; }
+.booking[open] > summary { background: transparent; color: var(--ink); border: 2px solid var(--line-strong); }
+.booking > p { margin-top: .6rem; }
+.providers { padding: .7rem .9rem; border-radius: var(--radius-sm); border: 1px dashed var(--line-strong); font-size: .9rem; }
+.providers b { display: block; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: .2rem; }
+/* medicine: which HZZO list */
+.listband { display: flex; gap: .7rem; padding: .8rem .95rem; border-radius: 14px; border-left: 7px solid var(--oll); background: var(--oll-soft); color: var(--oll-ink); }
+.listband--dll { border-left-color: var(--dll); background: var(--dll-soft); color: var(--dll-ink); }
+.listband--none { border-left-color: var(--nolist); background: var(--nolist-soft); color: var(--nolist-ink); }
+.listband b { display: block; }
+.forms li { display: flex; align-items: baseline; gap: .55rem; font-size: .92rem; }
+.dot { width: .7rem; height: .7rem; border-radius: 50%; background: var(--nolist); flex: none; }
+.dot--oll { background: var(--oll); } .dot--dll { background: var(--dll); }
+.hc__body { flex: 1; min-width: 0; display: grid; gap: .1rem; }
+.hc__name { font-weight: 850; }
+.hc__actions { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .4rem; }
+.btn--sm { min-height: 40px; padding: 0 .95rem; font-size: .9rem; }
+.btn--ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn--ghost:hover { background: var(--surface-3); }
+.sos { display: flex; align-items: center; gap: .7rem; min-height: 56px; padding: .5rem .9rem; border-radius: var(--radius-sm);
+       background: var(--surface-2); border: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.sos:hover { border-color: var(--danger); }
+.sos__n { font-size: 1.35rem; font-weight: 900; color: var(--danger); }
+.sos__l { font-size: .85rem; font-weight: 750; color: var(--ink-2); line-height: 1.25; }
+/* fixed red in both themes: white on #c62828 keeps 5.6:1 */
+.sos--main { background: #c62828; border-color: #c62828; }
+.sos--main:hover { background: #a91f1f; }
+.sos--main .sos__n, .sos--main .sos__l { color: #fff; }
+@media (max-width: 560px) { .rcard { padding-left: 1.2rem; } }
+
+/* footer */
+.foot { border-top: 1px solid var(--line); background: var(--surface); }
+.foot__in { max-width: 72rem; margin: 0 auto; padding: 1.4rem clamp(1rem, 3vw, 2rem) 1.8rem; display: grid; gap: 1rem; align-items: center;
+            font-size: .85rem; color: var(--ink-2); }
+@media (min-width: 760px) { .foot__in { grid-template-columns: auto 1fr; gap: 1.5rem; } }
+.foot .sos { min-width: 17rem; }
+.foot p + p { margin-top: .35rem; }
+
+/* active conversation: a compact stage */
+[data-phase="active"] .stage__lead, [data-phase="active"] .stage__hint { display: none; }
+[data-phase="active"] .halo { width: min(13rem, 60vw); }
+@media (max-width: 959px) {
+  [data-phase="active"] .stage { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "m s" "m b";
+                                  text-align: left; align-items: center; justify-items: start; gap: .35rem 1rem; }
+  [data-phase="active"] .halo { grid-area: m; width: 5.5rem; }
+  [data-phase="active"] .status-pill { grid-area: s; box-shadow: none; border: 0; padding: 0; min-height: 0; background: none; }
+  [data-phase="active"] .stage__actions { grid-area: b; }
+  [data-phase="active"] .btn--talk { min-height: 52px; padding: 0 1.3rem; font-size: 1.05rem; }
+  [data-phase="active"] .stage__title, [data-phase="active"] #error:not([hidden]) { grid-column: 1 / -1; }
+  [data-phase="active"] .stage__title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
+
+/* the voice sign inside the indicator: a dark circle with sound lines, teal while listening */
+.voice-sign { display: grid; place-items: center; width: 58%; aspect-ratio: 1; border-radius: 50%; background: var(--ink); color: var(--surface); }
+.voice-sign .i { width: 40%; height: 40%; }
+.halo[data-state="listening"] .voice-sign { background: var(--accent-fill); }
+.halo[data-state="sad"] .voice-sign { background: var(--danger); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important;
+                           transition-duration: 1ms !important; scroll-behavior: auto !important; }
+  .halo::before { transform: none; }
+}
+@media (forced-colors: active) {
+  .btn, .sos, .rcard, .voice-sign { border: 2px solid CanvasText; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#text">Preskoči na pisanje pitanja</a>
+
+<header class="topbar">
+  <div class="topbar__in">
+    <a class="brand" href="/" aria-label="Uputko, početna">
+      <span class="brand__logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="32" height="32"><use href="#mark"/></svg>
+      </span>
+      <span>Uputko</span>
+    </a>
+    <span class="chip" title="Pipecat, Whisper i jezični model otvorenih težina (Groq ili lokalno), sinteza govora na ovom poslužitelju">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+      Otvoreni profil
+    </span>
+  </div>
+</header>
+
+<!-- The mark (as in the premium app): a long wait and a short one, for the logo and the answers. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="mark">
+      <rect class="mark__bg" width="32" height="32" rx="8"/>
+      <rect class="mark__long" x="7" y="10.5" width="18" height="4" rx="2"/>
+      <rect class="mark__short" x="7" y="17.5" width="8" height="4" rx="2"/>
+    </g>
+  </defs>
+</svg>
+
+<main id="main" class="app" data-phase="welcome">
+  <section class="stage" aria-label="Razgovor glasom">
+    <div class="halo" id="halo" data-state="idle">
+      <span class="voice-sign" aria-hidden="true">
+        <svg class="i" viewBox="0 0 24 24"><path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/></svg>
+      </span>
+    </div>
+    <h1 class="stage__title">AI asistent za zdravstvo</h1>
+    <p class="stage__lead">Liste čekanja, ambulante i lijekovi iz službenih podataka HZZO-a i HALMED-a.
+      Odgovor je kratak i s izvorom.</p>
+    <p id="status" class="status-pill" data-state="idle" role="status" aria-live="polite">
+      <span class="status-pill__dot" aria-hidden="true"></span><span id="status-text">Spremno</span>
+    </p>
+    <p id="error" class="notice notice--danger" role="alert" hidden></p>
+    <div class="stage__actions">
+      <button id="talk" class="btn btn--talk" type="button">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
+        <span id="talk-label">Razgovaraj</span>
+      </button>
+    </div>
+    <p class="stage__hint">Preglednik će tražiti dopuštenje za mikrofon. Stranica ne traži vašu lokaciju,
+      zato recite mjesto, npr. „u Vinkovcima”.</p>
+  </section>
+
+  <section class="convo" aria-labelledby="convo-title">
+    <div class="convo__body">
+      <h2 id="convo-title" class="sr">Razgovor</h2>
+      <div id="topics" class="topics">
+        <p class="topics__title">Primjeri pitanja</p>
+        <p class="topics__sub">Odaberite primjer ili pitajte svojim riječima.</p>
+        <ul>
+          <li><button type="button" class="topic" data-q="Gdje najprije mogu na MR koljena, blizu Vinkovaca?">
+            <span class="tile"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></svg></span>
+            <span class="topic__text"><span class="topic__title">Pregledi i pretrage</span><span class="topic__q">„Gdje najprije mogu na MR koljena, blizu Vinkovaca?”</span></span>
+          </button></li>
+          <li><button type="button" class="topic" data-q="Je li Tomid na listi HZZO-a i kolika je doplata?">
+            <span class="tile"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></span>
+            <span class="topic__text"><span class="topic__title">Lijekovi</span><span class="topic__q">„Je li Tomid na listi HZZO-a i kolika je doplata?”</span></span>
+          </button></li>
+          <li><button type="button" class="topic" data-q="Gdje je najbliža ambulanta u Osijeku?">
+            <span class="tile"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg></span>
+            <span class="topic__text"><span class="topic__title">Ambulante i bolnice</span><span class="topic__q">„Gdje je najbliža ambulanta u Osijeku?”</span></span>
+          </button></li>
+        </ul>
+      </div>
+      <ol id="transcript" class="timeline" aria-live="polite" aria-label="Poruke"></ol>
+    </div>
+    <form id="composer" class="composer">
+      <label for="text" class="sr">Napišite pitanje</label>
+      <div class="field">
+        <input id="text" type="text" autocomplete="off" maxlength="500" placeholder="Napišite pitanje…">
+        <button class="btn btn--send" type="submit" aria-label="Pošalji">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot__in">
+    <a class="sos sos--main" href="tel:112"><span class="sos__n">112</span>
+      <span class="sos__l">U hitnom slučaju nazovite 112 · besplatno, 0–24</span></a>
+    <div>
+      <p>Podaci: HZZO (liste čekanja na CEZIH-u, ugovorne ustanove, liste lijekova), HALMED i DZS, uz Portal
+        otvorenih podataka. Bot ne sprema snimke ni transkripte. Asistent ne daje medicinske savjete ni dijagnoze.</p>
+      <p>Otvoreni profil: Pipecat, Whisper i jezični model otvorenih težina (Groq ili lokalno), sinteza govora na ovom poslužitelju ·
+        kod pod licencom EUPL-1.2 · pismo Schibsted Grotesk (SIL OFL) · ikone Lucide (ISC).</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const RTVI = "rtvi-ai";
+const PROTOCOL_VERSION = "2.2.0";
+const $ = (id) => document.getElementById(id);
+let pc = null, dc = null, ping = null, apiUrl = "", iceServers = [], pending = [], botBubble = null, sawUserInput = false;
+let withVoice = false, typing = null, meters = null;
+
+fetch("/config").then((r) => r.json()).then((c) => { apiUrl = c.api_url; iceServers = c.ice_servers || []; }).catch(() => {});
+
+const STATUS = { idle: "Spremno", connecting: "Spajanje…", listening: "Govorite…", thinking: "Traženje podataka…",
+  speaking: "Asistent govori…", text: "Napišite pitanje", ended: "Razgovor je završen" };
+
+/* status: what the pill says; the voice indicator follows it */
+function setStatus(key, text) {
+  const state = { connecting: "thinking", listening: "listening", thinking: "thinking", speaking: "speaking", sad: "sad" }[key] || "idle";
+  $("status-text").textContent = text || STATUS[key] || "";
+  $("status").dataset.state = state;
+  $("halo").dataset.state = state;
+}
+function showError(text) {
+  const e = $("error"); e.hidden = !text; e.textContent = text || "";
+  if (text) setStatus("sad", "Nešto nije u redu");
+}
+function uid() { return Math.random().toString(36).slice(2, 12); }
+function activate() { $("main").dataset.phase = "active"; $("topics").hidden = true; }
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined && text !== null) e.textContent = text;
+  return e;
+}
+const ICONS = {
+  db: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
+  health: '<path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  map: '<path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+  calendar: '<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/>',
+  pill: '<path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  link: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+};
+function icon(name) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("class", "i"); s.setAttribute("aria-hidden", "true");
+  s.innerHTML = ICONS[name]; // static markup from the table above, never from data
+  return s;
+}
+function avatar() {
+  const a = el("span", "msg__avatar");
+  a.setAttribute("aria-hidden", "true");
+  a.innerHTML = '<svg viewBox="0 0 32 32" width="26" height="26"><use href="#mark"/></svg>';
+  return a;
+}
+
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+function scrollToEnd(node) { node.scrollIntoView({ block: "nearest", behavior: reducedMotion() ? "auto" : "smooth" }); }
+
+function addBubble(role, text) {
+  activate();
+  hideTyping();
+  const li = el("li", `msg msg--${role}`);
+  const bubble = el("div", "msg__bubble");
+  bubble.append(el("span", "sr", role === "user" ? "Vi: " : "Asistent: "), el("span", "msg__text", text));
+  if (role === "agent") li.append(avatar());
+  li.append(bubble);
+  $("transcript").append(li);
+  scrollToEnd(li);
+  return li;
+}
+function showTyping() {
+  if (typing) return;
+  typing = el("li", "msg msg--agent");
+  typing.setAttribute("aria-hidden", "true");
+  const b = el("div", "msg__bubble");
+  b.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
+  typing.append(avatar(), b);
+  $("transcript").append(typing);
+  scrollToEnd(typing);
+}
+function hideTyping() { typing?.remove(); typing = null; }
+
+function send(type, data) {
+  const msg = JSON.stringify({ label: RTVI, type, id: uid(), data });
+  if (dc && dc.readyState === "open") dc.send(msg); else pending.push(msg);
+}
+
+function sendText(text) {
+  send("send-text", { content: text, options: { run_immediately: true, audio_response: true } });
+}
+
+function idleStatus() { setStatus(withVoice ? "listening" : "text"); }
+
+function onMessage(raw) {
+  let m;
+  try { m = JSON.parse(raw); } catch { return; }
+  if (m.label !== RTVI) return;
+  const d = m.data || {};
+  switch (m.type) {
+    case "bot-ready": if (!typing) idleStatus(); break;
+    case "user-started-speaking": setStatus("listening"); botBubble = null; break;
+    case "user-stopped-speaking": setStatus("thinking"); showTyping(); break;
+    case "bot-started-speaking": setStatus("speaking"); break;
+    case "bot-stopped-speaking": idleStatus(); botBubble = null; break;
+    case "user-input":
+      sawUserInput = true;
+      if (d.final && d.input_type !== "chat" && d.text) { addBubble("user", d.text); botBubble = null; showTyping(); }
+      break;
+    case "user-transcription":
+      if (!sawUserInput && d.final && d.text) { addBubble("user", d.text); botBubble = null; showTyping(); }
+      break;
+    case "bot-output":
+      if (d.text && (d.spoken_status === undefined || d.spoken_status === "new")) {
+        if (!botBubble) botBubble = addBubble("agent", d.text);
+        else botBubble.querySelector(".msg__text").textContent += " " + d.text;
+      }
+      break;
+    case "server-message":
+      if (d.type === "card" && d.card_id) showCard(d.card_id);
+      break;
+    case "error":  // the detail is technical; the page says it in Croatian
+      hideTyping(); console.warn("bot error", d.error || d.message);
+      showError("Greška u razgovoru. Pokušajte ponovno.");
+      if (d.fatal) disconnect("Veza je prekinuta.");
+      break;
+  }
+}
+
+async function showCard(id) {
+  if (!apiUrl) return;
+  try {
+    const r = await fetch(`${apiUrl}/api/cards/${encodeURIComponent(id)}`);
+    if (!r.ok) return;
+    const li = el("li", "timeline__card");
+    li.append(renderCard(await r.json()));
+    if (typing) $("transcript").insertBefore(li, typing); else $("transcript").append(li);
+    botBubble = null;
+    scrollToEnd(li);
+  } catch { /* the spoken answer is still there */ }
+}
+
+/* ---------------------------------------------------------------- cards */
+const FACILITY = { family_medicine: "opća medicina", pediatrics: "pedijatrija", gynecology: "ginekologija",
+  dentistry: "dentalna zaštita", hospital: "bolnice" };
+const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
+const MONTHS = ["siječnja", "veljače", "ožujka", "travnja", "svibnja", "lipnja", "srpnja", "kolovoza", "rujna", "listopada", "studenoga", "prosinca"];
+/* "2026-09" -> "rujna 2026." */
+function monthYear(ym) { const [y, m] = String(ym || "").split("-").map(Number); return y && m ? `${MONTHS[m - 1]} ${y}.` : ""; }
+const num = (v, digits = 0) => (typeof v === "number" ? v.toLocaleString("hr-HR", { maximumFractionDigits: digits }) : "–");
+function frame({ tone, iconName, kicker, title, sub, aside, summary, card }) {
+  const art = el("article", `rcard rcard--${tone}`);
+  art.setAttribute("aria-label", `${kicker}: ${title}`);
+  const head = el("header", "rcard__head");
+  const t = el("span", "tile"); t.append(icon(iconName));
+  const titles = el("div", "rcard__titles");
+  titles.append(el("p", "rcard__kicker", kicker), el("h3", "rcard__title", title));
+  if (sub) titles.append(el("p", "rcard__sub", sub));
+  head.append(t, titles);
+  if (aside) head.append(aside);
+  art.append(head);
+  if (summary) art.append(el("p", "rcard__summary", summary));
+  const body = el("div", "rcard__body");
+  art.append(body);
+  const source = card.source;
+  const when = card.updated_at
+    ? " · ažurirano " + new Date(card.updated_at).toLocaleString("hr-HR", { timeZone: "Europe/Zagreb", day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" })
+    : "";
+  const foot = el("footer", "rcard__source");
+  foot.append(icon("db"), el("span", null, `Izvor: ${source}${when}`));
+  art.append(foot);
+  return { art, body };
+}
+
+function healthCard(c) {
+  const d = c.data || {};
+  const items = d.facilities || [];
+  const type = d.facility_type || "any";
+  const { art, body } = frame({ tone: "ink", iconName: "health", kicker: FACILITY[type] ? `Ambulante · ${FACILITY[type]}` : "Zdravstvene ustanove",
+    title: c.location?.name || "Najbliže ustanove", card: c });
+  const ol = el("ol");
+  items.forEach((f, i) => {
+    const li = el("li", "hc");
+    const main = el("div", "hc__body");
+    main.append(el("p", "hc__name", f.type === "hospital" ? f.name : cap(f.type_hr)), el("p", "muted", f.address ? `${f.address}, ${f.settlement}` : f.settlement),
+      el("p", "muted", f.distance_km >= 0.5 ? `oko ${num(f.distance_km)} km` : "u mjestu"));
+    const actions = el("div", "hc__actions");
+    const phone = (f.phone || "").split(/[,\n]/)[0].trim();
+    if (phone) {
+      const a = el("a", "btn btn--sm"); a.href = `tel:${phone.replace(/[^\d+]/g, "")}`;
+      a.append(icon("phone"), document.createTextNode(`Nazovi ${phone}`)); actions.append(a);
+    }
+    const map = el("a", "btn btn--sm btn--ghost");
+    map.href = `https://www.openstreetmap.org/search?query=${encodeURIComponent(`${f.address}, ${f.settlement}, Hrvatska`)}`;
+    map.target = "_blank"; map.rel = "noreferrer";
+    map.append(icon("map"), document.createTextNode("Karta"), el("span", "sr", " (otvara OpenStreetMap u novoj kartici)"));
+    actions.append(map);
+    main.append(actions);
+    li.append(el("span", "hc__n", String(i + 1)), main);
+    ol.append(li);
+  });
+  body.append(ol);
+  const year = type === "hospital" ? d.data_as_of?.hospitals : d.data_as_of?.pzz;
+  if (year) {
+    const p = el("p", "notice notice--warn");
+    p.append(icon("info"), el("span", null, `Popis HZZO-a je iz ${monthYear(year)} ` +
+      "Prije odlaska provjerite radno vrijeme. Lokacija je točna do razine naselja."));
+    body.append(p);
+  }
+  return art;
+}
+
+/* waiting lists: the options of the answer as tickets (the same rules as the premium app) */
+const ROLES = { nearest: ["Najbliže vama", "ink"], sooner_nearby: ["Ranije u blizini", "teal"],
+  soonest_croatia: ["Najranije u Hrvatskoj", "red"], nearby: ["U blizini", ""], soon: ["Uskoro", ""] };
+const plural = (n, one, few, many) => (n % 10 === 1 && n % 100 !== 11 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? few : many);
+// "031/511-511" is one number (a slash after the area code); "01 2345 / 099 123" are two.
+function firstPhone(phone) { const d = String(phone || "").split(/[,;\n]| ili |\s\/\s/)[0].replace(/[^\d+]/g, ""); return d.length >= 6 ? d : ""; }
+function ticket(o, all) {
+  let [label, tone] = ROLES[o.role] || ["", ""];
+  if (o.role === "soonest_croatia" && all.some((e) => e.wait_days < o.wait_days)) label = "Puno ranije, dalje od vas";
+  const t = el("article", `ticket${tone ? ` ticket--${tone}` : ""}`);
+  const stub = el("div", "ticket__stub"); stub.setAttribute("aria-hidden", "true");
+  const word = o.wait_days <= 0 ? "danas" : o.wait_days === 1 ? "sutra" : "";
+  stub.append(el("span", "ticket__big", word || num(o.wait_days)));
+  if (!word) stub.append(el("span", "ticket__small", plural(o.wait_days, "dan", "dana", "dana")));
+  const body = el("div", "ticket__body");
+  if (label) body.append(el("p", "ticket__role", label));
+  body.append(el("p", "ticket__name", o.spoken_name));
+  const km = o.distance_km === null ? "lokacija nije poznata" : o.distance_km < 2 ? "u vašem mjestu" : `oko ${num(o.distance_km)} km`;
+  body.append(el("p", "muted", `${o.settlement ? `${o.settlement} · ` : ""}${km}`));
+  body.append(el("p", "hc__name", `Prvi termin: ${o.first_slot_hr}${word ? "" : `, za ${num(o.wait_days)} ${plural(o.wait_days, "dan", "dana", "dana")}`}`));
+  const actions = el("div", "hc__actions");
+  const phone = firstPhone(o.phone);
+  if (phone) { const a = el("a", "btn btn--sm"); a.href = `tel:${phone}`; a.append(icon("phone"), document.createTextNode("Nazovi"), el("span", "sr", ` ${o.phone}`)); actions.append(a); }
+  if (o.email) { const a = el("a", "btn btn--sm btn--ghost"); a.href = `mailto:${o.email}`; a.append(icon("mail"), document.createTextNode("E-pošta"), el("span", "sr", ` ${o.email}`)); actions.append(a); }
+  if (actions.childElementCount) body.append(actions);
+  t.append(stub, body);
+  return t;
+}
+// "Kardiologija - aritmije srca - prvi pregled" -> "Kardiologija · aritmije srca" and "prvi pregled"
+const VISITS = ["prvi pregled", "kontrolni pregled", "konzultacija bez pacijenta", "ostali postupci"];
+function procedureParts(name) {
+  const parts = String(name || "").split(" - ").map((p) => p.trim()).filter(Boolean);
+  const last = (parts[parts.length - 1] || "").toLowerCase();
+  const visit = parts.length > 1 && VISITS.includes(last) ? last : "";
+  return { title: (visit ? parts.slice(0, -1) : parts).join(" · "), visit };
+}
+function waitingCard(c) {
+  const d = c.data || {};
+  const all = (c.extra && c.extra.entries) || d.options || [];
+  let aside = null;
+  if (typeof d.median_days === "number") {
+    aside = el("span", "rcard__stat");
+    aside.append(el("b", null, num(d.median_days)), el("span", null, `${plural(d.median_days, "dan", "dana", "dana")} medijan`));
+  }
+  const { art, body } = frame({ tone: "teal", iconName: "calendar", kicker: "Liste čekanja HZZO-a",
+    title: d.procedure ? procedureParts(d.procedure.name).title : "Liste čekanja",
+    sub: [d.procedure ? procedureParts(d.procedure.name).visit : "", d.origin ? `od mjesta ${d.origin}` : ""].filter(Boolean).join(" · "),
+    aside, card: c });
+  const ol = el("ol");
+  (d.options || []).slice(0, 3).forEach((o) => { const li = el("li"); li.append(ticket(o, all)); ol.append(li); });
+  if (ol.childElementCount) body.append(ol);
+  const providers = d.other_providers || [];
+  if (providers.length) {
+    const box = el("div", "providers");
+    box.append(el("b", null, "Ugovor s HZZO-om, bez objavljene liste čekanja"));
+    providers.slice(0, 3).forEach((p) => box.append(el("p", null, `${p.name} · ${p.settlement}`)));
+    body.append(box);
+  }
+  // „Kako se naručiti?” as a disclosure, as in the premium app: the referral, whom to call, what
+  // to bring and what the shown slot means (the backend's booking_hr).
+  if (d.booking_hr) {
+    const how = el("details", "booking");
+    how.append(el("summary", null, "Kako se naručiti?"), el("p", "muted", d.booking_hr));
+    body.append(how);
+  }
+  return art;
+}
+
+/* medicines: which HZZO list, and the forms */
+function drugCard(c) {
+  const d = c.data || {};
+  const all = (c.extra && c.extra.products) || d.products || [];
+  // The forms still authorised (all when none is): what the spoken summary speaks of.
+  const live = all.filter((p) => !p.revoked);
+  const products = live.length ? live : all;
+  const substance = d.query_kind === "substance";
+  const subs = [...new Set(products.map((p) => p.active_substance))].slice(0, 2).join(" · ");
+  const { art, body } = frame({ tone: "red", iconName: "pill", kicker: substance ? "Djelatna tvar · HALMED" : "Lijek · HALMED",
+    title: substance ? cap(d.label || "") : d.label || "Lijek",
+    sub: substance ? `${num(d.products_total || products.length)} ${plural(d.products_total || products.length, "oblik", "oblika", "oblika")} u bazi HALMED-a` : subs, card: c });
+  if (!substance) {
+    const listed = products.filter((p) => p.hzzo_list);
+    const kinds = new Set(listed.flatMap((p) => p.hzzo_list.split("+")));
+    const lows = listed.map((p) => p.copay_min_eur).filter((v) => typeof v === "number");
+    const highs = listed.map((p) => p.copay_max_eur).filter((v) => typeof v === "number");
+    let cls = "listband--none", title = "Nije pronađen na listama HZZO-a", text = "Pod ovim nazivom ga nema ni na osnovnoj ni na dopunskoj listi.";
+    if (kinds.has("OLL") && kinds.has("DLL")) { cls = ""; title = "Osnovna i dopunska lista HZZO-a"; text = "Neka pakiranja bez doplate, neka uz doplatu."; }
+    else if (kinds.has("DLL")) {
+      cls = "listband--dll"; title = "Dopunska lista HZZO-a";
+      const lo = Math.min(...lows), hi = Math.max(...highs);
+      text = lows.length ? `Uz recept: doplata ${lo === hi ? `${num(lo, 2)} €` : `od ${num(lo, 2)} do ${num(hi, 2)} €`} po pakiranju.` : "Uz recept, uz doplatu.";
+    } else if (kinds.has("OLL")) { cls = ""; title = "Osnovna lista HZZO-a"; text = listed.every((p) => p.hospital_only) ? "Primjenjuje se u bolnici." : "Uz recept se izdaje bez doplate."; }
+    const band = el("div", `listband ${cls}`);
+    const t = el("div"); t.append(el("b", null, title), el("span", null, text));
+    band.append(t);
+    body.append(band);
+  }
+  const ul = el("ul", "forms");
+  products.slice(0, 5).forEach((p) => {
+    const li = el("li");
+    const dot = el("span", `dot ${p.hzzo_list ? (p.hzzo_list === "DLL" ? "dot--dll" : "dot--oll") : ""}`); dot.setAttribute("aria-hidden", "true");
+    li.append(dot, el("span", null, `${p.name} · ${p.rx || ""}`));
+    ul.append(li);
+  });
+  body.append(ul);
+  const link = products.find((p) => p.detail_url);
+  if (link) {
+    const a = el("a", "btn btn--sm btn--ghost"); a.href = link.detail_url; a.target = "_blank"; a.rel = "noreferrer";
+    a.append(icon("link"), document.createTextNode("Uputa o lijeku na HALMED-u"), el("span", "sr", " (otvara se u novoj kartici)"));
+    body.append(a);
+  }
+  return art;
+}
+
+function renderCard(c) {
+  if (c.status === "ok") {
+    if (c.tool === "find_health_facilities") return healthCard(c);
+    if (c.tool === "find_waiting_times") return waitingCard(c);
+    if (c.tool === "get_drug_info") return drugCard(c);
+  }
+  return frame({ tone: "ink", iconName: "info", kicker: "Odgovor", title: c.location?.name || "Uputko", summary: c.summary_hr, card: c }).art;
+}
+
+/* ---------------------------------------------------------------- voice level */
+// The indicator's ring follows the microphone while you speak and the assistant's voice while it answers.
+function meter(ctx, stream) {
+  const an = ctx.createAnalyser(); an.fftSize = 512;
+  ctx.createMediaStreamSource(stream).connect(an);
+  const buf = new Uint8Array(an.fftSize);
+  return () => { an.getByteTimeDomainData(buf); let s = 0; for (const v of buf) s += ((v - 128) / 128) ** 2; return Math.sqrt(s / buf.length); };
+}
+function startMeters(mic) {
+  if (reducedMotion() || !window.AudioContext) return;
+  const ctx = new AudioContext();
+  ctx.resume().catch(() => {});
+  meters = { ctx, mic: mic ? meter(ctx, mic) : null, bot: null, raf: 0 };
+  const tick = () => {
+    const state = $("halo").dataset.state;
+    const read = state === "speaking" ? meters.bot : state === "listening" ? meters.mic : null;
+    $("halo").style.setProperty("--level", read ? Math.min(1, read() * 4).toFixed(3) : "0");
+    meters.raf = requestAnimationFrame(tick);
+  };
+  tick();
+}
+function stopMeters() {
+  if (!meters) return;
+  cancelAnimationFrame(meters.raf); meters.ctx.close().catch(() => {}); meters = null;
+  $("halo").style.setProperty("--level", "0");
+}
+
+/* ---------------------------------------------------------------- connection */
+async function waitForIce(peer) {
+  if (peer.iceGatheringState === "complete") return;
+  await new Promise((resolve) => {
+    const done = () => { if (peer.iceGatheringState === "complete") { peer.removeEventListener("icegatheringstatechange", done); resolve(); } };
+    peer.addEventListener("icegatheringstatechange", done);
+    setTimeout(resolve, 3000);
+  });
+}
+
+function setTalk(active) {
+  $("talk-label").textContent = active ? "Završi razgovor" : "Razgovaraj";
+  $("talk").classList.toggle("btn--end", active);
+}
+
+const GENERIC_ERROR = "Razgovor trenutno nije moguće pokrenuti. Pokušajte ponovno za minutu.";
+class OfferError extends Error {}  // carries the server's own Croatian message (e.g. all busy)
+let connecting = null;  // the one connection being set up: the talk button and ask() share it
+
+function connect(withMic) {
+  if (!connecting) connecting = openConnection(withMic).finally(() => { connecting = null; });
+  return connecting;
+}
+
+async function openConnection(withMic) {
+  showError("");
+  setStatus("connecting");
+  $("talk").disabled = true;
+  let mic = null;
+  try {
+    if (withMic) {
+      try { mic = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+      catch {
+        showError("Mikrofon nije dostupan. Dopustite pristup mikrofonu ili napišite pitanje.");
+        return false;
+      }
+    }
+    withVoice = !!mic;
+    startMeters(mic);
+    pc = new RTCPeerConnection({ iceServers: iceServers.map((urls) => ({ urls })), bundlePolicy: "max-bundle" });
+    // Pipecat expects the first transceiver for audio and the second for video.
+    const audio = pc.addTransceiver("audio", { direction: "sendrecv" });
+    if (mic) await audio.sender.replaceTrack(mic.getAudioTracks()[0]);
+    pc.addTransceiver("video", { direction: "sendrecv" });
+    dc = pc.createDataChannel("rtvi", { ordered: true });
+    dc.onopen = () => {
+      dc.send(JSON.stringify({ label: RTVI, type: "client-ready", id: uid(),
+        data: { version: PROTOCOL_VERSION, about: { library: "uputko-open-page", library_version: "0.3.0" } } }));
+      pending.splice(0).forEach((m) => dc.send(m));
+      ping = setInterval(() => dc.readyState === "open" && dc.send("ping"), 1000);
+    };
+    dc.onmessage = (e) => onMessage(e.data);
+    pc.ontrack = (e) => {
+      if (e.track.kind !== "audio") return;
+      let player = document.querySelector("audio");
+      if (!player) { player = document.createElement("audio"); player.autoplay = true; document.body.append(player); }
+      player.srcObject = new MediaStream([e.track]);
+      if (meters) meters.bot = meter(meters.ctx, player.srcObject);
+    };
+    pc.onconnectionstatechange = () => { if (["failed", "closed"].includes(pc?.connectionState)) disconnect("Veza je prekinuta."); };
+    await pc.setLocalDescription(await pc.createOffer());
+    await waitForIce(pc);
+    const r = await fetch("/api/offer", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sdp: pc.localDescription.sdp, type: pc.localDescription.type }) });
+    if (!r.ok) {
+      const body = await r.json().catch(() => ({}));
+      throw new OfferError(typeof body.detail === "string" ? body.detail : "");
+    }
+    await pc.setRemoteDescription(await r.json());
+  } catch (err) {
+    mic?.getTracks().forEach((t) => t.stop());
+    disconnect();
+    showError(err instanceof OfferError && err.message ? err.message : GENERIC_ERROR);
+    return false;
+  } finally {
+    $("talk").disabled = false;
+  }
+  setTalk(true);
+  if (withVoice) activate();
+  if (typing) setStatus("thinking");
+  return true;
+}
+
+function disconnect(message) {
+  if (dc && dc.readyState === "open") dc.send(JSON.stringify({ label: RTVI, type: "disconnect-bot", id: uid() }));
+  clearInterval(ping);
+  pc?.getSenders().forEach((s) => s.track?.stop());
+  pc?.close();
+  pc = null; dc = null; botBubble = null; pending = []; withVoice = false;
+  stopMeters();
+  hideTyping();
+  setTalk(false);
+  setStatus("idle", message || STATUS.ended);
+}
+
+$("talk").addEventListener("click", () => (pc && !connecting ? disconnect() : connect(true)));
+
+async function ask(text) {
+  addBubble("user", text);
+  botBubble = null;
+  setStatus("thinking");
+  showTyping();
+  if (!pc && !(await connect(false))) { hideTyping(); return; }
+  sendText(text);
+}
+
+$("composer").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const text = $("text").value.trim();
+  if (!text) return;
+  $("text").value = "";
+  ask(text);
+});
+
+document.querySelectorAll(".topic").forEach((b) => b.addEventListener("click", () => ask(b.dataset.q)));
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+/* Print. Only the answer on /termini has a layout of its own: a printed list to take to the
+   phone, with the key cards, every institution with its number, how to book and the sources.
+   Every other page prints without the shell (layout.css). Paper is white whatever the screen
+   uses (tokens.css); charts and maps are left out (charts.css, map.css). */
+
+.print-only {
+  display: none;
+}
+/* Rows past the first page of the table are hidden on screen only: a printout lists them all. */
+@media screen {
+  tr.is-extra {
+    display: none;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm 12mm;
+  }
+  /* A printed page has its own measure: a size that reads on A4, larger for A+ and A++. */
+  :root:root {
+    font-size: 10.5pt;
+  }
+  :root:root[data-text="large"] {
+    font-size: 12pt;
+  }
+  :root:root[data-text="xlarge"] {
+    font-size: 13.5pt;
+  }
+  body {
+    color: #000;
+    background: #fff;
+  }
+  .print-only {
+    display: block;
+  }
+  /* Links are text on paper: black, no underline, no arrow. */
+  a,
+  a:visited {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  .link__tail {
+    display: none;
+  }
+
+  /* The page's controls stay on screen: the top with the search, print and share, sorting,
+     „Prikaži sve”, the map, the chart and the folded trend. */
+  .tr-top,
+  .tr-acts,
+  .tr-src,
+  .seg,
+  .all__more,
+  .all__filter,
+  .tr-map,
+  .tr-scatter,
+  .tr-more,
+  .skeleton {
+    display: none !important;
+  }
+  .is-refreshing {
+    opacity: 1;
+  }
+  /* Bands and cards are plain paper: no grey ground, no frame. */
+  .tr-band {
+    margin-top: 7mm;
+    padding-block: 0;
+    background: none;
+    box-shadow: none;
+    clip-path: none;
+    border: 0 !important;
+  }
+  .all {
+    padding: 0;
+    border: 0 !important;
+    background: none;
+    box-shadow: none;
+  }
+  .all__head {
+    margin-bottom: 1.5mm;
+  }
+  .tr-facts {
+    gap: 2mm 10mm;
+    margin-bottom: 4mm;
+  }
+  .tr-facts b {
+    font-size: var(--fs-num-s);
+  }
+  .tr-notes,
+  .tr-prov,
+  .tr-facts {
+    break-inside: avoid;
+  }
+
+  /* The printout's own head: what it is, the question, when it was printed and how fresh the
+     lists are, under a rule. */
+  .print-head {
+    margin-bottom: 5mm;
+    padding-bottom: 3mm;
+    border-bottom: 1px solid #000;
+  }
+  .print-head__paper {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 700;
+  }
+  .print-head__title {
+    margin-top: 1.5mm;
+    font-family: var(--font-sans);
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .print-head__meta {
+    margin-top: 1.5mm;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    line-height: 1.4;
+  }
+  .print-head ~ .tr-head .tr-head__h {
+    max-width: none;
+    font-size: var(--fs-h2);
+  }
+
+  /* Coupons print whole: nothing is masked or animated (a coupon caught as it rises in would print
+     faint or empty), white ground, the e-mail written out. */
+  .tr-picks {
+    margin-top: 4mm;
+  }
+  .coupon,
+  .coupon * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .coupon {
+    break-inside: avoid;
+    clip-path: none !important;
+    mask: none !important;
+    background: #fff !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .coupon__mail-w {
+    display: none !important;
+  }
+  .coupon__addr {
+    position: static !important;
+    display: inline !important;
+    width: auto !important;
+    height: auto !important;
+    clip-path: none !important;
+  }
+  .wkey {
+    print-color-adjust: exact;
+  }
+
+  /* Every row of the table as a table again (also where the screen had three lines per row),
+     the telephone as text; bars keep their colour, so the printout reads like the screen. */
+  .all,
+  .tr-none {
+    break-before: auto;
+  }
+  /* The table's headline stays with its first rows. */
+  .all__head {
+    break-after: avoid;
+  }
+  .wt {
+    display: table !important;
+  }
+  /* On a narrow page (A4 with A++ is under 42rem) the screen's three-line rows would apply:
+     the header row comes back and every cell is a cell again. */
+  .wt thead {
+    position: static !important;
+    display: table-header-group !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip-path: none !important;
+    white-space: normal !important;
+  }
+  .wt tbody {
+    display: table-row-group !important;
+  }
+  .wt tr,
+  .wt tr.is-extra {
+    display: table-row !important;
+    padding: 0 !important;
+    border: 0 !important;
+    break-inside: avoid;
+  }
+  .wt th,
+  .wt td {
+    display: table-cell !important;
+    margin: 0 !important;
+    padding: 1.6mm 0.6rem 1.6mm 0 !important;
+  }
+  .wt tbody th,
+  .wt tbody td {
+    border-bottom: var(--border-w) solid var(--hair) !important;
+  }
+  .wt :is(th, td):last-child {
+    padding-right: 0 !important;
+  }
+  .wt .wt__km {
+    text-align: right !important;
+  }
+  .wt .wt__date,
+  .wt .wt__tel {
+    text-align: left !important;
+  }
+  .wt tbody tr:hover,
+  .wt tbody tr[data-linked] {
+    background: none;
+  }
+  .wt .wt__wait {
+    width: 24% !important;
+  }
+  .wt__bar {
+    print-color-adjust: exact;
+  }
+  .wt__mail-word {
+    display: none;
+  }
+  /* The address breaks only after its „@” (the markup holds both halves together), so a hyphen
+     in the domain never splits it into what looks like two addresses. */
+  .wt__mail-addr {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    font-size: 0.92em;
+    white-space: normal;
+    hyphens: manual;
+  }
+  .all__foot,
+  .tr-none {
+    break-inside: avoid;
+  }
+  /* „Prikaži sve” is not printed: the last row's hairline is the rule above the line. */
+  .all__foot {
+    margin: 2mm 0 0;
+    padding: 0;
+    border-top: 0;
+  }
+}

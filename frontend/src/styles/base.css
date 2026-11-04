@@ -1,0 +1,239 @@
+/* Base: paper, ink and the typographic rules every page shares. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  font-variant-numeric: lining-nums;
+  font-synthesis: none; /* the italic is a real face; nothing is faked bold */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word; /* a long word in a narrow column breaks; the page never scrolls sideways */
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+p {
+  text-wrap: pretty;
+}
+/* Lists are set by their components; ones that need list semantics in Safari add role="list". */
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------ headlines */
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--fs-h1);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+h2 {
+  font-size: var(--fs-h2);
+  line-height: 1.1;
+  letter-spacing: -0.022em;
+}
+h3 {
+  font-size: var(--fs-h3);
+  line-height: 1.15;
+  letter-spacing: -0.008em;
+}
+h4 {
+  font-size: var(--fs-ui);
+}
+
+/* ------------------------------------------------------------ links */
+a {
+  color: var(--ink);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition:
+    color var(--t-hover) var(--ease),
+    text-decoration-thickness var(--t-hover) var(--ease);
+}
+a:hover {
+  color: var(--ink-2);
+  text-decoration-thickness: 2px;
+}
+:root[data-contrast="high"] a {
+  text-decoration-thickness: 2px;
+}
+:root[data-contrast="high"] a:hover {
+  text-decoration-thickness: 3px;
+}
+
+abbr {
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--teal-tint);
+  color: var(--ink);
+}
+:root[data-contrast="high"] ::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ------------------------------------------------------------ focus: the highlighter
+   A yellow marker with an ink edge reads on paper, on ink and in both themes. Links and
+   link-buttons are marked like highlighted text; Windows high contrast still gets an outline. */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 0;
+  box-shadow: 0 0 0 6px var(--focus-ink);
+}
+a:focus-visible,
+.linkbtn:focus-visible {
+  outline: 3px solid transparent;
+  background-color: var(--focus);
+  color: var(--focus-ink);
+  box-shadow:
+    0 -2px var(--focus),
+    0 4px var(--focus-ink);
+  text-decoration: none;
+}
+/* On the marker everything is set in its ink: the words, the numbers and the icons inside, whatever
+   colour the link carries (ink in the shell, teal, the red 112). Component rules come later in the
+   cascade and are often more specific, and in the dark theme their light ink would vanish on
+   the yellow, so this one rule has to win. */
+:is(a, .linkbtn):focus-visible,
+:is(a, .linkbtn):focus-visible * {
+  color: var(--focus-ink) !important;
+}
+/* Focus moved by the page itself (after navigation, to an answer) marks nothing. */
+[tabindex="-1"]:focus,
+[tabindex="-1"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------ Croatian typography */
+/* Acronyms as optically reduced capitals: <span class="nw"><abbr class="ac">HZZO</abbr>-a</span> */
+.ac {
+  font-size: 0.88em;
+  letter-spacing: 0.035em;
+  margin-right: -0.035em;
+}
+.nw {
+  white-space: nowrap;
+}
+/* Tabular figures only in columns of whole numbers (days, km), in the clock and in rankings. */
+.num {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Read by screen readers, not shown (on any element, whatever its own padding or border). */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  left: var(--gutter);
+  top: -6rem;
+  z-index: var(--z-skip);
+  padding: 0.7rem 1rem;
+  background: var(--focus);
+  color: var(--focus-ink);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-decoration: underline;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 0.75rem;
+  color: var(--focus-ink);
+  outline: 3px solid transparent;
+  box-shadow: 0 4px 0 var(--focus-ink);
+}
+
+/* ------------------------------------------------------------ reduced motion
+   "Animacije: smanjene", or a device that asks for less motion while the sheet says „Kao uređaj”
+   (the default; „Uključene” is the visitor's own choice and overrides the device, prefs.ts):
+   nothing moves, so every animated element shows its own (final) style; scrolling jumps. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) {
+    scroll-behavior: auto;
+  }
+  :root:not([data-motion="full"]) *,
+  :root:not([data-motion="full"]) *::before,
+  :root:not([data-motion="full"]) *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+:root[data-motion="reduce"] {
+  scroll-behavior: auto;
+}
+:root[data-motion="reduce"] *,
+:root[data-motion="reduce"] *::before,
+:root[data-motion="reduce"] *::after {
+  animation: none !important;
+  transition: none !important;
+}

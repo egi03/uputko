@@ -1,0 +1,34 @@
+# tajne
+.env
+.env.*
+!.env.example
+
+# podaci
+data/
+*.db
+*.sqlite3
+
+# modeli i izlazi testa sinteze govora
+models/
+*.wav
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+
+# node
+node_modules/
+dist/
+.vite/
+
+# ostalo
+.DS_Store
+*.log
+
+# open profil
+open/tts_out/
