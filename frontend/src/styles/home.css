@@ -1,6 +1,6 @@
 /* The front page (pages/Home.tsx): a short title and three large choices on
-   the left, a real case from the current lists on the right. On a phone: the title, the case,
-   the choices. No other text. */
+   the left, a real case from the current lists on the right. On a phone: the title, the choices,
+   the case. No other text. */
 
 .home {
   display: grid;
@@ -248,8 +248,8 @@
     grid-template-rows: none;
     grid-template-areas:
       "title"
-      "card"
-      "choices";
+      "choices"
+      "card";
   }
   .choices {
     max-width: none;

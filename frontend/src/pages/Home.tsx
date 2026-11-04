@@ -12,8 +12,8 @@ import type { WaitingExample } from "../types";
 import { exampleLink, exampleTitle } from "../waiting";
 
 /**
- * The front page: a short title, the three things one can do (a few words
- * each) and, beside them, a real case from the current lists that shows the point: the same
+ * The front page: a short title, the three things one can do (a few words each) and, beside them
+ * or on a phone under them, a real case from the current lists that shows the point: the same
  * examination, months sooner nearby.
  */
 export function HomePage() {
@@ -25,6 +25,11 @@ export function HomePage() {
       <h1 id="home-h" className="home__h">
         Kraće čekanje na pregled
       </h1>
+      <nav className="choices" aria-label="Što trebate">
+        <Choice to="/termini" icon={<CalendarClock />} title="Pronađi kraće čekanje" sub="pregled ili pretraga" />
+        <Choice to="/lijekovi" icon={<Pill />} title="Provjeri lijek" sub="recept, doplata, nestašica" />
+        <Choice to="/asistent" focusMic icon={<Mic />} title="Pitaj AI asistenta" sub="glasom ili tekstom" />
+      </nav>
       {first ? (
         <Example example={first} more={more} updatedAt={examples.data?.updated_at ?? null} />
       ) : examples.isPending ? (
@@ -33,11 +38,6 @@ export function HomePage() {
           <span className="skeleton ex__sk" />
         </div>
       ) : null}
-      <nav className="choices" aria-label="Što trebate">
-        <Choice to="/termini" icon={<CalendarClock />} title="Pronađi kraće čekanje" sub="pregled ili pretraga" />
-        <Choice to="/lijekovi" icon={<Pill />} title="Provjeri lijek" sub="recept, doplata, nestašica" />
-        <Choice to="/asistent" focusMic icon={<Mic />} title="Pitaj AI asistenta" sub="glasom ili tekstom" />
-      </nav>
     </section>
   );
 }
