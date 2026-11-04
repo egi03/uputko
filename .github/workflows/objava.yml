@@ -1,0 +1,35 @@
+# Publishes main on the server, only when someone presses "Run workflow" (Actions, Objava).
+# To publish on every push instead, add under "on:" the lines "push:" and "  branches: [main]".
+name: Objava
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: objava
+
+jobs:
+  objava:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Ključ za poslužitelj
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        # known_hosts pins the server's host key; it changes only if the server is rebuilt.
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo '* ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIASVOpxhhssFWGrWfjlb32WKQM19yRf8WEPnE+89PtT7' > ~/.ssh/known_hosts
+
+      # The key may run only ~/deploy.sh on the server (deploy/deploy.sh in this repository).
+      - name: Objava na poslužitelju
+        run: ssh -T -o BatchMode=yes -o ServerAliveInterval=30 uputko@uputko.eugensedlar.com
+
+      - name: Provjera stranice
+        run: |
+          curl -fsS -o /dev/null --retry 12 --retry-delay 5 --retry-all-errors --max-time 15 https://uputko.eugensedlar.com/health
+          curl -fsS -o /dev/null --retry 12 --retry-delay 5 --retry-all-errors --max-time 15 https://uputko.eugensedlar.com/
