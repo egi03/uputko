@@ -169,9 +169,8 @@ const OPENING_HINT = "Pitajte za termin, ambulantu ili lijek.";
 function MicHint({ className }: { className: string }) {
   return (
     <p className={`small ${className}`}>
-      Preglednik će zatražiti dopuštenje za mikrofon. Razgovor obrađuju ElevenLabs i{NBSP}jezični model; glas se ne snima,
-      a{NBSP}zapis se briše nakon razgovora. Ne navodite ime, OIB ni druge osobne podatke. Pokretanjem razgovora ili slanjem
-      pitanja pristajete na <ExtLink href="/privatnost">obradu podataka</ExtLink>.
+      Razgovor obrađuju ElevenLabs i{NBSP}jezični model; glas se ne snima. Ne navodite osobne podatke. Pokretanjem razgovora
+      ili slanjem pitanja pristajete na <ExtLink href="/privatnost">obradu podataka</ExtLink>.
     </p>
   );
 }
@@ -662,7 +661,7 @@ function Conversation({
               </div>
             </div>
             {errorNote("intro__error")}
-            {composer("ask intro__ask", "ili napišite pitanje", "npr. MR koljena u Osijeku")}
+            {composer("ask intro__ask", "ili napišite pitanje", "npr. MR koljena")}
             {placeLine("intro__loc")}
           </section>
           <section className="intro__ex" aria-labelledby="intro-ex-h">

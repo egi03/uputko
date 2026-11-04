@@ -500,10 +500,25 @@
     padding-top: 1.4rem;
   }
   .intro__lede {
-    font-size: var(--fs-body);
+    display: none;
   }
+  /* The hint runs the full width under the microphone and its label, not in a narrow column. */
   .intro__talk {
-    margin-top: 1.6rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.9rem 1rem;
+    margin-top: 1.4rem;
+  }
+  .intro__talk-text {
+    display: contents;
+  }
+  .intro__label {
+    align-self: center;
+  }
+  .intro__hint {
+    grid-column: 1 / -1;
+    max-width: none;
+    margin-top: 0;
   }
   .intro__voice {
     width: 5.5rem;

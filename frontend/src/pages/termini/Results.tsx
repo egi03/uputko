@@ -12,6 +12,7 @@ import { Ac, Typeset } from "../../components/Typeset";
 import { CountyWaits } from "../../components/waiting/CountyWaits";
 import { ContactLink, EntriesTable, type LeftOut, LeftOutLine } from "../../components/waiting/EntriesTable";
 import { ProcedureName } from "../../components/waiting/ProcedureName";
+import { useIsPhone } from "../../hooks/useIsPhone";
 import { WaitScatter } from "../../components/waiting/WaitScatter";
 import { WaitTrend } from "../../components/waiting/WaitTrend";
 import { dateHr, dayHr, days, fmt, fmtInt, NBSP, plural, stampHr, stampYearHr } from "../../format";
@@ -73,6 +74,11 @@ export function Results({
   const parts = headlineParts(options, entries);
   const scale = Math.max(1, median ?? 0, ...entries.map((e) => e.wait_days)) * 1.04;
   const shown = county ? entries.filter((e) => e.county === county) : entries;
+  const phone = useIsPhone();
+  const [statsOpen, setStatsOpen] = useState(false);
+  const statsHead = useRef<HTMLHeadingElement>(null);
+  // On a phone the answer comes first; the statistics wait behind a button.
+  const statsFolded = phone && !statsOpen;
   const linked = useLinkedHighlight();
   // Without a place the picks keep a place for the nearest one (no dead end).
   const askForPlace = result.status === "ok" && !origin && coupons.length === 1;
@@ -258,92 +264,109 @@ export function Results({
 
       {statsShown ? (
         <section className="tr-stats" aria-labelledby="stats-h">
-          <h2 className="tr-stats__h" id="stats-h">
+          <h2 className="tr-stats__h" id="stats-h" ref={statsHead} tabIndex={-1}>
             Statistika
           </h2>
-          {free > 0 && median !== null ? (
-            <dl className="tr-facts">
-              <div>
-                <dt>medijan čekanja u&nbsp;Hrvatskoj</dt>
-                <dd>
-                  <b className="num">{fmtInt(median)}</b> {plural(median, "dan", "dana", "dana")}
-                </dd>
-              </div>
-              <div>
-                <dt>
-                  {plural(lists, "ustanove", "ustanove", "ustanova")} s&nbsp;listom {plural(free, "ima", "imaju", "ima")}{" "}
-                  slobodan termin
-                </dt>
-                <dd>
-                  <b className="num">{fmtInt(free)}</b> od {fmtInt(lists)}
-                </dd>
-              </div>
-            </dl>
-          ) : null}
+          {statsFolded ? (
+            <p className="tr-stats__open">
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setStatsOpen(true);
+                  statsHead.current?.focus({ preventScroll: true });
+                }}
+              >
+                Prikaži statistiku
+              </button>
+            </p>
+          ) : (
+            <>
+              {free > 0 && median !== null ? (
+                <dl className="tr-facts">
+                  <div>
+                    <dt>medijan čekanja u&nbsp;Hrvatskoj</dt>
+                    <dd>
+                      <b className="num">{fmtInt(median)}</b> {plural(median, "dan", "dana", "dana")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      {plural(lists, "ustanove", "ustanove", "ustanova")} s&nbsp;listom {plural(free, "ima", "imaju", "ima")}{" "}
+                      slobodan termin
+                    </dt>
+                    <dd>
+                      <b className="num">{fmtInt(free)}</b> od {fmtInt(lists)}
+                    </dd>
+                  </div>
+                </dl>
+              ) : null}
 
-          {mapSection ? (
-            <section className="tr-sec tr-map" aria-labelledby="map-h" aria-busy={counties.isPending || undefined}>
-              <h3 className="tr-sec__h" id="map-h">
-                Po županijama
-              </h3>
-              {counties.data ? (
-                <CountyWaits
-                  data={counties.data}
-                  selected={county}
-                  onSelect={pickCounty}
-                  hint="Odaberite županiju za njezine ustanove."
-                  originCounty={result.location?.county ?? null}
-                  source={
+              {mapSection ? (
+                <section className="tr-sec tr-map" aria-labelledby="map-h" aria-busy={counties.isPending || undefined}>
+                  <h3 className="tr-sec__h" id="map-h">
+                    Po županijama
+                  </h3>
+                  {counties.data ? (
+                    <CountyWaits
+                      data={counties.data}
+                      selected={county}
+                      onSelect={pickCounty}
+                      hint="Odaberite županiju za njezine ustanove."
+                      originCounty={result.location?.county ?? null}
+                      source={
+                        <>
+                          <Ac>HZZO</Ac> (<Ac>CEZIH</Ac>)
+                          {counties.data.updated_at ? `, ${stampYearHr(counties.data.updated_at)}` : ""}
+                        </>
+                      }
+                    />
+                  ) : counties.isError ? (
+                    <p className="runin tr-map__err">
+                      <b>Pregled po županijama trenutno nije dostupan.</b> Tablica ustanova i&nbsp;dalje radi.{" "}
+                      <button type="button" className="linkbtn" onClick={() => void counties.refetch()}>
+                        Pokušaj ponovno
+                      </button>
+                    </p>
+                  ) : (
                     <>
-                      <Ac>HZZO</Ac> (<Ac>CEZIH</Ac>)
-                      {counties.data.updated_at ? `, ${stampYearHr(counties.data.updated_at)}` : ""}
+                      <span className="skeleton tr-map__sk" />
+                      <span className="visually-hidden">Učitavanje karte…</span>
                     </>
-                  }
-                />
-              ) : counties.isError ? (
-                <p className="runin tr-map__err">
-                  <b>Pregled po županijama trenutno nije dostupan.</b> Tablica ustanova i&nbsp;dalje radi.{" "}
-                  <button type="button" className="linkbtn" onClick={() => void counties.refetch()}>
-                    Pokušaj ponovno
-                  </button>
-                </p>
-              ) : (
-                <>
-                  <span className="skeleton tr-map__sk" />
-                  <span className="visually-hidden">Učitavanje karte…</span>
-                </>
-              )}
-            </section>
-          ) : null}
+                  )}
+                </section>
+              ) : null}
 
-          {origin ? (
-            <section className="tr-sec tr-scatter">
-              <WaitScatter
-                entries={entries}
-                picked={coupons}
-                origin={origin}
-                median={median}
-                procedure={label}
-                source={result.source}
-                updatedAt={result.updated_at}
-                total={free}
-                headingLevel={3}
-              />
-            </section>
-          ) : null}
+              {origin ? (
+                <section className="tr-sec tr-scatter">
+                  <WaitScatter
+                    entries={entries}
+                    picked={coupons}
+                    origin={origin}
+                    median={median}
+                    procedure={label}
+                    source={result.source}
+                    updatedAt={result.updated_at}
+                    total={free}
+                    headingLevel={3}
+                  />
+                </section>
+              ) : null}
 
-          {trendShown && pid ? (
-            <details className="tr-more">
-              <summary>Kako se mijenja medijan čekanja</summary>
-              <WaitTrend procedureId={pid} />
-            </details>
-          ) : null}
-          <p className="tr-stats__more">
-            <Link className="tr-go" to="/dashboard#liste">
-              Liste čekanja po županijama za sve postupke
-              <ArrowRight aria-hidden="true" />
-            </Link>
-          </p>
+              {trendShown && pid ? (
+                <details className="tr-more">
+                  <summary>Kako se mijenja medijan čekanja</summary>
+                  <WaitTrend procedureId={pid} />
+                </details>
+              ) : null}
+              <p className="tr-stats__more">
+                <Link className="tr-go" to="/dashboard#liste">
+                  Liste čekanja po županijama za sve postupke
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </p>
+            </>
+          )}
         </section>
       ) : null}
 

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
+import { useIsPhone } from "../hooks/useIsPhone";
 import { api } from "../api";
 import { ballsOf, listName } from "../drugs";
 import { collator, fmtInt, fold, NBSP, plural, stampYearHr } from "../format";
@@ -10,6 +11,7 @@ import { HarveyBall } from "./DrugStatus";
 
 /** How many medicines the list shows before „Prikaži sve”. */
 const FIRST = 8;
+const FIRST_PHONE = 3;
 
 /** The balls and the words for a list code from HZZO: „● ◐ osnovna i dopunska lista”. */
 export function ListWords({ list, hospital = false }: { list: HzzoList | null; hospital?: boolean }) {
@@ -34,11 +36,12 @@ export function ListWords({ list, hospital = false }: { list: HzzoList | null; h
 
 /**
  * HALMED's current shortages as a quiet panel: how many, a field that filters the names, and the
- * names from A to Ž, the first eight shown until „Prikaži sve”. A name opens that medicine.
+ * names from A to Ž, the first few shown until „Prikaži sve”. A name opens that medicine.
  */
 export function Shortages({ onAsk }: { onAsk: (name: string) => void }) {
   const overview = useQuery({ queryKey: ["drug-overview"], queryFn: api.drugOverview, staleTime: 10 * 60_000 });
   const [all, setAll] = useState(false);
+  const first = useIsPhone() ? FIRST_PHONE : FIRST;
   const [query, setQuery] = useState("");
   const firstNew = useRef<HTMLButtonElement>(null);
   const fieldId = useId();
@@ -73,7 +76,7 @@ export function Shortages({ onAsk }: { onAsk: (name: string) => void }) {
     const sorted = [...o.shortages].sort((a, b) => collator.compare(a.label, b.label));
     const q = fold(query);
     const found = q ? sorted.filter((s) => fold(`${s.label} ${s.substance}`).includes(q)) : sorted;
-    const shown = q || all ? found : found.slice(0, FIRST);
+    const shown = q || all ? found : found.slice(0, first);
     const forms = o.shortage_forms ?? sorted.length;
     body = (
       <>
@@ -109,7 +112,7 @@ export function Shortages({ onAsk }: { onAsk: (name: string) => void }) {
                 <button
                   type="button"
                   className="dlist__b"
-                  ref={i === FIRST && !q ? firstNew : undefined}
+                  ref={i === first && !q ? firstNew : undefined}
                   onClick={() => onAsk(s.label)}
                 >
                   <span className="dlist__t">
@@ -127,7 +130,7 @@ export function Shortages({ onAsk }: { onAsk: (name: string) => void }) {
         ) : (
           <p className="dpanel__lede">Nema nestašice za „{query.trim()}”.</p>
         )}
-        {!q && !all && sorted.length > FIRST ? (
+        {!q && !all && sorted.length > first ? (
           <p className="dpanel__more">
             <button type="button" className="btn btn--sm" onClick={() => setAll(true)}>
               Prikaži sve ({fmtInt(sorted.length)})

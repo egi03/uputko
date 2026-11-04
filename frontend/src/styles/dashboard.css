@@ -1367,3 +1367,9 @@
     box-shadow: none;
   }
 }
+
+@media (max-width: 760px) {
+  .mult-wide {
+    display: none;
+  }
+}

@@ -273,3 +273,9 @@
     display: none !important;
   }
 }
+
+@media (max-width: 760px) {
+  .ex__more {
+    display: none;
+  }
+}

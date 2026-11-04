@@ -490,3 +490,13 @@
     font-size: 17px;
   }
 }
+
+/* The tab bar already has these links; on a phone the sources are on each page. */
+:root[data-nav="compact"] .foot__dup {
+  display: none;
+}
+@media (max-width: 760px) {
+  .foot__src {
+    display: none;
+  }
+}

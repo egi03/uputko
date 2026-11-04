@@ -1,5 +1,6 @@
 import { type CSSProperties, Fragment, useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { useIsPhone } from "../../hooks/useIsPhone";
 import { dateHr, days, fmt, fmtInt, NBSP, plural } from "../../format";
 import type { WaitOption } from "../../types";
 import { countyName, forProcedure, instKey, waitTone } from "../../waiting";
@@ -8,6 +9,7 @@ import { Typeset } from "../Typeset";
 
 type Sort = "km" | "days";
 const FIRST_PAGE = 10;
+const FIRST_PAGE_PHONE = 5;
 
 /**
  * An institution the table leaves out: children only, or a list without a free appointment. The
@@ -70,6 +72,7 @@ export function EntriesTable({
   const [chosen, setSort] = useState<Sort | null>(null);
   const sort: Sort = hasOrigin ? (chosen ?? "km") : "days";
   const [all, setAll] = useState(false);
+  const firstPage = useIsPhone() ? FIRST_PAGE_PHONE : FIRST_PAGE;
   const head = useRef<HTMLHeadingElement>(null);
   const firstNew = useRef<HTMLTableCellElement>(null);
   const focusNew = useRef(false);
@@ -85,7 +88,7 @@ export function EntriesTable({
     else out.sort((a, b) => a.wait_days - b.wait_days || far(a) - far(b));
     return out;
   }, [entries, sort]);
-  const hidden = all ? 0 : Math.max(0, rows.length - FIRST_PAGE);
+  const hidden = all ? 0 : Math.max(0, rows.length - firstPage);
   const tick = median !== null && scale > 0 ? Math.min(1, median / scale) : null;
   const allCounties = (
     <button
@@ -184,14 +187,14 @@ export function EntriesTable({
                 return (
                   <tr
                     key={instKey(e)}
-                    className={!all && i >= FIRST_PAGE ? "is-extra" : undefined}
+                    className={!all && i >= firstPage ? "is-extra" : undefined}
                     data-inst={instKey(e)}
                     data-county={e.county ?? undefined}
                   >
                     <th
                       scope="row"
-                      ref={i === FIRST_PAGE ? firstNew : undefined}
-                      tabIndex={i === FIRST_PAGE ? -1 : undefined}
+                      ref={i === firstPage ? firstNew : undefined}
+                      tabIndex={i === firstPage ? -1 : undefined}
                     >
                       <span className="tbl__name">
                         <Typeset text={e.spoken_name} />

@@ -1028,3 +1028,15 @@
     margin-top: 3rem;
   }
 }
+
+@media (max-width: 760px) {
+  .tr-often .tr-pills li:nth-child(n + 4) {
+    display: none;
+  }
+  .wkey {
+    display: none;
+  }
+  .tr-stats__open {
+    margin-top: 0.9rem;
+  }
+}

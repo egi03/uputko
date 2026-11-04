@@ -140,8 +140,11 @@ function Footer() {
           Podaci: <Ac>HZZO</Ac>, <Ac>CEZIH</Ac>, <Ac>HALMED</Ac>, <Ac>DZS</Ac>, data.gov.hr
         </p>
         <p className="foot__links">
-          <Link to="/termini">Liste čekanja</Link> · <Link to="/lijekovi">Lijekovi</Link> ·{" "}
-          <Link to="/asistent">AI asistent</Link> · <Link to="/dashboard">Za općine</Link> ·{" "}
+          <span className="foot__dup">
+            <Link to="/termini">Liste čekanja</Link> · <Link to="/lijekovi">Lijekovi</Link> ·{" "}
+            <Link to="/asistent">AI asistent</Link> ·{" "}
+          </span>
+          <Link to="/dashboard">Za općine</Link> ·{" "}
           <Link to="/o-projektu#pristupacnost">Pristupačnost</Link>
         </p>
         <p className="foot__fine">

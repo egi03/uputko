@@ -30,6 +30,11 @@ const STATUS_LABELS: Record<string, string> = {
   no_data: "nema podataka",
   ambiguous: "nejasan upit",
 };
+const ASKED_FOR: Record<string, string> = {
+  find_waiting_times: "Postupak",
+  find_health_facilities: "Ustanova",
+  get_drug_info: "Lijek",
+};
 const TOPIC_LABELS: Record<string, string> = {
   ...CATEGORY_LABELS,
   brand: "lijek po nazivu",
@@ -429,11 +434,15 @@ function rowsOf(buckets: Bucket[], showDemo: boolean, label: (key: string) => { 
   return buckets.map((b) => ({ key: b.key, ...label(b.key), real: b.real, demo: showDemo ? b.demo : 0 }));
 }
 
-/** „find_waiting_times:not_found:ct” → CT, under it „liste čekanja · nije pronađeno”. */
+/**
+ * „find_waiting_times:not_found:ct” → CT, under it „liste čekanja · nije pronađeno”. A question
+ * that never got as far as a topic has its status there instead: named by what was asked for.
+ */
 function unansweredLabel(key: string): { label: string; sub?: string } {
   const [tool = "", status = "", topic = ""] = key.split(":");
+  const asked = !topic || topic === status;
   return {
-    label: capitalize(TOPIC_LABELS[topic] ?? topic),
+    label: asked ? (ASKED_FOR[tool] ?? capitalize(tool)) : capitalize(TOPIC_LABELS[topic] ?? topic),
     sub: [TOOL_LABELS[tool] ?? tool, STATUS_LABELS[status] ?? status].filter(Boolean).join(" · "),
   };
 }
@@ -474,11 +483,13 @@ function StatsCharts({ s, showDemo }: { s: Stats; showDemo: boolean }) {
             sample={showDemo}
             rows={rowsOf(s.by_tool, showDemo, (k) => ({ label: capitalize(TOOL_LABELS[k] ?? k) }))}
           />
-          <Multiple
-            title="Profil"
-            sample={showDemo}
-            rows={rowsOf(s.by_profile, showDemo, (k) => ({ label: PROFILE_LABELS[k] ?? k }))}
-          />
+          <div className="mult-wide">
+            <Multiple
+              title="Profil"
+              sample={showDemo}
+              rows={rowsOf(s.by_profile, showDemo, (k) => ({ label: PROFILE_LABELS[k] ?? k }))}
+            />
+          </div>
         </div>
         <Multiple
           title="Županije"
