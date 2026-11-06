@@ -779,6 +779,14 @@ select.select {
 .seg--box label + label {
   border-left: 1.5px solid var(--ink);
 }
+/* The outer cells take the pill's corners, so the inked and hover grounds stop at its curve.
+   Not overflow on the box: that would cut off the focus ring. */
+.seg--box label:first-child {
+  border-radius: var(--radius-control) 0 0 var(--radius-control);
+}
+.seg--box label:last-child {
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
+}
 .seg--box input {
   position: absolute;
   inset: 0;

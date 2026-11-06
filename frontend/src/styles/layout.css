@@ -213,12 +213,20 @@
   container: prikaz / inline-size;
 }
 @container prikaz (max-width: 15.5rem) {
+  /* Stacked, a pill's curve would swallow the first and last lines: a card's corners instead. */
   .settings__group .seg--box {
     grid-auto-flow: row;
+    border-radius: var(--radius-card);
   }
   .settings__group .seg--box label + label {
     border-top: 1.5px solid var(--ink);
     border-left: 0;
+  }
+  .settings__group .seg--box label:first-child {
+    border-radius: calc(var(--radius-card) - 1.5px) calc(var(--radius-card) - 1.5px) 0 0;
+  }
+  .settings__group .seg--box label:last-child {
+    border-radius: 0 0 calc(var(--radius-card) - 1.5px) calc(var(--radius-card) - 1.5px);
   }
   .settings__group .seg--box label {
     grid-auto-flow: column;
