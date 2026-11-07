@@ -826,6 +826,13 @@ select.select {
     background: Highlight;
     color: HighlightText;
   }
+  /* Their text: left to the browser it gets a backplate in Canvas, and HighlightText on Canvas
+     does not show. */
+  .seg--box label:has(input:checked) span,
+  .combo .combo__option[aria-selected="true"] * {
+    forced-color-adjust: none;
+    color: HighlightText;
+  }
   .seg button {
     border-bottom-color: Canvas;
   }

@@ -737,6 +737,12 @@
     background: Highlight;
     color: HighlightText;
   }
+  /* Its text and tick: left to the browser they get a backplate in Canvas, on which
+     HighlightText does not show. */
+  .check:has(input:checked) > span {
+    forced-color-adjust: none;
+    color: HighlightText;
+  }
 }
 
 /* ------------------------------------------------------------ folded notes */

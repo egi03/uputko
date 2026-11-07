@@ -419,6 +419,12 @@
   color: var(--paper);
   box-shadow: none;
 }
+/* Windows high contrast drops the ground and the shadow, the only marks of the chosen order. */
+@media (forced-colors: active) {
+  .all .all__sort button[aria-pressed="true"] {
+    outline: 2px solid CanvasText;
+  }
+}
 @media (pointer: coarse) {
   .all .all__sort button {
     min-height: 44px;
