@@ -71,8 +71,8 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--teal-fill);
+  color: var(--on-fill);
   vertical-align: middle;
   transition:
     background-color var(--t-hover) var(--ease),
@@ -84,7 +84,7 @@
   stroke-width: 2.4;
 }
 .dh__go:hover {
-  background: var(--ink-2);
+  background: var(--teal-fill-hover);
 }
 .dh__go:active {
   transform: translateY(1px);
@@ -133,9 +133,9 @@
   text-decoration: none;
 }
 .dchip[aria-current="true"] {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--paper);
+  border-color: var(--teal-fill);
+  background: var(--teal-fill);
+  color: var(--on-fill);
 }
 .dchip:focus-visible {
   outline: 3px solid var(--focus);

@@ -57,9 +57,14 @@
   line-height: 1.35;
 }
 .ex__saving b {
+  padding: 0 0.28em;
+  border-radius: 0.3em;
+  background: var(--teal-tint);
   color: var(--teal);
   font-weight: 800;
   letter-spacing: -0.015em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 .ex__acts {
   margin-top: 1rem;
@@ -210,6 +215,16 @@
 }
 :root[data-contrast="high"] .choice {
   border: 2px solid var(--ink);
+}
+/* The icon on a pale teal square, as every icon that names a task. */
+.choice__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  background: var(--act-tint);
+  color: var(--teal-fill);
 }
 .choice__icon .lucide {
   width: 1.7rem;

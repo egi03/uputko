@@ -716,11 +716,11 @@
   stroke-linejoin: round;
   visibility: hidden;
 }
-/* On: the pill is inked, as the chosen option in „Prikaz”. */
+/* On: the pill is filled, as the chosen option in „Prikaz”. */
 .check:has(input:checked) {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--paper);
+  border-color: var(--teal-fill);
+  background: var(--teal-fill);
+  color: var(--on-fill);
 }
 .check input:checked + .check__box svg {
   visibility: visible;

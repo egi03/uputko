@@ -1,11 +1,12 @@
 /* Uputko: design tokens.
 
-   A calm public-service look: white paper, near-black ink, one grotesque, rounded controls and
-   light hairlines. Ink is the action colour (buttons, the microphone); teal is the data colour
-   ("shorter": the sooner appointment, shorter than the median) and the brand mark's short bar;
-   red is only for emergencies (112) and "longer than the median". light-dark() picks the day or
-   night value from color-scheme, so a theme is a single property; high contrast redefines the
-   colours for both schemes. */
+   A calm public-service look in one green-blue: very lightly tinted paper, near-black ink, one
+   grotesque, rounded controls and light hairlines. Teal is the only brand colour: the action
+   (buttons, the microphone, the selected item, icons, the mark) and the data ("shorter": the
+   sooner appointment, shorter than the median). A full teal ground means "press"; a teal figure,
+   bar or pale teal ground means "better". Red is only for emergencies (112) and "longer than the
+   median". light-dark() picks the day or night value from color-scheme, so a theme is a single
+   property; high contrast redefines the colours for both schemes. */
 
 :root {
   color-scheme: light dark;
@@ -31,48 +32,50 @@
   --fs-graphic: 0.78rem; /* labels inside graphics only */
 
   /* ------------------------------------------------------------ colour
-     Ink on white; grey bands set sections apart; red is the microphone, 112 and "longer than the
-     median"; teal is "shorter than the median" and links in data; yellow is only the keyboard
-     focus. Colour never stands alone: a word, number or shape goes with it. */
-  --paper: light-dark(#ffffff, #0f1012);
-  --paper-raised: light-dark(#ffffff, #1a1b1e); /* cards on a grey band, floating sheets */
-  --paper-sunk: light-dark(#f3f3f1, #18191c); /* grey bands, fields */
-  --hover: light-dark(#f0f0ed, #26272b);
-  --ink: light-dark(#111111, #f2f2ef);
-  --ink-2: light-dark(#3d3d3d, #c9c9c4);
-  --ink-3: light-dark(#666666, #9d9d98);
-  --rule: light-dark(#e4e4e0, #2b2c30); /* separators are hairlines, never heavy rules */
-  --hair: light-dark(#e4e4e0, #2b2c30);
-  --hair-2: light-dark(#eeeeeb, #222327); /* chart grid, list rows */
-  --teal: light-dark(#0b6b6d, #5cc2bd); /* data: shorter than the median */
-  --teal-fill: light-dark(#111111, #f2f2ef); /* the main button is ink */
-  --teal-fill-hover: light-dark(#333333, #ffffff);
-  --teal-tint: light-dark(#e3f0ed, #16302f);
-  --red: light-dark(#b00c27, #ff7a88); /* text */
-  --red-fill: #c8102e; /* the microphone, 112 */
+     Ink on very lightly tinted paper; tinted bands set sections apart; teal is the action and
+     "shorter than the median"; red is 112 and "longer than the median"; yellow is only the
+     keyboard focus. Colour never stands alone: a word, number or shape goes with it. */
+  --paper: light-dark(#edfdfd, #081113);
+  --paper-raised: light-dark(#ffffff, #132124); /* cards on a tinted band, floating sheets */
+  --paper-sunk: light-dark(#def4f5, #0e1a1d); /* tinted bands, fields */
+  --hover: light-dark(#d7f2f3, #172a2e);
+  --ink: light-dark(#0c2128, #ecf1f2);
+  --ink-2: light-dark(#374b52, #bfcaca);
+  --ink-3: light-dark(#55676d, #94a2a2);
+  --rule: light-dark(#d0e2e3, #243033); /* separators are hairlines, never heavy rules */
+  --hair: light-dark(#d0e2e3, #243033);
+  --hair-2: light-dark(#dff0f0, #162123); /* chart grid, list rows */
+  --teal: light-dark(#056569, #6dd1cc); /* data: shorter than the median */
+  --teal-fill: light-dark(#056569, #6dd1cc); /* the action: buttons, the selected item */
+  --teal-fill-hover: light-dark(#005256, #91e2dd);
+  --teal-tint: light-dark(#c5f0ee, #053838); /* "better": the saving, the sooner coupon */
+  --act-tint: light-dark(#d7f3f5, #003335); /* icon grounds, the selected tab */
+  --red: light-dark(#b00c27, #ed737b); /* text */
+  --red-fill: #c8102e; /* 112 */
   --red-fill-hover: #a90d27;
   --red-glow: light-dark(rgb(200 16 46 / 14%), rgb(255 90 110 / 18%));
-  --on-fill: light-dark(#ffffff, #111111);
+  --on-fill: light-dark(#ffffff, #001b1c);
   --on-red: #ffffff;
   --focus: #ffd60a;
   --focus-ink: #0b0c0c;
-  /* The brand mark: an ink square, a long pale bar and a short teal one. */
-  --mark-bg: var(--ink);
-  --mark-long: light-dark(rgb(255 255 255 / 55%), rgb(15 16 18 / 45%));
-  --mark-short: light-dark(#5cc2bd, #0b6b6d);
+  /* The brand mark: a teal square, a long pale bar and a short light-teal one. */
+  --mark-bg: var(--teal-fill);
+  --mark-long: light-dark(rgb(255 255 255 / 55%), rgb(10 30 35 / 45%));
+  --mark-short: light-dark(#8eebe2, #001b1c);
 
   /* ------------------------------------------------------------ data
-     Wait against the Croatian median, always with words and numbers next to the colour. */
-  --div-n2: light-dark(#0b6b6d, #5cc2bd); /* half or less (≤ 0.5 × median) */
-  --div-n1: light-dark(#86bfb8, #2d6662); /* shorter (≤ 0.85) */
+     Wait against the Croatian median, always with words and numbers next to the colour. The mild
+     steps differ in lightness as well as in hue, so they stay apart for red-green colour blindness. */
+  --div-n2: light-dark(#056569, #6dd1cc); /* half or less (≤ 0.5 × median) */
+  --div-n1: light-dark(#48b7c2, #1b8fa5); /* shorter (≤ 0.85) */
   --div-0: light-dark(#d9d2c5, #3a3f45); /* about the median (< 1.15) */
-  --div-p1: light-dark(#e2a1a1, #7c3a44); /* longer (< 1.6) */
-  --div-p2: light-dark(#a8172c, #ff7a88); /* much longer */
+  --div-p1: light-dark(#c37d71, #a75c55); /* longer (< 1.6) */
+  --div-p2: light-dark(#a8172c, #ed737b); /* much longer */
   --hatch: light-dark(#b3ab9c, #4e555c); /* "bez liste": 45° hatching */
   --map-stroke: var(--paper);
   --wait-none: var(--paper); /* the ground under the --hatch lines */
   --bar-short: var(--teal); /* bars and dots: shorter / about / longer than the median */
-  --bar-mid: light-dark(#7a7f86, #8e9196);
+  --bar-mid: light-dark(#798285, #7e8889);
   --bar-long: var(--red);
   --num-short: var(--teal); /* the number on a coupon */
   --num-mid: var(--ink);
@@ -165,6 +168,7 @@
   --teal-fill: light-dark(#000000, #ffffff);
   --teal-fill-hover: light-dark(#000000, #ffffff);
   --teal-tint: light-dark(#ffffff, #000000); /* tinted areas get a dashed border instead */
+  --act-tint: light-dark(#ffffff, #000000);
   --red: light-dark(#9b0019, #ff8a99);
   --red-fill: light-dark(#9b0019, #ff8a99);
   --red-fill-hover: light-dark(#7a0014, #ffb3bd);

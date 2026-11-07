@@ -57,10 +57,15 @@
 .coupon[data-linked] {
   border-color: var(--ink);
 }
-/* The sooner appointment: a teal edge and what it saves against the nearest one. */
+/* The sooner appointment: a teal edge on a pale teal ground, and what it saves against the
+   nearest one. */
 .coupon--sooner {
   border-color: var(--teal);
+  background: var(--teal-tint);
   box-shadow: inset 0 0 0 1px var(--teal), var(--shadow-card);
+}
+.coupon--sooner .coupon__saving {
+  background: var(--paper-raised);
 }
 .coupon__saving {
   width: fit-content;
@@ -375,6 +380,10 @@ span.tel:is(.coupon__tel, .apill) {
   background: none;
   box-shadow: none;
   animation: none;
+}
+/* The sooner one keeps its pale teal ground, as on the page. */
+.ans .coupon--sooner {
+  background: var(--teal-tint);
 }
 .ans .coupon__name {
   font-size: 1.08rem;

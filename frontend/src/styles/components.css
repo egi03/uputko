@@ -279,7 +279,7 @@ a.tel:has(> .lucide) {
   font-size: var(--fs-meta);
   font-weight: 700;
 }
-/* The action inside a field („Pošalji”): an ink pill at the end of the line. */
+/* The action inside a field („Pošalji”): a teal pill at the end of the line. */
 .field__btn {
   display: inline-flex;
   flex: none;
@@ -290,15 +290,15 @@ a.tel:has(> .lucide) {
   padding: 0 1rem;
   border: 0;
   border-radius: var(--radius-control);
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--teal-fill);
+  color: var(--on-fill);
   font-family: var(--font-sans);
   font-size: var(--fs-meta);
   font-weight: 700;
 }
 .field__btn:hover {
-  background: var(--ink-2);
-  color: var(--paper);
+  background: var(--teal-fill-hover);
+  color: var(--on-fill);
 }
 .field__btn:disabled {
   opacity: 0.45;
@@ -595,14 +595,14 @@ select.select {
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--teal-fill);
+  color: var(--on-fill);
   transition:
     background-color var(--t-hover) var(--ease),
     transform var(--t-press) var(--ease);
 }
 .ask-line__go:hover {
-  background: var(--ink-2);
+  background: var(--teal-fill-hover);
 }
 .ask-line__go:active {
   transform: translateY(1px);
@@ -750,11 +750,11 @@ select.select {
   color: var(--ink);
 }
 .seg button[aria-pressed="true"] {
-  border-bottom-color: var(--ink);
+  border-bottom-color: var(--teal-fill);
   color: var(--ink);
   font-weight: 700;
 }
-/* As a row of boxes (the „Prikaz” sheet): radio inputs in a fieldset, the chosen one inked. */
+/* As a row of boxes (the „Prikaz” sheet): radio inputs in a fieldset, the chosen one filled. */
 .seg--box {
   display: grid;
   grid-auto-columns: minmax(0, 1fr);
@@ -798,8 +798,8 @@ select.select {
   background: var(--hover);
 }
 .seg--box label:has(input:checked) {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--teal-fill);
+  color: var(--on-fill);
 }
 .seg--box label:has(input:focus-visible) {
   z-index: 1;

@@ -65,7 +65,7 @@ export function applyNav(text: Prefs["text"]) {
 }
 
 // The paper of each theme (styles/tokens.css): the phone's browser bar takes the page's colour.
-const PAPER = { light: "#FFFFFF", dark: "#0F1012" } as const;
+const PAPER = { light: "#EDFDFD", dark: "#081113" } as const;
 const PAPER_HIGH = { light: "#FFFFFF", dark: "#000000" } as const;
 
 /**

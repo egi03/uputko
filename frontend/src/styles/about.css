@@ -66,8 +66,8 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--teal-fill);
+  color: var(--on-fill);
   font-family: var(--font-sans);
   font-size: 1.05rem;
   font-weight: 800;

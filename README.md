@@ -46,7 +46,7 @@ Upišete pregled i mjesto, a naslov odmah kaže koliko možete uštedjeti. Ispod
 
 | Na računalu | Na mobitelu |
 |---|---|
-| <img src="assets/rezultat.png" alt="Rezultat: za 37 dana umjesto 70, s telefonima ustanova" width="640"> | <img src="assets/mobitel.png" alt="Isti rezultat na mobitelu" width="240"> |
+| <img src="assets/rezultat.png" alt="Rezultat: raniji termin u blizini, s telefonima ustanova" width="640"> | <img src="assets/mobitel.png" alt="Isti rezultat na mobitelu" width="240"> |
 
 ### Razgovor glasom ili tekstom
 
@@ -166,25 +166,23 @@ Standardi: REST + OpenAPI (`/docs`, `/openapi.json`), ATK klasifikacija lijekova
 | [GeoNames](https://www.geonames.org) | koordinate naselja | | jednokratno | CC BY 4.0 |
 | [DHMZ](https://meteo.hr) | granice županija, za kartu | 21 | jednokratno | Otvorena dozvola, uz navođenje DHMZ-a |
 
-**Kako se podaci povezuju:**
+### Kako se podaci povezuju
 
-```mermaid
-flowchart LR
-  subgraph d["Za općine"]
-    DZS["Stanovnici 65+<br/>DZS"] --> A["Dostupnost<br/>po općini"]
-    OR["Ordinacije<br/>HZZO"] --> A
-  end
-  subgraph l["Lijekovi"]
-    LK["Lijek<br/>HALMED"] -- "ATK šifra, naziv,<br/>jačina i oblik" --> LL["Lista i doplata<br/>liste HZZO-a"]
-  end
-  subgraph t["Termini"]
-    G["Rečeno mjesto:<br/>u Vinkovcima"] --> N["Naselje, općina, županija<br/>DZS + GeoNames"]
-    P["Rečeni pregled:<br/>magnetska koljena"] --> L["Postupak i ustanova<br/>liste čekanja CEZIH"]
-    L --> R["Registar HZZO-a<br/>adresa, ugovori"]
-    N --> Dist["Udaljenost i<br/>raniji termin u blizini"]
-    R --> Dist
-  end
-```
+![Dijagram: sedam izvora i šest mjesta na kojima se spajaju, svaki redak s ključem spajanja i onim što iz toga nastaje](assets/povezivanje.png)
+
+<details>
+<summary>Isto u tekstu</summary>
+
+| Što nastaje | Izvori | Spaja se po |
+|---|---|---|
+| Svako naselje s općinom, županijom i koordinatama; tu se spaja i mjesto koje korisnik kaže | DZS naselja, GeoNames, DHMZ | isto ime naselja u istoj županiji; županiju točke iz GeoNamesa daju granice DHMZ-a. 99 % naselja ima koordinate iz GeoNamesa, ostala dobiju koordinate sjedišta općine. |
+| Najbliži i raniji termin u krugu 100 km | CEZIH liste čekanja, registri HZZO-a | naziv ustanove („OŽB Vinkovci” = Opća županijska bolnica Vinkovci) vodi do registra, a adresa iz registra (ili grad iz naziva) do naselja. 99 % lista dobije lokaciju ustanove. |
+| Tko je ugovoren za istu uslugu, a nema objavljenu listu | CEZIH postupak, ugovorene djelatnosti HZZO-a | šifra djelatnosti HZZO-a (MR: 2500400) |
+| Sve o lijeku na jednoj kartici: recept, lista, doplata, nestašica | HALMED, osnovna i dopunska lista HZZO-a | ATK šifra i zaštićeni naziv, zatim jačina i oblik |
+| Gdje je više starijih, a manje ordinacija | DZS gradovi i općine (65+), ordinacije primarne zaštite HZZO-a | grad ili općina u kojoj je ordinacija |
+| Čekanje po županijama na karti | CEZIH liste čekanja, DHMZ | županija u kojoj je ustanova |
+
+</details>
 
 ### Što smo našli o kvaliteti podataka
 
@@ -330,17 +328,17 @@ MPUDT je u lipnju 2026. na gov.hr pokrenuo AI asistenta u sklopu Jedinstvenog ko
 
 ## Usklađenost s kriterijima
 
-| Kriterij | Kako ga Uputko ispunjava |
-|---|---|
-| Upotreba otvorenih podataka | izvori se automatski preuzimaju: CEZIH, HZZO, HALMED, DZS, data.gov.hr |
-| Povezivanje podataka | mjesto iz govora → naselje → općina → županija; liste čekanja → registar HZZO-a; HALMED ↔ liste lijekova; DZS × HZZO po općini |
-| Relevantnost | pristup zdravstvenoj zaštiti: termini, ambulante, lijekovi, pristupačnost |
-| Utjecaj i korist | na jedno pitanje gdje se najkraće čeka; općine vide gdje je više starijih, a manje ordinacija |
-| Inovativnost | glasovni agent koji u stvarnom vremenu koristi alate nad otvorenim podacima; brojke iz predložaka, ne iz jezičnog modela |
-| Izvedivost | radni prototip na javnom linku; open profil pokreće se jednom naredbom |
-| Arhitektura i integracija | modularni alati, REST/OpenAPI, dva zamjenjiva glasovna sloja, uklapanje uz asistenta na gov.hr |
-| Dojam (UI/UX) | tri jasna zadatka, ušteda kao naslov rezultata, „Kako se naručiti?” uz svaki termin, pristupačno uz čitač zaslona |
-| Softver otvorenog koda | kod pod EUPL-1.2; open profil koristi samo open-source softver i open-weight modele |
+| Kriterij | Kako ga Uputko ispunjava | Gdje se vidi |
+|---|---|---|
+| Upotreba otvorenih podataka | izvori se automatski preuzimaju: CEZIH svakih 12 h, HZZO dnevno, HALMED preko CKAN API-ja portala data.gov.hr, DZS s data.gov.hr | [Podaci](#podaci); stanje izvora uživo na [/dashboard](https://uputko.eugensedlar.com/dashboard) |
+| Povezivanje javno dostupnih podataka | šest spojeva: mjesto iz govora → naselje → općina → županija; liste čekanja → registar HZZO-a; postupak → ugovorena djelatnost; HALMED ↔ liste lijekova; DZS × HZZO po općini; čekanje po županijama | [Kako se podaci povezuju](#kako-se-podaci-povezuju) |
+| Relevantnost rješenja | pristup zdravstvenoj zaštiti: termini, ambulante, lijekovi, pristupačnost | [Problem](#problem) |
+| Utjecaj i korist za zajednicu | na jedno pitanje gdje se najkraće čeka; općine vide gdje je više starijih, a manje ordinacija | [Rješenje](#rješenje), [Za općine i županije](#za-općine-i-županije) |
+| Inovativnost i primjena tehnologija | glasovni agent koji u stvarnom vremenu koristi alate nad otvorenim podacima; brojke iz predložaka, ne iz jezičnog modela | [Kako nastaje odgovor](#kako-nastaje-odgovor) |
+| Izvedivost rješenja | radni prototip na javnom linku; open profil pokreće se jednom naredbom | [uputko.eugensedlar.com](https://uputko.eugensedlar.com), [Pokretanje](#pokretanje) |
+| Tehnička arhitektura i integracijski potencijal | modularni alati, REST/OpenAPI, dva zamjenjiva glasovna sloja, uklapanje uz asistenta na gov.hr; navedeni tehnički, organizacijski i pravni preduvjeti | [Arhitektura](#arhitektura), [Uklapanje u javne sustave](#uklapanje-u-javne-sustave), [OpenAPI](https://uputko.eugensedlar.com/docs) |
+| Dojam rješenja | tri jasna zadatka, ušteda kao naslov rezultata, „Kako se naručiti?” uz svaki termin, pristupačno uz čitač zaslona | [Što Uputko radi](#što-uputko-radi), [Pristupačnost](#pristupačnost) |
+| Softver otvorenog koda | kod pod EUPL-1.2; open profil koristi samo open-source softver i open-weight modele | [Licenca i atribucija](#licenca-i-atribucija) |
 
 ## Licenca i atribucija
 
