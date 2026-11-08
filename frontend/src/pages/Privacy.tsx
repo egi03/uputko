@@ -84,7 +84,7 @@ export function PrivacyPage() {
 
       <PageSection id="prava" title="Odgovorna osoba i vaša prava">
         <p>
-          Eugen Sedlar, autor prototipa: <a href="mailto:sedlar.eugen.biz@gmail.com">sedlar.eugen.biz@gmail.com</a>
+          Eugen Sedlar, autor prototipa: <a href="mailto:esedlar@student.ferit.hr">esedlar@student.ferit.hr</a>
         </p>
         <p>
           Možete zatražiti pristup podacima, ispravak ili brisanje, prigovoriti obradi i&nbsp;povući privolu. Podaci se ne

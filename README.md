@@ -2,7 +2,7 @@
 
 **Isti pregled, kraće čekanje.** AI asistent za zdravstvo iz otvorenih podataka: gdje se najkraće čeka na pregled, gdje je najbliža ambulanta ili bolnica i što piše o lijeku. Glasom ili tekstom, na hrvatskom, bez instalacije i prijave.
 
-**[Isprobajte: uputko.eugensedlar.com](https://uputko.eugensedlar.com)** · **Licenca:** [EUPL-1.2](LICENSE)
+**[Isprobajte: uputko.eugensedlar.com](https://uputko.eugensedlar.com)** · **[Video prezentacija (2:52)](https://www.youtube.com/watch?v=f6BwQSGqwfU)** · **Licenca:** [EUPL-1.2](LICENSE)
 
 Datathon Portala otvorenih podataka 2026 · Izazov A: Društvo i javne usluge
 
@@ -16,9 +16,15 @@ Na isti pregled u obližnjoj ustanovi često se čeka mjesecima kraće, ali to j
 
 Dovoljno je pitati. Uputko pronađe najbližu ustanovu s terminom, kaže postoji li raniji termin u blizini i kako se naručiti.
 
-> **Građanin:** Gdje najprije mogu na MR koljena, blizu Vinkovaca?
+> **Građanin:** Gdje mogu najranije doći na MR koljena blizu Osijeka?
 >
-> **Uputko:** Prema listama čekanja HZZO-a, najbliža ustanova je Opća županijska bolnica Vinkovci: 12. siječnja 2027., za 70 dana. Ranije, za 37 dana umjesto 70, ima Nacionalna memorijalna bolnica Vukovar, oko 17 km: 10. prosinca 2026.
+> **Uputko:** Prema listama čekanja HZZO-a, najbliži termin je u Kliničkom bolničkom centru Osijek, za 288 dana. Ranije, za 72 dana umjesto 288, termin ima Opća županijska bolnica Vinkovci, oko 30 kilometara.
+>
+> **Građanin:** A što mi možeš reći o lijeku Brufen i smiju li ga uzimati trudnice?
+>
+> **Uputko:** Prema HALMED-u, djelatna tvar lijeka Brufen je ibuprofen. Lijek se izdaje na recept i nalazi se na dopunskoj listi HZZO-a, uz recept se doplaćuje od 0,38 do 2,20 eura. Za pitanje o uzimanju lijeka tijekom trudnoće obratite se liječniku ili ljekarniku.
+
+Razgovor glasom iz video prezentacije, 8. 11. 2026.
 
 ![Graf: šest primjera u kojima je raniji termin u blizini višestruko kraći od najbliže ustanove](assets/usteda.svg)
 
@@ -84,12 +90,12 @@ sequenceDiagram
     participant A as Asistent
     participant B as Backend
     participant D as Lokalna baza
-    G->>A: Gdje najprije na MR koljena, blizu Vinkovaca?
-    A->>B: find_waiting_times(MR koljena, Vinkovci)
+    G->>A: Gdje najranije na MR koljena, blizu Osijeka?
+    A->>B: find_waiting_times(MR koljena, Osijek)
     B->>D: liste čekanja, ustanove, udaljenost
     D-->>B: termini i kontakti
     B-->>A: gotova rečenica s brojkama
-    A-->>G: Za 37 dana umjesto 70, Vukovar, oko 17 km
+    A-->>G: Za 72 dana umjesto 288, Vinkovci, oko 30 km
     B-->>G: kartica na ekranu: telefon, izvor, datum
 ```
 
@@ -307,7 +313,7 @@ MPUDT je u lipnju 2026. na gov.hr pokrenuo AI asistenta u sklopu Jedinstvenog ko
 
 - **Tehnički:** poslužitelj s Dockerom i domenom; upozorenje timu kad izvor ima grešku; sigurnosna kopija baze zbog dnevnih snimki lista.
 - **Organizacijski:** vlasnik usluge; dogovor s HZZO-om o strojno čitljivim listama sa šifrom ustanove i stalnim URL-ovima te s HALMED-om o stalnom URL-u izvoza.
-- **Pravni:** usluga u javnom interesu (čl. 6. st. 1. t. (e) GDPR-a); ugovori o obradi s ElevenLabsom ili Groqom i provjera prijenosa podataka izvan EU-a; procjena učinka (DPIA), jer se obrađuje glas i zdravstvene teme. Open profil omogućuje rad modela na državnoj infrastrukturi, bez vanjskih obrađivača.
+- **Pravni:** usluga u javnom interesu (čl. 6. st. 1. t. (e) GDPR-a); ugovori o obradi s ElevenLabsom ili Groqom i provjera prijenosa podataka izvan EU-a; procjena učinka (DPIA), jer se obrađuje glas i zdravstvene teme. Open profil omogućuje rad modela na lokalnoj infrastrukturi, bez vanjskih obrađivača.
 
 ## Ograničenja
 
@@ -321,7 +327,7 @@ MPUDT je u lipnju 2026. na gov.hr pokrenuo AI asistenta u sklopu Jedinstvenog ko
 
 - obavijest kad se u blizini oslobodi raniji termin
 - telefonski kanal: poziv na običan broj
-- modeli open profila na državnoj infrastrukturi
+- modeli open profila na lokalnoj infrastrukturi
 - bolji hrvatski glas za open profil
 - dežurne ljekarne, čim izvor bude ažuran
 - povezivanje s AI asistentom na gov.hr
@@ -335,10 +341,10 @@ MPUDT je u lipnju 2026. na gov.hr pokrenuo AI asistenta u sklopu Jedinstvenog ko
 | Relevantnost rješenja | pristup zdravstvenoj zaštiti: termini, ambulante, lijekovi, pristupačnost | [Problem](#problem) |
 | Utjecaj i korist za zajednicu | na jedno pitanje gdje se najkraće čeka; općine vide gdje je više starijih, a manje ordinacija | [Rješenje](#rješenje), [Za općine i županije](#za-općine-i-županije) |
 | Inovativnost i primjena tehnologija | glasovni agent koji u stvarnom vremenu koristi alate nad otvorenim podacima; brojke iz predložaka, ne iz jezičnog modela | [Kako nastaje odgovor](#kako-nastaje-odgovor) |
-| Izvedivost rješenja | radni prototip na javnom linku; open profil pokreće se jednom naredbom | [uputko.eugensedlar.com](https://uputko.eugensedlar.com), [Pokretanje](#pokretanje) |
+| Izvedivost rješenja | radni prototip na javnom linku; kod otvoren pod EUPL-1.2; open profil pokreće se jednom naredbom | [uputko.eugensedlar.com](https://uputko.eugensedlar.com), [Pokretanje](#pokretanje), [Licenca i atribucija](#licenca-i-atribucija) |
 | Tehnička arhitektura i integracijski potencijal | modularni alati, REST/OpenAPI, dva zamjenjiva glasovna sloja, uklapanje uz asistenta na gov.hr; navedeni tehnički, organizacijski i pravni preduvjeti | [Arhitektura](#arhitektura), [Uklapanje u javne sustave](#uklapanje-u-javne-sustave), [OpenAPI](https://uputko.eugensedlar.com/docs) |
 | Dojam rješenja | tri jasna zadatka, ušteda kao naslov rezultata, „Kako se naručiti?” uz svaki termin, pristupačno uz čitač zaslona | [Što Uputko radi](#što-uputko-radi), [Pristupačnost](#pristupačnost) |
-| Softver otvorenog koda | kod pod EUPL-1.2; open profil koristi samo open-source softver i open-weight modele | [Licenca i atribucija](#licenca-i-atribucija) |
+| Prezentacija rješenja | video od 2:52: problem, ciljni korisnici, izvori podataka, funkcionalnosti, arhitektura, korist i daljnji razvoj; središnja minuta je cijeli razgovor glasom, bez rezova | [video na YouTubeu](https://www.youtube.com/watch?v=f6BwQSGqwfU), [MP4 na Google Driveu](https://drive.google.com/file/d/1sY0y7GzUYNqVqdADfaUEW7V466eZJLRJ/view?usp=sharing) |
 
 ## Licenca i atribucija
 
